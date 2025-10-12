@@ -17,9 +17,8 @@ Auth::routes();
 
 Route::middleware(['auth', 'verified'])->group(function () {
 Route::resource('pacientes', PacienteController::class);
-
 Route::resource('medicos', MedicController::class);
-// Route::get('medicos/get/{id}', MedicController@getMedico)->name('medicos.get');
+// Route::get('paciente/{id}', [PacienteController::class, 'showpaciente'])->name('showpaciente');
 Route::resource('patologos', PatologoController::class);  
 Route::resource('procedencias', ProcedenciaController::class);
 // Route::get('procedencias/get/{id}', 'ProcedenciaController@getProcedencia')->name('procedencias.get');

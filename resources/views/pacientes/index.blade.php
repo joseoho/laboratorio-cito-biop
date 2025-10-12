@@ -86,13 +86,13 @@
                 <thead class="thead-dark">
                     <tr>
                         <th>ID</th>
-                        <th>Fecha Ingreso</th>
+                        <th>Ingreso</th>
                         <th>Cédula</th>
                         <th>Nombre</th>
                         {{-- <th>Edad</th>
                         <th>Sexo</th> --}}
-                        <th>Teléfono</th>
-                        <th>Dirección</th>
+                        <th>Tlfo.</th>
+                        <th>Dir.</th>
                         <th>Email</th>
                         <th>Biopsia</th>    
                         <th>Citología</th>
@@ -117,15 +117,15 @@
                         <td>{{ $paciente->medico->Codigo ?? 'N/A' }}</td> --}}
                         
                         <td>{{ $paciente->mail }}</td>
-                        <td>{{ $paciente->NB }}</td>
-                        <td>{{ $paciente->NC }}</td>
-                        {{-- <td>
+                        {{-- <td>{{ $paciente->NB }}</td>
+                        <td>{{ $paciente->NC }}</td> --}}
+                        <td>
                             @if($paciente->NB)
                                 <!-- Enlace a biopsia usando el número de biopsia -->
                                 <a href="{{ route('biopsias.create', $paciente->NB) }}" 
                                    class="btn btn-outline-primary btn-sm"
                                    title="Ver biopsia B-{{ $paciente->NB }}">
-                                    B-{{ $paciente->NB }}
+                                    {{ $paciente->NB }}
                                 </a>
                             @else
                                 <span class="text-muted">N/A</span>
@@ -133,16 +133,16 @@
                         </td>
                         <td>
                                     @if($paciente->NC)
-                                    <a href="{{ route('citologias.show', $paciente->id) }}" 
+                                    <a href="{{ route('pacientes.show', $paciente->id) }}" 
                                     class="btn btn-outline-success btn-sm"
-                                    title="Crear/Editar citología para este pacinte">
-                                        C-{{ $paciente->NC }}
+                                    title="Formulario de citología">
+                                        {{ $paciente->NC }}
                                     </a>
                                 @else
                                     <span class="text-muted">N/A</span>
                                 @endif
                             
-                        </td> --}}
+                        </td>
                         <td>
                             {{ $paciente->procedencia->Procedencia ?? $paciente->Procedencia }}
                         </td>

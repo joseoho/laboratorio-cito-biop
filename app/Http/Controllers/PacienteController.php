@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Paciente;
 use App\Models\Medic;
 use App\Models\Procedencia;
+use App\Models\Patologo;        
+use App\Models\DiagCito;
+use App\Models\Anexo;
 use Illuminate\Http\Request;
 use App\Http\Requests\StorePacienteRequest;
 use App\Http\Requests\UpdatePacienteRequest;
@@ -130,9 +133,15 @@ class PacienteController extends Controller
      */
    public function show(Paciente $paciente)
     {
-        return view('citologia.citologia', compact('paciente'));
+        $anexos = Anexo::all(); 
+        $diagcitos = DiagCito::all(); 
+        return view('citologia.citologia', compact('paciente','anexos','diagcitos'));
     }
 
+     public function showpaciente(Paciente $paciente)
+    {
+        return view('paciente.show', compact('paciente'));
+    }
     /**
      * Show the form for editing the specified resource.
      */

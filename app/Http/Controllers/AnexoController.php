@@ -23,7 +23,7 @@ class AnexoController extends Controller
         }
         
         // Ordenar por orden por defecto
-        $query->orderBy('Orden', 'asc');
+        $query->orderBy('Orden', 'desc');
         
         $anexos = $query->paginate(10);
         

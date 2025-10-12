@@ -17,27 +17,27 @@
         @csrf
         
         <!-- Campo oculto para el ID del paciente -->
-        <input type="hidden" name="IdPaciente" value="{{ $paciente->id }}">
+        <input type="hidden" name="IdPaciente" value="{{ $paciente->id}}">
 
         <!-- Frame de Citología -->
         <div class="frame mb-4 p-3 border rounded">
             <h3>Datos del Paciente</h3>
             <div class="row">
                 <div class="col-md-3">
-                    <label for="recibo" class="form-label">ID Paciente:</label>
+                    <label for="recibo" class="form-label">Recibo:</label>
                     <input type="text" value="{{ $paciente->id }}" name="id" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
                     <label for="ci" class="form-label">C.I No.:</label>
-                    <input type="text" value="{{ $paciente->CI }}" name="CI" class="form-control" readonly>
+                    <input type="text" value="{{ $paciente->CI }}" name="ci" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
                     <label for="noCitologia" class="form-label">No. Citología:</label>
-                    <input type="text" value="{{ $paciente->NC }}" name="NC" class="form-control" readonly>
+                    <input type="text" value="{{ $paciente->NC }}" name="nc" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
                     <label for="nombres" class="form-label">Nombres:</label>
-                    <input type="text" value="{{ $paciente->Nombre }}" name="Nombre" class="form-control" readonly>
+                    <input type="text" value="{{ $paciente->Nombre }}" name="nombre" class="form-control" readonly>
                 </div>
             </div>
         </div>
@@ -87,21 +87,25 @@
         <div class="frame mb-4 p-3 border rounded">
             <h3>Descripción Citología</h3>
             <div class="row">
-                <div class="col-md-6">
-                    <label for="cod" class="form-label">Cod:</label>
-                    <select id="cod" class="form-control">
-                        <option value="1">Código 1</option>
-                        <option value="2">Código 2</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label for="anexo" class="form-label">Anexo:</label>
-                    <select id="anexo" class="form-control">
-                        <option value="1">Anexo 1</option>
-                        <option value="2">Anexo 2</option>
-                    </select>
-                </div>
-            </div>
+                            <select id="diagcito" name="Procedencia" name = "diagcito" class="form-control" required>
+                                <option value="">Seleccione...</option>
+                                        @foreach($diagcitos as $diagcito)
+                                            <option value="{{ $diagcito->Cod }}">
+                                                {{ $diagcito->Cod }} - {{ $diagcito->Descripcion ?? 'Sin nombre' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                
+                                    <label for="anexo" class="form-label">Anexo:</label>
+                                        <select id="anexo" name="anexo" class="form-control" required>
+                                        <option value="">Seleccione...</option>
+                                                @foreach($anexos as $anexo)
+                                                    <option value="{{ $anexo->Cod }}">
+                                                        {{ $anexo->Cod }} - {{ $anexo->Anexo}}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                 </div>
             <div class="row mt-3">
                 <div class="col-md-12">
                     <label for="DescripcionCitologica" class="form-label">Descripción Citología:</label>

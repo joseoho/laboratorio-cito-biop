@@ -23,7 +23,7 @@ class DiagCitoController extends Controller
         }
         
         // Ordenar por el campo Orden (asumiendo que quieres un orden específico)
-        $query->orderBy('Orden', 'asc');
+        $query->orderBy('Orden', 'desc');
         
         $diagcitos = $query->paginate(10);
         
