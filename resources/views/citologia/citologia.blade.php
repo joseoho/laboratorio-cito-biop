@@ -87,25 +87,26 @@
         <div class="frame mb-4 p-3 border rounded">
             <h3>Descripción Citología</h3>
             <div class="row">
-                            <select id="diagcito" name="Procedencia" name = "diagcito" class="form-control" required>
-                                <option value="">Seleccione...</option>
-                                        @foreach($diagcitos as $diagcito)
-                                            <option value="{{ $diagcito->Cod }}">
-                                                {{ $diagcito->Cod }} - {{ $diagcito->Descripcion ?? 'Sin nombre' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                
-                                    <label for="anexo" class="form-label">Anexo:</label>
-                                        <select id="anexo" name="anexo" class="form-control" required>
-                                        <option value="">Seleccione...</option>
-                                                @foreach($anexos as $anexo)
-                                                    <option value="{{ $anexo->Cod }}">
-                                                        {{ $anexo->Cod }} - {{ $anexo->Anexo}}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                 </div>
+                        <select id="cod" name="cod" class="form-control">
+                            <option value="">Seleccione un código</option>
+                            @foreach($diagcitos as $diagcito)
+                                <option value="{{ $diagcito->Cod }}" 
+                                        data-descripcion="{{ $diagcito->Descripcion }}"
+                                        data-diagnostico="{{ $diagcito->Diagnostico }}">
+                                    {{ $diagcito->Cod }} - {{ $diagcito->Descripcion }}
+                                </option>
+                            @endforeach
+                        </select>    
+                        <label for="anexo" class="form-label">Anexo:</label>
+                              <select id="anexo" name="anexo" class="form-control"> class="form-control" required>
+                                   <option value="">Seleccione...</option>
+                                           @foreach($anexos as $anexo)
+                                                 <option value="{{ $anexo->Cod }}">
+                                                    {{ $anexo->Cod }} - {{ $anexo->Anexo}}
+                                                   </option>
+                                           @endforeach
+                              </select>
+                        </div>
             <div class="row mt-3">
                 <div class="col-md-12">
                     <label for="DescripcionCitologica" class="form-label">Descripción Citología:</label>
@@ -205,3 +206,5 @@
 }
 </style>
 @endsection
+<script src="{{ asset('assets/js/llenadiagCito.js') }}"></script>
+<script src="{{ asset('assets/js/llenaAnexo.js') }}"></script>

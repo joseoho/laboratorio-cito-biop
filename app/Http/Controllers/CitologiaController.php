@@ -26,10 +26,7 @@ class CitologiaController extends Controller
      */
     public function create(Request $request)
     {
-            $anexos = Anexo::all(); 
-            $diagcitos = DiagCito::all();  
-       
-        return view('citologia.citologia', compact('anexos', 'diagcitos'));
+    
         
     }
     /**
@@ -37,8 +34,7 @@ class CitologiaController extends Controller
      */
     public function store(StoreCitologiaRequest $request)
     {
-              $anexos = Anexo::all(); 
-            $diagcitos = DiagCito::all();  
+        
                 try {
             $citologia = new Citologia();
             
@@ -99,7 +95,7 @@ class CitologiaController extends Controller
     {
          
         $paciente = Paciente::with(['citologias'])->findOrFail($paciente->id);
-        return view('citologia.citologia', compact('paciente', 'anexos', 'diagcitos'));
+        return view('citologia.citologia', compact('paciente'));
     }
 
  
