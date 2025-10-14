@@ -96,36 +96,7 @@ class PacienteController extends Controller
                 ->withInput();
         }
 
-            //   \Log::info('Datos recibidos en store:', $request->all());
-        
-        // Usar $request->all() pero asegurar los campos críticos
-        // $datosPaciente = $request->all();
-        
-        // Asegurar que los campos tengan valores por defecto si vienen vacíos
-    //     $datosPaciente['FechaApertura'] = $request->FechaApertura ?? now();
-    //     $datosPaciente['status'] = $request->status ?? 0;
-    //     $datosPaciente['Dirección'] = $request->Dirección ?? null;
-    //     $datosPaciente['Teléfono'] = $request->Teléfono ?? null;
-    //     $datosPaciente['mail'] = $request->mail ?? null;
-    //     $datosPaciente['NB'] = $request->NB ?? null;
-    //     $datosPaciente['NC'] = $request->NC ?? null;
-    //     $datosPaciente['Edad'] = $request->Edad ?? null;
-
-    //     \Log::info('Datos procesados para crear:', $datosPaciente);
-        
-    //     $paciente = Paciente::create($datosPaciente);
-
-    //     return redirect()->route('pacientes.index')
-    //         ->with('success', 'Paciente guardado correctamente!');
-
-    // } catch (\Exception $e) {
-    //     \Log::error('Error al crear paciente: ' . $e->getMessage());
-    //     \Log::error('Trace: ' . $e->getTraceAsString());
-        
-    //     return redirect()->back()
-    //         ->with('error', 'Error al guardar: ' . $e->getMessage())
-    //         ->withInput();
-    // }
+            
     }
 
     /**

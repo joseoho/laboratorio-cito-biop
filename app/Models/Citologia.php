@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Citologia extends Model
 {
     use HasFactory;
-    Protected $primaryKey ="IdPaciente";
+    // Protected $primaryKey ="IdPaciente";
     protected $table ='citologia';
     protected $fillable = [
         'IdPaciente',
@@ -36,6 +36,6 @@ class Citologia extends Model
      */
     public function paciente()
     {
-        return $this->belongsTo(Paciente::class, 'IdPaciente', 'NC');
+        return $this->belongsTo(Paciente::class, 'IdPaciente', 'id');
     }
 }

@@ -68,7 +68,7 @@ class Paciente extends Model
      * Relación: Un paciente tiene MUCHAS citologías (si necesitas múltiples)
      */
     public function citologias()
-    {
-        return $this->hasMany(Citologia::class, 'IdPaciente', 'NC');
-    }
+{
+     return $this->hasMany(Citologia::class, 'IdPaciente', 'id');
+}
 }

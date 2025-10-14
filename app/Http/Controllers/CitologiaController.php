@@ -16,9 +16,23 @@ class CitologiaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+             $query = Citologia::with('paciente')->orderBy('created_at', 'desc');
+    
+    // Búsqueda por número de citología (NC del paciente)
+    if ($request->has('search') && $request->search != '') {
+        $search = $request->search;
+        $query->whereHas('paciente', function($q) use ($search) {
+            $q->where('NC', 'LIKE', "%{$search}%")
+              ->orWhere('Nombre', 'LIKE', "%{$search}%")
+              ->orWhere('CI', 'LIKE', "%{$search}%");
+        });
+    }
+    
+    $citologias = $query->paginate(10);
+    
+    return view('citologia.index', compact('citologias'));
     }
 
     /**
@@ -35,45 +49,47 @@ class CitologiaController extends Controller
     public function store(StoreCitologiaRequest $request)
     {
         
-                try {
-            $citologia = new Citologia();
+            try {
+            // $citologia = new Citologia();
             
-            // Datos básicos del paciente (ya vienen en la vista)
-            $citologia->paciente_id = $request->id;
-            $citologia->CI = $request->ci;
-            $citologia->NC = $request->nc;
-            $citologia->Nombre = $request->nombre;
+            // // Datos básicos del paciente (ya vienen en la vista)
+            // $citologia->paciente_id = $request->id;
+            // $citologia->CI = $request->ci;
+            // $citologia->NC = $request->nc;
+            // $citologia->Nombre = $request->nombre;
             
-            // Identificación de la muestra
-            $citologia->FechaRecibido = $request->FechaRecibido;
-            $citologia->FechaEnvio = $request->FechaEnvio;
+            // // Identificación de la muestra
+            // $citologia->FechaRecibido = $request->FechaRecibido;
+            // $citologia->FechaEnvio = $request->FechaEnvio;
             
-            // Material y diagnóstico
-            $citologia->MaterialRemitido = $request->MaterialRemitido;
-            $citologia->DiagnosticoClinico = $request->DiagnosticoClinico;
+            // // Material y diagnóstico
+            // $citologia->MaterialRemitido = $request->MaterialRemitido;
+            // $citologia->DiagnosticoClinico = $request->DiagnosticoClinico;
             
-            // Calidad y descripción
-            $citologia->calidad_muestra = $request->calidad_muestra;
-            $citologia->DescripcionMacroscopica = $request->DescripcionMacroscopica;
+            // // Calidad y descripción
+            // $citologia->calidad_muestra = $request->calidad_muestra;
+            // $citologia->DescripcionMacroscopica = $request->DescripcionMacroscopica;
             
-            // Descripción citología
-            $citologia->codigo = $request->codigo;
-            $citologia->anexo = $request->anexo;
-            $citologia->descripcion_citologia = $request->descripcion_citologia;
-            $citologia->diagnostico_citologia = $request->diagnostico_citologia;
-            $citologia->notas = $request->notas;
+            // // Descripción citología
+            // $citologia->codigo = $request->codigo;
+            // $citologia->anexo = $request->anexo;
+            // $citologia->descripcion_citologia = $request->descripcion_citologia;
+            // $citologia->diagnostico_citologia = $request->diagnostico_citologia;
+            // $citologia->notas = $request->notas;
             
-            // Índice de valoración hormonal
-            $citologia->superficiales = $request->superficiales;
-            $citologia->intermedias = $request->intermedias;
-            $citologia->parabasales = $request->parabasales;
+            // // Índice de valoración hormonal
+            // $citologia->superficiales = $request->superficiales;
+            // $citologia->intermedias = $request->intermedias;
+            // $citologia->parabasales = $request->parabasales;
             
-            // Médicos patólogos
-            $citologia->medico_patologo_1 = $request->medico_patologo_1;
-            $citologia->medico_patologo_2 = $request->medico_patologo_2;
+            // // Médicos patólogos
+            // $citologia->medico_patologo_1 = $request->medico_patologo_1;
+            // $citologia->medico_patologo_2 = $request->medico_patologo_2;
             
-            $citologia->save();
-            
+            // $citologia->save();
+            $citologia = Citologia::create($request->all());
+            return redirect()->route('citologia.index')
+                ->with('success', 'Paciente guardado correctamente!');
             return response()->json([
                 'success' => true,
                 'message' => 'Citología guardada correctamente',
