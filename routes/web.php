@@ -26,6 +26,8 @@ Route::resource('anexos', AnexoController::class);
 Route::resource('diagcito', DiagCitoController::class);
 Route::resource('biopsias', BiopsiaController::class);
 Route::resource('citologias', CitologiaController::class);
+Route::get('citologias/{id}/imprimir', [CitologiaController::class, 'imprimir'])->name('citologias.imprimir');
+Route::get('citologias/{id}/vista-previa', [CitologiaController::class, 'vistaPrevia'])->name('citologias.vista-previa');
 // Route::resource('citologias', CitologiaController::class)->except(['create']);
 // Ruta personalizada para crear citología con datos de paciente
 // Route::get('citologias/crear/{paciente}', [CitologiaController::class, 'crear'])->name('citologias.crear');

@@ -109,10 +109,7 @@ class PacienteController extends Controller
         return view('citologia.citologia', compact('paciente','anexos','diagcitos'));
     }
 
-     public function showpaciente(Paciente $paciente)
-    {
-        return view('paciente.show', compact('paciente'));
-    }
+
     /**
      * Show the form for editing the specified resource.
      */

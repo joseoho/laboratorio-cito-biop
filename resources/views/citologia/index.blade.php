@@ -1,58 +1,7 @@
 @extends('layouts.layout')
 
 @section('content')
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Citologías - LABORATORIO BECOMARCA</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-        .container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-top: 30px;
-        }
-        .table-responsive {
-            margin-top: 20px;
-        }
-        .btn-custom {
-            background-color: #28a745;
-            color: #ffffff;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 12px;
-            cursor: pointer;
-        }
-        .btn-custom:hover {
-            background-color: #218838;
-        }
-        .search-form {
-            margin-bottom: 20px;
-        }
-        .badge-new {
-            background-color: #17a2b8;
-        }
-        .badge-pending {
-            background-color: #ffc107;
-            color: #212529;
-        }
-    </style>
-</head>
-<body>
-    @extends('layout.layout')
-    
-    @section('content')
+
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
@@ -72,7 +21,7 @@
                         <label for="search" class="sr-only">Buscar por número de citología</label>
                         <input type="text" class="form-control" id="search" name="search" 
                                value="{{ request('search') }}" 
-                               placeholder="Buscar por número de citología...">
+                               placeholder="Buscar por NC, Cédula...">
                     </div>
                     <button type="submit" class="btn btn-primary mb-2">
                         <i class="fas fa-search"></i> Buscar
@@ -149,23 +98,23 @@
                 @endif
             </td>
             <td>
-                {{-- <div class="btn-group" role="group">
-                    <a href="{{ route('citologias.show', $citologia->id) }}" 
+                <div class="btn-group" role="group">
+                    <a href="{{ route('citologias.show', $citologia->IdPaciente) }}" 
                        class="btn btn-info btn-sm" 
                        title="Ver">
                         <i class="fas fa-eye"></i>
                     </a>
-                    <a href="{{ route('citologias.edit', $citologia->id) }}" 
+                    {{-- <a href="{{ route('citologias.edit', $citologia->IdPaciente) }}" 
                        class="btn btn-warning btn-sm" 
                        title="Editar">
                         <i class="fas fa-edit"></i>
-                    </a>
-                    <a href="{{ route('citologias.imprimir', $citologia->id) }}" 
+                    </a> --}}
+                    <a href="{{ route('citologias.imprimir', $citologia->IdPaciente) }}" 
                        class="btn btn-secondary btn-sm" 
                        title="Imprimir" target="_blank">
                         <i class="fas fa-print"></i>
                     </a>
-                    <form action="{{ route('citologias.destroy', $citologia->id) }}" 
+                    <form action="{{ route('citologias.destroy', $citologia->paciente->NC) }}" 
                           method="POST" 
                           class="d-inline"
                           onsubmit="return confirm('¿Está seguro de eliminar esta citología?')">
@@ -174,7 +123,7 @@
                         <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
                             <i class="fas fa-trash"></i>
                         </button>
-                    </form> --}}
+                    </form> 
                 </div>
             </td>
         </tr>
@@ -265,6 +214,3 @@
         });
     </script>
     @endsection
-</body>
-</html>
-@endsection

@@ -1,87 +1,176 @@
-<!-- resources/views/pacientes/show.blade.php -->
 @extends('layouts.layout')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row mb-3">
-        <div class="col">
-            <h1>Información del Paciente</h1>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Jose R. Becker Reyes"</h1>
+            <h2>Detalle de Citología</h2>
         </div>
-        <div class="col text-right">
-            <a href="{{ route('pacientes.edit', $paciente->id) }}" class="btn btn-warning">Editar</a>
-            <a href="{{ route('pacientes.index') }}" class="btn btn-secondary">Volver</a>
+        <div>
+            <a href="{{ route('citologias.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <a href="{{ route('citologias.edit', $citologia->paciente->id) }}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Editar
+            </a> 
+            <a href="{{ route('citologias.imprimir', $citologia->paciente->NC) }}" class="btn btn-primary" target="_blank">
+                <i class="fas fa-print"></i> Imprimir
+            </a>
         </div>
     </div>
 
-    <!-- Frame: Identificación -->
-    <div class="frame mb-4 p-3 border rounded">
-        <h3 class="mb-4">Identificación</h3>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Fecha de Ingreso:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->created_at}}</p>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Cédula Número:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->CI }}</p>
-            </div>
+    <!-- Información del Paciente -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Información del Paciente</h4>
         </div>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Nombres:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->Nombre }}</p>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>No. Citología:</strong> {{ $citologia->paciente->NC ?? 'N/A' }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Cédula:</strong> {{ $citologia->paciente->CI ?? 'N/A' }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Nombre:</strong> {{ $citologia->paciente->Nombre ?? 'N/A' }}
+                </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Sexo:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->Sexo }}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Dirección:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->Direccion ?? 'No especificada' }}</p>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Teléfono:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->Teléfono ?? 'No especificado' }}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Edad:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->Edad }} años</p>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Procedencia:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->procedencia->Procedencia ?? $paciente->Procedencia }}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Médico:</strong></label>
-                <p class="form-control-plaintext">
-                    {{ $paciente->medico->Codigo ?? $paciente->Codigo }}
-                   
-                </p>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Correo Electrónico:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->mail }}</p>
+            <div class="row mt-2">
+                <div class="col-md-3">
+                    <strong>Recibo:</strong> {{ $citologia->paciente->id ?? 'N/A' }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Sexo:</strong> {{ $citologia->paciente->Sexo ?? 'N/A' }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Edad:</strong> {{ $citologia->paciente->Edad ?? 'N/A' }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Teléfono:</strong> {{ $citologia->paciente->Teléfono ?? 'N/A' }}
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Frame: Biopsias y Citologías -->
-    <div class="frame mb-4 p-3 border rounded">
-        <h3 class="mb-4">Biopsias y Citologías</h3>
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Biopsia:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->NB ?? 'No asignada' }}</p>
+    <!-- Información de la Citología -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">Información de la Muestra</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Fecha Recepción:</strong> 
+                    @if($citologia->FechaRecibido)
+                        {{ \Carbon\Carbon::parse($citologia->FechaRecibido)->format('d/m/Y') }}
+                    @else
+                        N/A
+                    @endif
+                </div>
+                <div class="col-md-6">
+                    <strong>Fecha Envío:</strong> 
+                    @if($citologia->FechaEnvio)
+                        {{ \Carbon\Carbon::parse($citologia->FechaEnvio)->format('d/m/Y') }}
+                    @else
+                        N/A
+                    @endif
+                </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label"><strong>Citología:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->NC ?? 'No asignada' }}</p>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <strong>Material Remitido:</strong> {{ $citologia->MaterialRemitido ?? 'N/A' }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Diagnóstico Clínico:</strong> {{ $citologia->DiagnosticoClinico ?? 'N/A' }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Descripciones -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Descripciones y Diagnósticos</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <strong>Calidad de la Muestra:</strong>
+                    <p class="mt-1">{{ $citologia->Calidad ?? 'N/A' }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <strong>Descripción Macroscópica:</strong>
+                    <p class="mt-1">{{ $citologia->DescripcionMacroscopica ?? 'N/A' }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <strong>Descripción Citológica:</strong>
+                    <p class="mt-1">{{ $citologia->DescripcionCitologica ?? 'N/A' }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <strong>Diagnóstico Citológico:</strong>
+                    <p class="mt-1">{{ $citologia->DiagnosticoCitologico ?? 'N/A' }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <strong>Notas:</strong>
+                    <p class="mt-1">{{ $citologia->Notas ?? 'N/A' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Índice Hormonal -->
+    @if($citologia->Superficiales || $citologia->Intermedias || $citologia->Parabasales)
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Índice de Valoración Hormonal</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Superficiales:</strong> {{ $citologia->Superficiales ?? '0' }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Intermedias:</strong> {{ $citologia->Intermedias ?? '0' }}
+                </div>
+                <div class="col-md-4">
+                    <strong>Parabasales:</strong> {{ $citologia->Parabasales ?? '0' }}
+                </div>
+            </div>
+            @if($citologia->Conclusion)
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <strong>Conclusión:</strong>
+                    <p class="mt-1">{{ $citologia->Conclusion }}</p>
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+    @endif
+
+    <!-- Médicos -->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0">Médicos Patólogos</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Médico Patólogo 1:</strong> {{ $citologia->MedicoPatologo1 ?? 'N/A' }}
+                </div>
+                <div class="col-md-6">
+                    <strong>Médico Patólogo 2:</strong> {{ $citologia->MedicoPatologo2 ?? 'N/A' }}
+                </div>
             </div>
         </div>
     </div>

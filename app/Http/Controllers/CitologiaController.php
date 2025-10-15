@@ -25,7 +25,7 @@ class CitologiaController extends Controller
         $search = $request->search;
         $query->whereHas('paciente', function($q) use ($search) {
             $q->where('NC', 'LIKE', "%{$search}%")
-              ->orWhere('Nombre', 'LIKE', "%{$search}%")
+            //   ->orWhere('Nombre', 'LIKE', "%{$search}%")
               ->orWhere('CI', 'LIKE', "%{$search}%");
         });
     }
@@ -88,7 +88,7 @@ class CitologiaController extends Controller
             
             // $citologia->save();
             $citologia = Citologia::create($request->all());
-            return redirect()->route('citologia.index')
+            return redirect()->route('citologias.index')
                 ->with('success', 'Paciente guardado correctamente!');
             return response()->json([
                 'success' => true,
@@ -107,12 +107,15 @@ class CitologiaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
-    {
-         
-        $paciente = Paciente::with(['citologias'])->findOrFail($paciente->id);
-        return view('citologia.citologia', compact('paciente'));
-    }
+    public function show(string $id)
+{
+    // Buscar por IdPaciente en lugar de id
+    $citologia = Citologia::with('paciente')
+        ->where('IdPaciente', $id)
+        ->firstOrFail();
+    
+    return view('citologia.show', compact('citologia'));
+}
 
  
     /**
@@ -151,5 +154,18 @@ class CitologiaController extends Controller
         //
     }
 
+    public function imprimir($id)
+    {
+         $citologia = Citologia::with('paciente')
+        ->where('IdPaciente', $id)
+        ->firstOrFail();
+         return view('citologia.imprimir', compact('citologia'));
+    }
+
+    public function vistaPrevia($id)
+    {
+        $citologia = Citologia::with('paciente')->findOrFail($id);
+        return view('citologias.vista-previa', compact('citologia'));
+    }
    
 }

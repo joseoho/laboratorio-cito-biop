@@ -5,7 +5,7 @@
     <div class="row mb-3">
         <div class="col">
             <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Jose R. Becker Reyes"</h1>
-            <h2>Citologías</h2>
+            <h2>Citologías, Registrar</h2>
         </div>
         <div class="col text-right">
             <a href="{{ route('pacientes.index') }}" class="btn btn-secondary">Volver a Pacientes</a>
