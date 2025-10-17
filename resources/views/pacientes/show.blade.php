@@ -1,4 +1,3 @@
-<!-- resources/views/pacientes/show.blade.php -->
 @extends('layouts.layout')
 
 @section('content')
@@ -19,7 +18,7 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label"><strong>Fecha de Ingreso:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->created_at}}</p>
+                <p class="form-control-plaintext">{{ $paciente->FechaApertura }}</p>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label"><strong>Cédula Número:</strong></label>
@@ -39,7 +38,7 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label"><strong>Dirección:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->Direccion ?? 'No especificada' }}</p>
+                <p class="form-control-plaintext">{{ $paciente->Dirección ?? 'No especificada' }}</p>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label"><strong>Teléfono:</strong></label>
@@ -53,20 +52,22 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label"><strong>Procedencia:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->procedencia->Procedencia ?? $paciente->Procedencia }}</p>
+                <p class="form-control-plaintext">{{ $paciente->procedencia->Codigo ?? $paciente->Procedencia }}</p>
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label"><strong>Médico:</strong></label>
                 <p class="form-control-plaintext">
-                    {{ $paciente->medico->Codigo ?? $paciente->Codigo }}
-                   
+                    {{ $paciente->medico->Codigo ?? $paciente->Dr }}
+                    @if($paciente->medico->Codigo && $paciente->Dr)
+                        ({{ $paciente->medico->especialidad }})
+                    @endif
                 </p>
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label"><strong>Correo Electrónico:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->mail }}</p>
+                <p class="form-control-plaintext">{{ $paciente->Mail }}</p>
             </div>
         </div>
     </div>

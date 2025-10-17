@@ -87,7 +87,16 @@ class CitologiaController extends Controller
             // $citologia->medico_patologo_2 = $request->medico_patologo_2;
             
             // $citologia->save();
+            
             $citologia = Citologia::create($request->all());
+              // ACTUALIZAR STATUS DEL PACIENTE A 1
+        if ($citologia->IdPaciente) {
+            $paciente = Paciente::find($citologia->IdPaciente);
+            if ($paciente) {
+                $paciente->status = 1;
+                $paciente->save();
+            }
+        }
             return redirect()->route('citologias.index')
                 ->with('success', 'Paciente guardado correctamente!');
             return response()->json([
@@ -125,7 +134,7 @@ class CitologiaController extends Controller
     {
  // El $id que recibimos es el NC (número de citología) del paciente
     // Buscar el paciente por su número de citología (NC)
-    $paciente = Paciente::where('NC', $id)->first();
+    $paciente = Paciente::where('id', $id)->first();
     
     if (!$paciente) {
         return redirect()->route('pacientes.index')
@@ -133,9 +142,11 @@ class CitologiaController extends Controller
     }
 
     // Buscar si ya existe una citología para este paciente
+    $anexos = Anexo::all(); 
+    $diagcitos = DiagCito::all(); 
     $citologia = Citologia::where('IdPaciente', $id)->first();
 
-    return view('citologia.citologia', compact('paciente', 'citologia'));
+    return view('citologia.citologia', compact('paciente', 'citologia', 'anexos', 'diagcitos'));
     }
 
     /**

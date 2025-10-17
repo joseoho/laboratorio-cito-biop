@@ -14,7 +14,7 @@
             <a href="{{ route('citologias.edit', $citologia->paciente->id) }}" class="btn btn-warning">
                 <i class="fas fa-edit"></i> Editar
             </a> 
-            <a href="{{ route('citologias.imprimir', $citologia->paciente->NC) }}" class="btn btn-primary" target="_blank">
+            <a href="{{ route('citologias.imprimir', $citologia->IdPaciente) }}" class="btn btn-primary" target="_blank">
                 <i class="fas fa-print"></i> Imprimir
             </a>
         </div>

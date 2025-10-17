@@ -57,7 +57,7 @@
                         <th>Recibo</th>
                         <th>Fecha Recepción</th>
                         <th>Fecha Envío</th>
-                        <th>Estado</th>
+                        {{-- <th>Estado</th> --}}
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -90,13 +90,20 @@
                     N/A
                 @endif
             </td>
-            <td>
-                @if($citologia->created_at)
+            {{-- <td>
+               @if($citologia->created_at)
                     <span class="badge badge-new">Nuevo</span>
                 @else
                     <span class="badge badge-pending">Procesado</span>
-                @endif
-            </td>
+                @endif 
+                @if($paciente->status == 0)
+                                    <span class="badge badge-warning">Pendiente</span>
+                                    @elseif($paciente->status == 1)
+                                    <span class="badge badge-info">Procesado</span>
+                                 @else
+                                    <span class="badge badge-secondary">Pendiente</span> 
+                                @endif
+            </td> --}}
             <td>
                 <div class="btn-group" role="group">
                     <a href="{{ route('citologias.show', $citologia->IdPaciente) }}" 
@@ -104,11 +111,11 @@
                        title="Ver">
                         <i class="fas fa-eye"></i>
                     </a>
-                    {{-- <a href="{{ route('citologias.edit', $citologia->IdPaciente) }}" 
+                    <a href="{{ route('citologias.edit', $citologia->IdPaciente) }}" 
                        class="btn btn-warning btn-sm" 
                        title="Editar">
                         <i class="fas fa-edit"></i>
-                    </a> --}}
+                    </a>
                     <a href="{{ route('citologias.imprimir', $citologia->IdPaciente) }}" 
                        class="btn btn-secondary btn-sm" 
                        title="Imprimir" target="_blank">

@@ -132,8 +132,14 @@
                             @endif
                         </td>
                         <td>
+                            @if($paciente->status == 1)
+                                            <!-- Completado - Solo mostrar información -->
+                                            <span class="text-success">
+                                                <i class="fas fa-check-circle"></i> Procesada/{{$paciente->NC}}
+                                            </span>
+                                        @else
                                     @if($paciente->NC)
-                                    <a href="{{ route('pacientes.show', $paciente->id) }}" 
+                                    <a href="{{ route('citologias.edit', $paciente->id) }}" 
                                     class="btn btn-outline-success btn-sm"
                                     title="Formulario de citología">
                                         {{ $paciente->NC }}
@@ -141,7 +147,7 @@
                                 @else
                                     <span class="text-muted">N/A</span>
                                 @endif
-                            
+                            @endif
                         </td>
                         <td>
                             {{ $paciente->procedencia->Procedencia ?? $paciente->Procedencia }}
@@ -152,11 +158,13 @@
                         </td>
                             <td>
                                 @if($paciente->status == 0)
-                                    <span class="badge badge-warning">Pendiente</span>
+                                    <span class="text-alert">
+                                                <i class="fas fa-check-circle"></i> Pendiente
+                                    </span>
                                     @elseif($paciente->status == 1)
-                                    <span class="badge badge-info">Compleatdo</span>
-                                {{-- @else
-                                    <span class="badge badge-secondary">Pendiente</span> --}}
+                                    <span class="text-success">
+                                                <i class="fas fa-check-circle"></i> Procesada
+                                    </span>
                                 @endif
                         </td>
                         <td>

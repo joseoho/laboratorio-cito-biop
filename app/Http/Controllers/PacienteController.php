@@ -106,7 +106,7 @@ class PacienteController extends Controller
     {
         $anexos = Anexo::all(); 
         $diagcitos = DiagCito::all(); 
-        return view('citologia.citologia', compact('paciente','anexos','diagcitos'));
+        return view('pacientes.show', compact('paciente','anexos','diagcitos'));
     }
 
 
