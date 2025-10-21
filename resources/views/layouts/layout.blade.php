@@ -128,10 +128,16 @@
           Pacientes
         </a>
       </li>
-      <li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link" href="/citologias">
             <span data-feather="repeat"></span>
             Citologias
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/biopsias">
+            <span data-feather="repeat"></span>
+            Biopsias
           </a>
         </li>
       @if(Auth::user()->rol === 'Administrador')

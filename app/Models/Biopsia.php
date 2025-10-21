@@ -37,6 +37,6 @@ class Biopsia extends Model
      */
     public function paciente()
     {
-        return $this->belongsTo(Paciente::class, 'id', 'NB');
+        return $this->belongsTo(Paciente::class, 'id', 'id');
     }
 }

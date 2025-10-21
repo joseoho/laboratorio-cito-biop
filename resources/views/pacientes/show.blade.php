@@ -67,7 +67,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <label class="form-label"><strong>Correo Electrónico:</strong></label>
-                <p class="form-control-plaintext">{{ $paciente->Mail }}</p>
+                <p class="form-control-plaintext">{{ $paciente->mail }}</p>
             </div>
         </div>
     </div>

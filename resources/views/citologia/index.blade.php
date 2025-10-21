@@ -8,9 +8,10 @@
                 <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Jose R. Becker Reyes"</h1>
                 <h2>Lista de Citologías</h2>
             </div>
-            <a href="{{ route('citologias.create') }}" class="btn btn-custom">
+            {{-- <a href="{{ route('citologias.create') }}" class="btn btn-custom">
                 <i class="fas fa-plus"></i> Nueva Citología
-            </a>
+            </a> --}}
+            
         </div>
 
         <!-- Formulario de Búsqueda -->
@@ -106,30 +107,17 @@
             </td> --}}
             <td>
                 <div class="btn-group" role="group">
-                    <a href="{{ route('citologias.show', $citologia->IdPaciente) }}" 
-                       class="btn btn-info btn-sm" 
-                       title="Ver">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                    <a href="{{ route('citologias.edit', $citologia->IdPaciente) }}" 
-                       class="btn btn-warning btn-sm" 
-                       title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <a href="{{ route('citologias.imprimir', $citologia->IdPaciente) }}" 
-                       class="btn btn-secondary btn-sm" 
-                       title="Imprimir" target="_blank">
-                        <i class="fas fa-print"></i>
-                    </a>
+                    <a href="{{ route('citologias.show', $citologia->IdPaciente) }}" class="btn btn-info btn-sm">Ver</a>
+                    <a href="{{ route('citologias.edit', $citologia->IdPaciente) }}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{{ route('citologias.imprimir', $citologia->IdPaciente) }}" class="btn btn-success print">Imprimir</a>
+                    
                     <form action="{{ route('citologias.destroy', $citologia->paciente->NC) }}" 
                           method="POST" 
                           class="d-inline"
                           onsubmit="return confirm('¿Está seguro de eliminar esta citología?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar esta citologia?')">Eliminar</button>
                     </form> 
                 </div>
             </td>
@@ -143,10 +131,10 @@
                 </div>
             </td>
         </tr>
-    @endforelse
-</tbody>
-            </table>
-        </div>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
         <!-- Paginación -->
         @if($citologias->hasPages())

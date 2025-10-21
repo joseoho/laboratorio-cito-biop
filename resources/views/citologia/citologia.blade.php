@@ -102,7 +102,7 @@
                                    <option value="">Seleccione...</option>
                                            @foreach($anexos as $anexo)
                                                  <option value="{{ $anexo->Cod }}">
-                                                     {{ $anexo->Anexo}}
+                                                     {{ $anexo->Anexo}}- {{ $anexo->Cod }}
                                                    </option>
                                            @endforeach
                               </select>

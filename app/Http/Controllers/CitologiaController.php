@@ -41,7 +41,7 @@ class CitologiaController extends Controller
     public function create(Request $request)
     {
     
-        
+         return view('citologia.citologia');
     }
     /**
      * Store a newly created resource in storage.
@@ -133,7 +133,8 @@ class CitologiaController extends Controller
     public function edit($id)
     {
  // El $id que recibimos es el NC (número de citología) del paciente
-    // Buscar el paciente por su número de citología (NC)
+    // Buscar el paciente por su número de citología (NC), que es único, este el el metodo correcto
+    // para crear citologia con datos del paciente
     $paciente = Paciente::where('id', $id)->first();
     
     if (!$paciente) {

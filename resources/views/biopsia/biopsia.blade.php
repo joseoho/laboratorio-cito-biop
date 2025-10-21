@@ -1,105 +1,53 @@
 <!-- resources/views/biopsia/form.blade.php -->
-@extends('layout.layout')
+@extends('layouts.layout')
 
 @section('content')
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biopsias - LABORATORIO BECOMARCA</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome para íconos -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .container {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-top: 30px;
-        }
-
-        h1, h2 {
-            color: #343a40;
-            font-weight: bold;
-        }
-
-        .frame {
-            border: 1px solid #dee2e6;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-        }
-
-        label {
-            color: #495057;
-            font-weight: 500;
-        }
-
-        .form-control {
-            border-radius: 4px;
-            border: 1px solid #ced4da;
-        }
-
-        .btn-custom {
-            background-color: #28a745;
-            color: #ffffff;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 12px;
-            cursor: pointer;
-        }
-
-        .btn-custom:hover {
-            background-color: #218838;
-        }
-
-        textarea {
-            resize: none;
-        }
-    </style>
-</head>
-<body>
     <div class="container">
-        <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Jose R. Becker Reyes"</h1>
-        <h2>Biopsias</h2>
+    <div class="row mb-3">
+        <div class="col">
+            <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Jose R. Becker Reyes"</h1>
+            <h2>Citologías, Registrar</h2>
+        </div>
+        <div class="col text-right">
+            <a href="{{ route('pacientes.index') }}" class="btn btn-secondary">Volver a Pacientes</a>
+        </div>
+    </div>
 
-        <!-- Frame de Biopsia -->
-        <div class="frame">
-            <h3>Biopsias</h3>
+    <!-- Formulario de Citología -->
+    <form action="{{ route('citologias.store') }}" method="POST" id="formCitologia">
+        @csrf
+        
+        <!-- Campo oculto para el ID del paciente -->
+        <input type="hidden" name="IdPaciente" value="{{ $paciente->id}}">
+
+        <!-- Frame de Citología -->
+        <div class="frame mb-4 p-3 border rounded">
+            <h3>Datos del Paciente</h3>
             <div class="row">
                 <div class="col-md-3">
-                    <label for="recibo">Recibo:</label>
-                    <input type="text" value="{{ $paciente->id }}" id="recibo" class="form-control" readonly>
+                    <label for="recibo" class="form-label">Recibo:</label>
+                    <input type="text" value="{{ $paciente->id }}" name="id" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
-                    <label for="ci">C.I No.:</label>
-                    <input type="text" value="{{ $paciente->cedula }}" id="ci" class="form-control" readonly>
+                    <label for="ci" class="form-label">C.I No.:</label>
+                    <input type="text" value="{{ $paciente->CI }}" name="ci" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
-                    <label for="noBiopsia">No. Biopsia:</label>
-                    <input type="text" value="{{ $paciente->biopsia }}" id="noBiopsia" class="form-control" readonly>
+                    <label for="noCitologia" class="form-label">No. Citología:</label>
+                    <input type="text" value="{{ $paciente->NC }}" name="nc" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
-                    <label for="nombres">Nombres:</label>
-                    <input type="text" value="{{ $paciente->nombre }}" id="nombres" class="form-control" readonly>
+                    <label for="nombres" class="form-label">Nombres:</label>
+                    <input type="text" value="{{ $paciente->Nombre }}" name="nombre" class="form-control" readonly>
                 </div>
             </div>
         </div>
 
-        <form action="{{ route('biopsia.guardar', $paciente->biopsia) }}" method="POST">
+        <form action="{{ route('biopsias.store', $paciente->biopsia) }}" method="POST">
             @csrf
 
             <!-- Frame de Identificación de la muestra -->
-            <div class="frame">
+            <div class="frame mb-4 p-3 border rounded">
                 <h3>Identificación de la muestra</h3>
                 <div class="row">
                     <div class="col-md-6">
@@ -114,7 +62,7 @@
             </div>
 
             <!-- Frame de Material Remitido y Diagnóstico clínico -->
-            <div class="frame">
+            <div class="frame mb-4 p-3 border rounded">
                 <div class="row">
                     <div class="col-md-6">
                         <label for="materialRemitido">Material Remitido:</label>
@@ -131,7 +79,7 @@
                 </div>
             </div>
 
-            <div class="frame">
+            <div class="frame mb-4 p-3 border rounded">
                 <div class="row">
                     <div class="col-md-6">
                         <label for="descripcionMacroscopica">Descripción Macroscópica:</label>
@@ -156,7 +104,7 @@
             </div>
 
             <!-- Frame de Descripción Microscópica -->
-            <div class="frame">
+            <div class="frame mb-4 p-3 border rounded">
                 <div class="row">
                     <div class="col-md-6">
                         <label for="descripcionMicroscopica">Descripción Microscópica:</label>
@@ -181,7 +129,7 @@
             </div>
 
             <!-- Frame de Diagnóstico Microscópico -->
-            <div class="frame">
+            <div class="frame mb-4 p-3 border rounded">
                 <div class="row">
                     <div class="col-md-6">
                         <label for="diagnosticoMicroscopico">Diagnóstico Microscópico:</label>
@@ -221,12 +169,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script>
-        function guardarPlantilla(tipo) {
-            // Lógica para guardar plantillas (puede ser via AJAX)
-            alert('Función de guardar plantilla ' + tipo + ' será implementada');
-        }
-    </script>
+    
 </body>
 </html>
 @endsection

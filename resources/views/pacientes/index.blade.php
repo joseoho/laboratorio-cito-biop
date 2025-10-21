@@ -122,9 +122,9 @@
                         <td>
                             @if($paciente->NB)
                                 <!-- Enlace a biopsia usando el número de biopsia -->
-                                <a href="{{ route('biopsias.create', $paciente->NB) }}" 
+                                <a href="{{ route('biopsias.edit', $paciente->id) }}" 
                                    class="btn btn-outline-primary btn-sm"
-                                   title="Ver biopsia B-{{ $paciente->NB }}">
+                                   title="Formulario-Crear-NB/{{ $paciente->NB }}">
                                     {{ $paciente->NB }}
                                 </a>
                             @else
@@ -141,7 +141,7 @@
                                     @if($paciente->NC)
                                     <a href="{{ route('citologias.edit', $paciente->id) }}" 
                                     class="btn btn-outline-success btn-sm"
-                                    title="Formulario de citología">
+                                    title="Formulario-Crear-NC/{{ $paciente->NC }}">
                                         {{ $paciente->NC }}
                                     </a>
                                 @else
@@ -158,8 +158,8 @@
                         </td>
                             <td>
                                 @if($paciente->status == 0)
-                                    <span class="text-alert">
-                                                <i class="fas fa-check-circle"></i> Pendiente
+                                    <span class="text-warning">
+                                                <i class="fas fa-check"></i> Pendiente
                                     </span>
                                     @elseif($paciente->status == 1)
                                     <span class="text-success">

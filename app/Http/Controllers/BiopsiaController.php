@@ -13,13 +13,23 @@ class BiopsiaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-       $pacientes = DB::table('pacientes')
-            ->select('FechaApertura', 'CI', 'Nombre', 'Sexo', 'Dirección', 'CodTelf', 'Teléfono', 'Edad', 'Procedencia', 'Dr', 'NB','SMSStatus','FechaComp')
-            ->whereNotNull('NB')
-            ->get();
-        return view('biopsia.biopsia', compact('pacientes'));
+         $query = Biopsia::with('paciente')->orderBy('created_at', 'desc');
+    
+    // Búsqueda por número de citología (NC del paciente)
+    if ($request->has('search') && $request->search != '') {
+        $search = $request->search;
+        $query->whereHas('paciente', function($q) use ($search) {
+            $q->where('NB', 'LIKE', "%{$search}%")
+            //   ->orWhere('Nombre', 'LIKE', "%{$search}%")
+              ->orWhere('CI', 'LIKE', "%{$search}%");
+        });
+    }
+    
+    $biopsias = $query->paginate(10);
+    
+    return view('biopsia.index', compact('biopsias'));
     }
 
     /**
@@ -41,33 +51,38 @@ class BiopsiaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Biopsia $biopsia)
+    public function show(string $id)
     {
-        $paciente = Paciente::where('NB', $biopsia)->first();
-        
-        if (!$paciente) {
-            return redirect()->route('biopsia.form')
-                ->with('error', 'No se encontró paciente con NB-' . $biopsia);
-        }
-
-        // Buscar si ya existe una biopsia para este paciente
-        $biopsia = Biopsia::where('paciente_id', $paciente->id)
-                         ->where('NB', $biopsia)
-                         ->first();
-
-        return view('biopsia.biopsia', [
-            'paciente' => $paciente,
-            'numero_biopsia' => $biopsia,
-            'biopsia' => $biopsia // Pasar datos existentes si hay
-        ]);
+       // Buscar por IdPaciente en lugar de id
+    $biopsia = Biopsia::with('paciente')
+        ->where('Id', $id)
+        ->firstOrFail();
+    
+    return view('biopsia.show', compact('biopsia'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Biopsia $biopsia)
+    public function edit($id)
     {
-        //
+        // El $id que recibimos es el NC (número de citología) del paciente
+    // Buscar el paciente por su número de citología (NC), que es único, este el el metodo correcto
+    // para crear citologia con datos del paciente
+    $paciente = Paciente::where('id', $id)->first();
+    
+    if (!$paciente) {
+        return redirect()->route('pacientes.index')
+            ->with('error', 'No se encontró el paciente con número de biopsia: ' . $id);
+    }
+
+    // Buscar si ya existe una citología para este paciente
+    // $anexos = Anexo::all(); 
+    // $diagcitos = DiagCito::all(); 
+    $biopsia = Biopsia::where('id', $id)->first();
+
+    return view('biopsia.biopsia', compact('paciente', 'biopsia'));//, 'anexos', 'diagcitos'));
+ 
     }
 
     /**
