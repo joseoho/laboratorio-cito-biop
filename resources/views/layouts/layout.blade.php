@@ -102,6 +102,12 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="/plantillas">
+            <span data-feather="layers"></span>
+            Plantillas
+          </a>
+        </li> 
+        <li class="nav-item">
           <a class="nav-link" href="/anexos">
             <span data-feather="layers"></span>
             Anexos

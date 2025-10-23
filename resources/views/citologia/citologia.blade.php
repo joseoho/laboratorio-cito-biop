@@ -101,9 +101,9 @@
                               <select id="anexo" name="anexo" class="form-control"> class="form-control" required>
                                    <option value="">Seleccione...</option>
                                            @foreach($anexos as $anexo)
-                                                 <option value="{{ $anexo->Cod }}">
-                                                     {{ $anexo->Anexo}}- {{ $anexo->Cod }}
-                                                   </option>
+                                            <option value="{{ $anexo->Cod }}">
+                                                {{ $anexo->Anexo}}- {{ $anexo->Cod }}
+                                            </option>
                                            @endforeach
                               </select>
                         </div>

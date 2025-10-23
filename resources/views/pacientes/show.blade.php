@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <div class="row mb-3">
         <div class="col">
-            <h1>Información del Paciente</h1>
+            <h1>Información del Pacientee</h1>
         </div>
         <div class="col text-right">
             <a href="{{ route('pacientes.edit', $paciente->id) }}" class="btn btn-warning">Editar</a>

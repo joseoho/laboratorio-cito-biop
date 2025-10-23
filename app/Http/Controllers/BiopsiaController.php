@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Biopsia;
 use App\Models\Paciente;
+use App\Models\PlantillaNB;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreBiopsiaRequest;
 use App\Http\Requests\UpdateBiopsiaRequest;
@@ -54,11 +55,11 @@ class BiopsiaController extends Controller
     public function show(string $id)
     {
        // Buscar por IdPaciente en lugar de id
-    $biopsia = Biopsia::with('paciente')
-        ->where('Id', $id)
-        ->firstOrFail();
-    
-    return view('biopsia.show', compact('biopsia'));
+        $biopsia = Biopsia::with('paciente')
+            ->where('Id', $id)
+            ->firstOrFail();
+        
+        return view('biopsia.show', compact('biopsia'));
     }
 
     /**
@@ -67,7 +68,7 @@ class BiopsiaController extends Controller
     public function edit($id)
     {
         // El $id que recibimos es el NC (número de citología) del paciente
-    // Buscar el paciente por su número de citología (NC), que es único, este el el metodo correcto
+    // Buscar el paciente por su número de biopsia (NB), que es único, este el el metodo correcto
     // para crear citologia con datos del paciente
     $paciente = Paciente::where('id', $id)->first();
     
@@ -76,13 +77,30 @@ class BiopsiaController extends Controller
             ->with('error', 'No se encontró el paciente con número de biopsia: ' . $id);
     }
 
-    // Buscar si ya existe una citología para este paciente
-    // $anexos = Anexo::all(); 
-    // $diagcitos = DiagCito::all(); 
-    $biopsia = Biopsia::where('id', $id)->first();
+    // // Buscar si ya existe una citología para este paciente
+        $biopsia = Biopsia::where('id', $id)->first();
 
-    return view('biopsia.biopsia', compact('paciente', 'biopsia'));//, 'anexos', 'diagcitos'));
- 
+          // Obtener las plantillas para cada módulo
+        $descripcionesMacro = PlantillaNB::where('modulo', '00')
+                                      ->orderBy('nombre')
+                                      ->get();
+
+        $descripcionesMicro = PlantillaNB::where('modulo', '01')
+                                      ->orderBy('nombre')
+                                      ->get();
+
+        $diagnosticosMacro = PlantillaNB::where('modulo', '02')
+                                     ->orderBy('nombre')
+                                     ->get();
+
+        return view('biopsia.biopsia', compact(
+            'biopsia',
+            'descripcionesMacro',
+            'descripcionesMicro',
+            'paciente',
+            'diagnosticosMacro'
+        ));
+    
     }
 
     /**

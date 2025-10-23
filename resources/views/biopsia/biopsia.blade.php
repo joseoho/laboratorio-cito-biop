@@ -6,7 +6,7 @@
     <div class="row mb-3">
         <div class="col">
             <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Jose R. Becker Reyes"</h1>
-            <h2>Citologías, Registrar</h2>
+            <h2>Biopsia, Registrar</h2>
         </div>
         <div class="col text-right">
             <a href="{{ route('pacientes.index') }}" class="btn btn-secondary">Volver a Pacientes</a>
@@ -34,7 +34,7 @@
                 </div>
                 <div class="col-md-3">
                     <label for="noCitologia" class="form-label">No. Citología:</label>
-                    <input type="text" value="{{ $paciente->NC }}" name="nc" class="form-control" readonly>
+                    <input type="text" value="{{ $paciente->NB }}" name="nc" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
                     <label for="nombres" class="form-label">Nombres:</label>
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <form action="{{ route('biopsias.store', $paciente->biopsia) }}" method="POST">
+        <form action="{{ route('biopsias.store') }}" method="POST">
             @csrf
 
             <!-- Frame de Identificación de la muestra -->
@@ -86,18 +86,18 @@
                         <textarea name="descripcion_macroscopica" id="descripcionMacroscopica" class="form-control" rows="5"></textarea>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="plantillaMacroscopica">Plantilla:</label>
-                            <div class="input-group">
-                                <select name="plantilla_macroscopica" id="plantillaMacroscopica" class="form-control">
-                                    <option value="">Seleccionar plantilla</option>
-                                    <option value="1">Plantilla 1</option>
-                                    <option value="2">Plantilla 2</option>
-                                </select>
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-custom" onclick="guardarPlantilla('macroscopica')">Guardar</button>
-                                </div>
-                            </div>
+                        <!-- Descripción Macroscópica -->
+                        <div class="col mb-6">
+                            <label for="descripcion_macroscopica" class="form-label">Plantilla Descripción Macroscópica</label>
+                            <select class="form-select" id="descripcion_macroscopica" name="Descripción_Macroscópica">
+                                <option value="">Seleccione una descripción macroscópica</option>
+                                @foreach($descripcionesMacro as $plantilla)
+                                    <option value="{{ $plantilla->contenido }}" 
+                                        {{ old('Descripción_Macroscópica', isset($biopsia) ? $biopsia->Descripción_Macroscópica : '') == $plantilla->contenido ? 'selected' : '' }}>
+                                        {{ $plantilla->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -110,20 +110,18 @@
                         <label for="descripcionMicroscopica">Descripción Microscópica:</label>
                         <textarea name="descripcion_microscopica" id="descripcionMicroscopica" class="form-control" rows="5"></textarea>
                     </div>
+                    <!-- Descripción Microscópica -->
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="plantillaMicroscopica">Plantilla:</label>
-                            <div class="input-group">
-                                <select name="plantilla_microscopica" id="plantillaMicroscopica" class="form-control">
-                                    <option value="">Seleccionar plantilla</option>
-                                    <option value="1">Plantilla 1</option>
-                                    <option value="2">Plantilla 2</option>
-                                </select>
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-custom" onclick="guardarPlantilla('microscopica')">Guardar</button>
-                                </div>
-                            </div>
-                        </div>
+                        <label for="descripcion_microscopica" class="form-label">Plantilla Descripción Microscópica</label>
+                        <select class="form-select" id="descripcion_microscopica" name="Descripción_Microscópica">
+                            <option value="">Seleccione una descripción microscópica</option>
+                            @foreach($descripcionesMicro as $plantilla)
+                                <option value="{{ $plantilla->contenido }}" 
+                                    {{ old('Descripción_Microscópica', isset($biopsia) ? $biopsia->Descripción_Microscópica : '') == $plantilla->contenido ? 'selected' : '' }}>
+                                    {{ $plantilla->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>
@@ -136,21 +134,22 @@
                         <textarea name="diagnostico_microscopico" id="diagnosticoMicroscopico" class="form-control" rows="5"></textarea>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="plantillaDiagnostico">Plantilla:</label>
-                            <div class="input-group">
-                                <select name="plantilla_diagnostico" id="plantillaDiagnostico" class="form-control">
-                                    <option value="">Seleccionar plantilla</option>
-                                    <option value="1">Plantilla 1</option>
-                                    <option value="2">Plantilla 2</option>
-                                </select>
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-custom" onclick="guardarPlantilla('diagnostico')">Guardar</button>
-                                </div>
-                            </div>
-                        </div>
+                        <label for="diagnostico_microscopico" class="form-label">Diagnóstico Microscópico</label>
+                        <select class="form-select" id="diagnostico_microscopico" name="Diagnóstico_Microscópico">
+                            <option value="">Seleccione un diagnóstico microscópico</option>
+                            @foreach($diagnosticosMacro as $plantilla)
+                                <option value="{{ $plantilla->contenido }}" 
+                                    {{ old('Diagnóstico_Microscópico', isset($biopsia) ? $biopsia->Diagnóstico_Microscópico : '') == $plantilla->contenido ? 'selected' : '' }}>
+                                    {{ $plantilla->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
+                    <div class="col-md-12">
+                        <label for="notas">Notas:</label>
+                        <textarea name="notas" id="descripcionMicroscopica" class="form-control" rows="5"></textarea>
+                    </div>
             </div>
 
             <div class="text-center mt-4">

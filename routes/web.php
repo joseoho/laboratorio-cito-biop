@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PacienteController;
+use App\Http\Controllers\PlantillaNBController;
 use App\Http\Controllers\BiopsiaController;
 use App\Http\Controllers\CitologiaController;
 use App\Http\Controllers\MedicController;
@@ -23,6 +24,7 @@ Route::resource('patologos', PatologoController::class);
 Route::resource('procedencias', ProcedenciaController::class);
 // Route::get('procedencias/get/{id}', 'ProcedenciaController@getProcedencia')->name('procedencias.get');
 Route::resource('anexos', AnexoController::class);
+Route::resource('plantillas', PlantillaNBController::class);
 Route::resource('diagcito', DiagCitoController::class);
 Route::resource('biopsias', BiopsiaController::class);
 Route::resource('citologias', CitologiaController::class);

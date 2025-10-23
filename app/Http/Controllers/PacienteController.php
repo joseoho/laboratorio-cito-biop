@@ -104,12 +104,18 @@ class PacienteController extends Controller
      */
    public function show(Paciente $paciente)
     {
+        
         $anexos = Anexo::all(); 
         $diagcitos = DiagCito::all(); 
         return view('pacientes.show', compact('paciente','anexos','diagcitos'));
     }
 
-
+    public function showNB(Paciente $paciente)
+    {
+        
+        $plantillas = Plantilla::all(); 
+        return view('pacientes.show', compact('paciente','anexos','diagcitos'));
+    }
     /**
      * Show the form for editing the specified resource.
      */
