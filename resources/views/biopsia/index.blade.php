@@ -21,7 +21,7 @@
                         <label for="search" class="sr-only">Buscar por número de biopsia</label>
                         <input type="text" class="form-control" id="search" name="search" 
                                value="{{ request('search') }}" 
-                               placeholder="Buscar por NC, Cédula...">
+                               placeholder="Buscar por NB, Cédula...">
                     </div>
                     <button type="submit" class="btn btn-primary mb-2">
                         <i class="fas fa-search"></i> Buscar
@@ -48,7 +48,7 @@
                         <tr>
                             <th>No. Biopsia</th>
                             <th>Paciente</th>
-                            <th>C.I.</th>
+                            {{-- <th>C.I.</th> --}}
                             <th>Fecha Recibido</th>
                             <th>Fecha Envío</th>
                             <th>Material Remitido</th>
@@ -58,11 +58,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($biopsias as $biopsia)
+                            @foreach($biopsias as $biopsia)
                             <tr>
-                                <td>{{ $biopsia->paciente->NB }}</td>
-                                <td>{{ $biopsia->paciente->Nombre }}</td>
-                                <td>{{ $biopsia->paciente->CI }}</td>
+                            <td>
+                                <strong>{{ $biopsia->paciente->NB ?? 'N/A' }}</strong>
+                            </td>
+                            <td>
+                                    @if($biopsia->paciente)
+                                        {{ $biopsia->paciente->Nombre ?? 'N/A' }}
+                                    @else
+                                        Paciente no encontrado (ID: {{ $biopsia->id }})
+                                    @endif
+                                </td>
+                                {{-- <td>{{ $biopsia->paciente->CI }}</td> --}}
                                 <td>{{ $biopsia->FechaRecibido }}</td>
                                 <td>{{ $biopsia->FechaEnvio }}</td>
                                 <td>{{ $biopsia->MaterialRemitido }}</td>

@@ -46,9 +46,28 @@ class BiopsiaController extends Controller
      */
     public function store(StoreBiopsiaRequest $request)
     {
-        //
-    }
+    
+            try {
+        // Crear la biopsia con todos los datos del formulario
+        $biopsia = Biopsia::create($request->all());
+        // ACTUALIZAR STATUS DEL PACIENTE A 1
+                    if ($biopsia->id) {
+                        $paciente = Paciente::find($biopsia->id);
+                        if ($paciente) {
+                            $paciente->status = 1;
+                            $paciente->save();
+                        }
+            }
+        return redirect()->route('biopsias.index')
+                         ->with('success', '✅ Biopsia creada exitosamente');
 
+    } catch (\Exception $e) {
+        return redirect()->back()
+                         ->withInput()
+                         ->with('error', '❌ Error: ' . $e->getMessage());
+    }
+        }
+    
     /**
      * Display the specified resource.
      */

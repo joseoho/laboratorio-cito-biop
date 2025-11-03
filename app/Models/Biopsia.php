@@ -11,17 +11,18 @@ class Biopsia extends Model
     Protected $primaryKey = "id";
     protected $table ='biopsias';
     protected $fillable = [
+        'id',
         'FechaRecibido',
         'FechaEnvio',
         'MaterialRemitido',
         'DiagnosticoClinico',
         'SitioLesion',
-        'Descripción Macroscópica',
-        'Descripción Microscópica',
-        'Diagnóstico Microscópico',
+        'DescripciónMacroscópica',
+        'DescripciónMicroscópica',
+        'DiagnósticoMicroscópico',
         'Notas',
-        'Medico Patólogo 1',
-        'Medico Patólogo 2',
+        'MedicoPatólogo1',
+        'MedicoPatólogo2',
         'Foto 1',
         'Foto 2',
         'Foto 3',
@@ -33,7 +34,7 @@ class Biopsia extends Model
 
     /**
      * Relación: Una biopsia pertenece a UN paciente
-     * Se relaciona por el ID de la biopsia con el campo NB del paciente
+     * Se relaciona por el ID de la biopsia con el campo id del paciente
      */
     public function paciente()
     {

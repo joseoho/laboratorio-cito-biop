@@ -13,12 +13,12 @@
         </div>
     </div>
 
-    <!-- Formulario de Citología -->
-    <form action="{{ route('citologias.store') }}" method="POST" id="formCitologia">
+    <!-- Formulario de Biopsia -->
+    <form action="{{ route('biopsias.store') }}" method="POST" id="formCitologia">
         @csrf
         
         <!-- Campo oculto para el ID del paciente -->
-        <input type="hidden" name="IdPaciente" value="{{ $paciente->id}}">
+        <input type="hidden" name="id" value="{{ $paciente->id}}">
 
         <!-- Frame de Citología -->
         <div class="frame mb-4 p-3 border rounded">
@@ -33,8 +33,8 @@
                     <input type="text" value="{{ $paciente->CI }}" name="ci" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
-                    <label for="noCitologia" class="form-label">No. Citología:</label>
-                    <input type="text" value="{{ $paciente->NB }}" name="nc" class="form-control" readonly>
+                    <label for="noCitologia" class="form-label">No. Biopsia:</label>
+                    <input type="text" value="{{ $paciente->NB }}" name="nb" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
                     <label for="nombres" class="form-label">Nombres:</label>
@@ -51,12 +51,12 @@
                 <h3>Identificación de la muestra</h3>
                 <div class="row">
                     <div class="col-md-6">
-                        <label for="fechaRecib">Fecha Recib.:</label>
-                        <input type="date" name="fecha_recibido" id="fechaRecib" class="form-control">
+                        <label for="FechaRecibido">Fecha Recib.:</label>
+                        <input type="date" name="FechaRecibido" id="FechaRecibido" class="form-control">
                     </div>
                     <div class="col-md-6">
                         <label for="fechaEnvio">Fecha Envio:</label>
-                        <input type="date" name="fecha_envio" id="fechaEnvio" class="form-control">
+                        <input type="date" name="FechaEnvio" id="FechaEnvio" class="form-control">
                     </div>
                 </div>
             </div>
@@ -66,15 +66,15 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="materialRemitido">Material Remitido:</label>
-                        <input type="text" name="material_remitido" id="materialRemitido" class="form-control">
+                        <input type="text" name="MaterialRemitido" id="MaterialRemitido" class="form-control">
                     </div>
                     <div class="col-md-6">
                         <label for="diagnosticoClinico">Diagnóstico clínico:</label>
-                        <input type="text" name="diagnostico_clinico" id="diagnosticoClinico" class="form-control">
+                        <input type="text" name="DiagnosticoClinico" id="DiagnosticoClinico" class="form-control">
                     </div>
                     <div class="col-md-6">
                         <label for="sitioLesion">Sitio de la Lesión:</label>
-                        <input type="text" name="sitio_lesion" id="sitioLesion" class="form-control">
+                        <input type="text" name="SitioLesion" id="SitioLesion" class="form-control">
                     </div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="descripcionMacroscopica">Descripción Macroscópica:</label>
-                        <textarea name="descripcion_macroscopica" id="descripcionMacroscopica" class="form-control" rows="5"></textarea>
+                        <textarea name="DescripciónMacroscópica" id="DescripciónMacroscópica" class="form-control" rows="5"></textarea>
                     </div>
                     <div class="col-md-6">
                         <!-- Descripción Macroscópica -->
@@ -108,7 +108,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="descripcionMicroscopica">Descripción Microscópica:</label>
-                        <textarea name="descripcion_microscopica" id="descripcionMicroscopica" class="form-control" rows="5"></textarea>
+                        <textarea name="DescripciónMicroscópica" id="DescripciónMicroscópica" class="form-control" rows="5"></textarea>
                     </div>
                     <!-- Descripción Microscópica -->
                     <div class="col-md-6">
@@ -131,7 +131,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="diagnosticoMicroscopico">Diagnóstico Microscópico:</label>
-                        <textarea name="diagnostico_microscopico" id="diagnosticoMicroscopico" class="form-control" rows="5"></textarea>
+                        <textarea name="DiagnósticoMicroscópico" id="DiagnósticoMicroscópico" class="form-control" rows="5"></textarea>
                     </div>
                     <div class="col-md-6">
                         <label for="diagnostico_microscopico" class="form-label">Diagnóstico Microscópico</label>
@@ -148,14 +148,14 @@
                 </div>
                     <div class="col-md-12">
                         <label for="notas">Notas:</label>
-                        <textarea name="notas" id="descripcionMicroscopica" class="form-control" rows="5"></textarea>
+                        <textarea name="Notas" id="Notas" class="form-control" rows="5"></textarea>
                     </div>
             </div>
 <div class="frame mb-4 p-3 border rounded">
             <div class="row">
                 <div class="col-md-6">
                     <label for="MedicoPatologo1" class="form-label">Médico Patólogo 1:</label>
-                    <select id="MedicoPatologo1" name="MedicoPatologo1" class="form-control">
+                    <select id="MedicoPatólogo1" name="MedicoPatólogo1" class="form-control">
                         <option value="">Seleccione médico...</option>
                         <option value="Dr. Juan Carlos Becker">Dr. Juan Carlos Becker</option>
                         <option value="Dr. Claudio Arrechedera">Dr. Claudio Arrechedera</option>
@@ -166,7 +166,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="MedicoPatologo2" class="form-label">Médico Patólogo 2:</label>
-                    <select id="MedicoPatologo2" name="MedicoPatologo2" class="form-control">
+                    <select id="MedicoPatólogo2" name="MedicoPatólogo2" class="form-control">
                         <option value="">Seleccione médico...</option>
                         <option value="Dr. Juan Carlos Becker">Dr. Juan Carlos Becker</option>
                         <option value="Dr. Claudio Arrechedera">Dr. Claudio Arrechedera</option>

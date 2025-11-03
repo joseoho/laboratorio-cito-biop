@@ -120,15 +120,22 @@
                         {{-- <td>{{ $paciente->NB }}</td>
                         <td>{{ $paciente->NC }}</td> --}}
                         <td>
-                            @if($paciente->NB)
-                                <!-- Enlace a biopsia usando el número de biopsia -->
-                                <a href="{{ route('biopsias.edit', $paciente->id) }}" 
-                                   class="btn btn-outline-primary btn-sm"
-                                   title="Formulario-Crear-NB/{{ $paciente->NB }}">
-                                    {{ $paciente->NB }}
-                                </a>
+                            @if($paciente->status == 1)
+                                            <!-- Completado - Solo mostrar información -->
+                                            <span class="text-success">
+                                                <i class="fas fa-check-circle"></i> Procesada/{{$paciente->NB}}
+                                            </span>
+                            
                             @else
-                                <span class="text-muted">N/A</span>
+                                @if($paciente->NB)
+                                    <a href="{{ route('biopsias.edit', $paciente->id) }}" 
+                                    class="btn btn-outline-success btn-sm"
+                                    title="Formulario-Crear-NB/{{ $paciente->NB }}">
+                                        {{ $paciente->NB }}
+                                    </a>
+                                @else
+                                    <span class="text-muted">N/A</span>
+                                @endif
                             @endif
                         </td>
                         <td>

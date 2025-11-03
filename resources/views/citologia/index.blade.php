@@ -111,14 +111,14 @@
                     <a href="{{ route('citologias.edit', $citologia->IdPaciente) }}" class="btn btn-warning btn-sm">Editar</a>
                     <a href="{{ route('citologias.imprimir', $citologia->IdPaciente) }}" class="btn btn-success print">Imprimir</a>
                     
-                    <form action="{{ route('citologias.destroy', $citologia->paciente->NC) }}" 
+                    {{-- <form action="{{ route('citologias.destroy', $citologia->paciente->NC) }}" 
                           method="POST" 
                           class="d-inline"
                           onsubmit="return confirm('¿Está seguro de eliminar esta citología?')">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar esta citologia?')">Eliminar</button>
-                    </form> 
+                    </form> --}}
                 </div>
             </td>
         </tr>

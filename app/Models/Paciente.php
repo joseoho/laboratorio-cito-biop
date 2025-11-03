@@ -21,8 +21,8 @@ class Paciente extends Model
         'Dirección',
         'Teléfono',
         'Edad',
-        'Procedencia',  // Esta columna probablemente contiene el ID de la procedencia
-        'Dr',           // Esta columna probablemente contiene el ID del médico
+        'Procedencia',  // Esta columna contiene el ID de la procedencia
+        'Dr',           // Esta columna contiene el ID del médico
         'mail',
         'NB',
         'NC',
