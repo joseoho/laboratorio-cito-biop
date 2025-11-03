@@ -80,7 +80,7 @@
                 <table class="table table-striped table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th width="80">ID</th>
+                            {{-- <th width="80">ID</th> --}}
                             <th width="100">Módulo</th>
                             <th>Nombre</th>
                             <th>Contenido</th>
@@ -90,7 +90,7 @@
                     <tbody>
                         @foreach($plantillas as $plantilla)
                             <tr>
-                                <td><strong>#{{ $plantilla->id }}</strong></td>
+                                {{-- <td><strong>#{{ $plantilla->id }}</strong></td> --}}
                                 <td>
                                     @if($plantilla->modulo == '00')
                                         <span class="badge bg-success badge-modulo">00 - Macro</span>

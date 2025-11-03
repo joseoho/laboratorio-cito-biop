@@ -151,6 +151,31 @@
                         <textarea name="notas" id="descripcionMicroscopica" class="form-control" rows="5"></textarea>
                     </div>
             </div>
+<div class="frame mb-4 p-3 border rounded">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="MedicoPatologo1" class="form-label">Médico Patólogo 1:</label>
+                    <select id="MedicoPatologo1" name="MedicoPatologo1" class="form-control">
+                        <option value="">Seleccione médico...</option>
+                        <option value="Dr. Juan Carlos Becker">Dr. Juan Carlos Becker</option>
+                        <option value="Dr. Claudio Arrechedera">Dr. Claudio Arrechedera</option>
+                        <option value="Cit. Ilia C. Molina">Cit. Ilia C. Molina</option>
+                        <option value="Cit. Johaiza Contreras">Cit. Johaiza Contreras</option>
+                        <option value="Cit. Kandy Contreras">Cit. Kandy Contreras</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="MedicoPatologo2" class="form-label">Médico Patólogo 2:</label>
+                    <select id="MedicoPatologo2" name="MedicoPatologo2" class="form-control">
+                        <option value="">Seleccione médico...</option>
+                        <option value="Dr. Juan Carlos Becker">Dr. Juan Carlos Becker</option>
+                        <option value="Dr. Claudio Arrechedera">Dr. Claudio Arrechedera</option>
+                        <option value="Cit. Ilia C. Molina">Cit. Ilia C. Molina</option>
+                        <option value="Cit. Johaiza Contreras">Cit. Johaiza Contreras</option>
+                        <option value="Cit. Kandy Contreras">Cit. Kandy Contreras</option>
+                    </select>
+                </div>
+            </div>
 
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-primary btn-lg">
@@ -172,3 +197,4 @@
 </body>
 </html>
 @endsection
+<script src="{{ asset('assets/js/llenaplantillas.js') }}"></script>

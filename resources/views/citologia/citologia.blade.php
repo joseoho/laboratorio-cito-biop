@@ -168,16 +168,22 @@
                     <label for="MedicoPatologo1" class="form-label">Médico Patólogo 1:</label>
                     <select id="MedicoPatologo1" name="MedicoPatologo1" class="form-control">
                         <option value="">Seleccione médico...</option>
-                        <option value="Dr. José Becker">Dr. José Becker</option>
-                        <option value="Dr. Carlos Pérez">Dr. Carlos Pérez</option>
+                        <option value="Dr. Juan Carlos Becker">Dr. Juan Carlos Becker</option>
+                        <option value="Dr. Claudio Arrechedera">Dr. Claudio Arrechedera</option>
+                        <option value="Cit. Ilia C. Molina">Cit. Ilia C. Molina</option>
+                        <option value="Cit. Johaiza Contreras">Cit. Johaiza Contreras</option>
+                        <option value="Cit. Kandy Contreras">Cit. Kandy Contreras</option>
                     </select>
                 </div>
                 <div class="col-md-6">
                     <label for="MedicoPatologo2" class="form-label">Médico Patólogo 2:</label>
                     <select id="MedicoPatologo2" name="MedicoPatologo2" class="form-control">
                         <option value="">Seleccione médico...</option>
-                        <option value="Dr. María González">Dr. María González</option>
-                        <option value="Dr. Luis Rodríguez">Dr. Luis Rodríguez</option>
+                        <option value="Dr. Juan Carlos Becker">Dr. Juan Carlos Becker</option>
+                        <option value="Dr. Claudio Arrechedera">Dr. Claudio Arrechedera</option>
+                        <option value="Cit. Ilia C. Molina">Cit. Ilia C. Molina</option>
+                        <option value="Cit. Johaiza Contreras">Cit. Johaiza Contreras</option>
+                        <option value="Cit. Kandy Contreras">Cit. Kandy Contreras</option>
                     </select>
                 </div>
             </div>
