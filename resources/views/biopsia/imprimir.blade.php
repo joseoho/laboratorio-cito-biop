@@ -1,10 +1,11 @@
 {{-- resources/views/citologias/imprimir.blade.php --}}
+{{-- resources/views/biopsias/imprimir.blade.php --}}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de Citología - {{ $citologia->paciente->NC ?? 'N/A' }}</title>
+    <title>Reporte de Biopsia - {{ $biopsia->id ?? 'N/A' }}</title>
     <style>
         /* Estilos para impresión */
         @media print {
@@ -159,6 +160,15 @@
             white-space: pre-wrap;
         }
         
+        .diagnosis-box {
+            background-color: #fffacd;
+            border: 2px solid #ff6b6b;
+            padding: 15px;
+            margin: 15px 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
         .signature-area {
             margin-top: 40px;
             display: flex;
@@ -172,27 +182,21 @@
             padding-top: 5px;
         }
         
-        .hormonal-index {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .index-item {
-            text-align: center;
-        }
-        
-        .index-value {
-            font-size: 16px;
-            font-weight: bold;
-        }
-        
         .controls {
             text-align: center;
             margin-bottom: 20px;
             padding: 10px;
             background-color: #e9ecef;
+        }
+        
+        .photo-indicator {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -246,144 +250,130 @@
         <div class="content">
             <!-- Título del reporte -->
             <div class="report-title">
-                INFORME DE CITOLOGÍA
+                BIOPSIA
             </div>
 
-            <!-- Información del Paciente -->
+            <!-- Información General -->
             <div class="section">
-                <div class="section-title">INFORMACIÓN DEL PACIENTE</div>
+                <div class="section-title">INFORMACIÓN GENERAL</div>
                 <div class="patient-info">
                     <div class="info-item">
-                        <span class="info-label">No. Citología:</span> 
-                        {{ $citologia->paciente->NC ?? 'N/A' }}
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Cédula:</span> 
-                        {{ $citologia->paciente->CI ?? 'N/A' }}
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Recibo:</span> 
-                        {{ $citologia->paciente->id ?? 'N/A' }}
+                        <span class="info-label">No. Biopsia:</span> 
+                        {{ $biopsia->paciente->NB ?? 'N/A' }}
                     </div>
                     <div class="info-item">
                         <span class="info-label">Nombre:</span> 
-                        {{ $citologia->paciente->Nombre ?? 'N/A' }}
+                        {{ $biopsia->paciente->Nombre ?? 'N/A' }}
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Edad:</span> 
-                        {{ $citologia->paciente->Edad ?? 'N/A' }}
+                        <span class="info-label">Procedencia:</span> 
+                        {{ $biopsia->paciente->Procedencia ?? 'N/A' }}
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Sexo:</span> 
-                        {{ $citologia->paciente->Sexo ?? 'N/A' }}
+                        <span class="info-label">Dr(a):</span> 
+                        {{ $biopsia->paciente->Dr ?? 'N/A' }}
                     </div>
-                
                     <div class="info-item">
-                        <span class="info-label">Medico:</span> 
-                        {{ $citologia->paciente->Dr ?? 'N/A' }}
-                    </div>
-                <div class="info-item">
-                        <span class="info-label">Fecha Recepción:</span> 
-                        @if($citologia->FechaRecibido)
-                            {{ \Carbon\Carbon::parse($citologia->FechaRecibido)->format('d/m/Y') }}
+                        <span class="info-label">Recibida:</span> 
+                        @if($biopsia->FechaRecibido)
+                            {{ \Carbon\Carbon::parse($biopsia->FechaRecibido)->format('d/m/Y') }}
                         @else
                             N/A
                         @endif
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Fecha Envío:</span> 
-                        @if($citologia->FechaEnvio)
-                            {{ \Carbon\Carbon::parse($citologia->FechaEnvio)->format('d/m/Y') }}
+                        <span class="info-label">Enviada:</span> 
+                        @if($biopsia->FechaEnvio)
+                            {{ \Carbon\Carbon::parse($biopsia->FechaEnvio)->format('d/m/Y') }}
                         @else
                             N/A
                         @endif
                     </div>
-                </div>
-            </div>
-
-            <!-- Información de la Muestra -->
-            <div class="section">
-                <div class="section-title">INFORMACIÓN DE LA MUESTRA</div>
-                <div class="patient-info">
                     
-                    <div class="info-item">
-                        <span class="info-label">Material Remitido:</span> 
-                        {{ $citologia->MaterialRemitido ?? 'N/A' }}
-                    </div>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Diagnóstico Clínico:</span> 
-                    {{ $citologia->DiagnosticoClinico ?? 'N/A' }}
-                </div>
-
-                 <div class="info-item">
-                    <span class="info-label">Calidad de la Muestra:</span> 
-                    {{ $citologia->Calidad ?? 'N/A' }}
+                    {{-- <div class="info-item">
+                        <span class="info-label">Fotos Adjuntas:</span> 
+                        @if($biopsia->Foto_1 || $biopsia->Foto_2 || $biopsia->Foto_3)
+                            Sí 
+                            @if($biopsia->Foto_1)<span class="photo-indicator">1</span>@endif
+                            @if($biopsia->Foto_2)<span class="photo-indicator">2</span>@endif
+                            @if($biopsia->Foto_3)<span class="photo-indicator">3</span>@endif
+                        @else
+                            No
+                        @endif
+                    </div> --}}
                 </div>
             </div>
+
+            <!-- Diagnóstico Clínico -->
+             <div class="info-item">
+                        <span class="info-label">Material Remitido:</span> 
+                        {{ $biopsia->MaterialRemitido ?? 'N/A' }}
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Diag. Clinico:</span> 
+                            {{ $biopsia->DiagnosticoClinico }}
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Sitio de la Lesión:</span> 
+                        {{ $biopsia->SitioLesion ?? 'N/A' }}
+                    </div>
+            @if($biopsia->DiagnosticoClinico)
+           
+            </div>
+            @endif
 
             <!-- Descripción Macroscópica -->
-            @if($citologia->DescripcionMacroscopica)
+            @if($biopsia->DescripciónMacroscópica)
             <div class="section">
                 <div class="section-title">DESCRIPCIÓN MACROSCÓPICA</div>
                 <div class="text-area-content">
-                    {{ $citologia->DescripcionMacroscopica }}
+                    {{ $biopsia->DescripciónMacroscópica }}
                 </div>
             </div>
             @endif
 
-            <!-- Descripción Citológica -->
-            @if($citologia->DescripcionCitologica)
+            <!-- Descripción Microscópica -->
+            @if($biopsia->DescripciónMicroscópica)
             <div class="section">
-                <div class="section-title">DESCRIPCIÓN CITOLÓGICA</div>
+                <div class="section-title">DESCRIPCIÓN MICROSCÓPICA</div>
                 <div class="text-area-content">
-                    {{ $citologia->DescripcionCitologica }}
+                    {{ $biopsia->DescripciónMicroscópica }}
                 </div>
             </div>
             @endif
 
-            <!-- Diagnóstico Citológico -->
-            @if($citologia->DiagnosticoCitologico)
+            <!-- Diagnóstico Microscópico -->
             <div class="section">
-                <div class="section-title">DIAGNÓSTICO CITOLÓGICO</div>
-                <div class="text-area-content">
-                    {{ $citologia->DiagnosticoCitologico }}
+                <div class="section-title">DIAGNÓSTICO MICROSCÓPICO</div>
+                <div class="diagnosis-box">
+                    {{ $biopsia->DiagnósticoMicroscópico ?? 'Diagnóstico no disponible' }}
                 </div>
             </div>
-            @endif
-
-            <!-- Índice Hormonal -->
-            @if($citologia->Superficiales || $citologia->Intermedias || $citologia->Parabasales)
-            <div class="section">
-                <div class="section-title">ÍNDICE DE VALORACIÓN HORMONAL</div>
-                <div class="hormonal-index">
-                    <div class="index-item">
-                        <div class="info-label">Superficiales</div>
-                        <div class="index-value">{{ $citologia->Superficiales ?? 0 }}</div>
-                    </div>
-                    <div class="index-item">
-                        <div class="info-label">Intermedias</div>
-                        <div class="index-value">{{ $citologia->Intermedias ?? 0 }}</div>
-                    </div>
-                    <div class="index-item">
-                        <div class="info-label">Parabasales</div>
-                        <div class="index-value">{{ $citologia->Parabasales ?? 0 }}</div>
-                    </div>
-                </div>
-                @if($citologia->Conclusion)
-                <div class="text-area-content">
-                    <strong>Conclusión:</strong> {{ $citologia->Conclusion }}
-                </div>
-                @endif
-            </div>
-            @endif
 
             <!-- Notas -->
-            @if($citologia->Notas)
+            @if($biopsia->Notas)
             <div class="section">
                 <div class="section-title">NOTAS</div>
                 <div class="text-area-content">
-                    {{ $citologia->Notas }}
+                    {{ $biopsia->Notas }}
+                </div>
+            </div>
+            @endif
+
+            <!-- Comentarios Adicionales -->
+            @if($biopsia->Com_1 || $biopsia->Com_2 || $biopsia->Com_3)
+            <div class="section">
+                <div class="section-title">COMENTARIOS ADICIONALES</div>
+                <div class="text-area-content">
+                    @if($biopsia->Com_1)
+                        <strong>•</strong> {{ $biopsia->Com_1 }}<br>
+                    @endif
+                    @if($biopsia->Com_2)
+                        <strong>•</strong> {{ $biopsia->Com_2 }}<br>
+                    @endif
+                    @if($biopsia->Com_3)
+                        <strong>•</strong> {{ $biopsia->Com_3 }}
+                    @endif
                 </div>
             </div>
             @endif
@@ -391,12 +381,12 @@
             <!-- Firmas -->
             <div class="signature-area">
                 <div class="signature-line">
-                    {{ $citologia->MedicoPatologo1 ?? '____________________' }}
+                    {{ $biopsia->MedicoPatólogo1 ?? '____________________' }}
                     <br>
                     <small>Médico Patólogo 1</small>
                 </div>
                 <div class="signature-line">
-                    {{ $citologia->MedicoPatologo2 ?? '____________________' }}
+                    {{ $biopsia->MedicoPatólogo2 ?? '____________________' }}
                     <br>
                     <small>Médico Patólogo 2</small>
                 </div>
@@ -411,11 +401,11 @@
                 Email: becomarca@gmail.com,
                 <br>Rif: J-29890247-7
                 Fecha de impresión: {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}
-                {{$citologia->paciente->id}}<hr>
-                Se entrega informe original, quedando copia fiel y exacta en los archivos de este laboratorio, el cual no se hace responsable por posibles tachaduras, enmendaruas, copias o escaneos realizados.
+                {{$biopsia->id}}<hr>
+                Se entrega informe original, quedando copia fiel y exacta en los archivos de este laboratorio, el cual no se hace responsable por posibles tachaduras, enmendaduras, copias o escaneos realizados.
             </div>
         </div>
-    </div>
+  
 
     <script>
         // Auto-imprimir si se desea

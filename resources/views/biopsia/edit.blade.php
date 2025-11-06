@@ -8,16 +8,16 @@
             <h2>Editar Citología</h2>
         </div>
         <div>
-            <a href="{{ route('citologias.show', $citologia->id) }}" class="btn btn-info">
+            <a href="{{ route('biopsias.show', $biopsia->id) }}" class="btn btn-info">
                 <i class="fas fa-eye"></i> Ver
             </a>
-            <a href="{{ route('citologias.index') }}" class="btn btn-secondary">
+            <a href="{{ route('biopsia.index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Volver
             </a>
         </div>
     </div>
 
-    <form action="{{ route('citologias.update', $citologia->id) }}" method="POST">
+    <form action="{{ route('biopsia.update', $biopsia->id) }}" method="POST">
         @csrf
         @method('PUT')
         

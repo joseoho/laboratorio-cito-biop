@@ -3,11 +3,18 @@
 @section('content')
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Detalle de Biopsia #{{ $biopsia->paciente->NB ?? 'N/A' }}</h1>
+            <h1>Detalle de Biopsia {{ $biopsia->paciente->NB ?? 'N/A' }}</h1>
             <div>
-                <a href="{{ route('biopsias.index') }}" class="btn btn-secondary">← Volver a la lista</a>
-                <a href="{{ route('biopsias.edit', $biopsia->paciente->id) }}" class="btn btn-warning">Editar</a>
-            </div>
+            <a href="{{ route('biopsias.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <a href="{{ route('biopsias.edit', $biopsia->paciente->id) }}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Editar
+            </a> 
+            <a href="{{ route('biopsias.imprimir', $biopsia->id) }}" class="btn btn-primary" target="_blank">
+                <i class="fas fa-print"></i> Imprimir
+            </a>
+        </div>
         </div>
 
         <div class="row">
@@ -18,6 +25,10 @@
                         <h5 class="mb-0">Información General</h5>
                     </div>
                     <div class="card-body">
+                            <div class="detail-card">
+                                <strong>Paciente:</strong>
+                                <p class="mb-0">{{ $biopsia->paciente->Nombre ?? 'N/A' }}</p>
+                            </div>
                         <div class="detail-card">
                             <strong>Fecha de Recibido:</strong>
                             <p class="mb-0">{{ $biopsia->FechaRecibido ?? 'No especificado' }}</p>

@@ -46,20 +46,25 @@ class BiopsiaController extends Controller
      */
     public function store(StoreBiopsiaRequest $request)
     {
-    
+  
             try {
         // Crear la biopsia con todos los datos del formulario
         $biopsia = Biopsia::create($request->all());
-        // ACTUALIZAR STATUS DEL PACIENTE A 1
-                    if ($biopsia->id) {
-                        $paciente = Paciente::find($biopsia->id);
-                        if ($paciente) {
-                            $paciente->status = 1;
-                            $paciente->save();
-                        }
+        if ($biopsia->id) {
+            $paciente = Paciente::find($biopsia->id);
+            if ($paciente) {
+                $paciente->status = 1;
+                $paciente->save();
             }
-        return redirect()->route('biopsias.index')
-                         ->with('success', '✅ Biopsia creada exitosamente');
+        }
+        
+         return redirect()->route('biopsia.index')
+                ->with('success', 'Paciente guardado correctamente!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Biopsia guardada correctamente',
+                'data' => $biopsia
+            ]);
 
     } catch (\Exception $e) {
         return redirect()->back()
@@ -75,7 +80,7 @@ class BiopsiaController extends Controller
     {
        // Buscar por IdPaciente en lugar de id
         $biopsia = Biopsia::with('paciente')
-            ->where('Id', $id)
+            ->where('id', $id)
             ->firstOrFail();
         
         return view('biopsia.show', compact('biopsia'));
@@ -96,7 +101,7 @@ class BiopsiaController extends Controller
             ->with('error', 'No se encontró el paciente con número de biopsia: ' . $id);
     }
 
-    // // Buscar si ya existe una citología para este paciente
+    // // Buscar si ya existe una biopsia para este paciente
         $biopsia = Biopsia::where('id', $id)->first();
 
           // Obtener las plantillas para cada módulo
@@ -137,4 +142,19 @@ class BiopsiaController extends Controller
     {
         //
     }
+
+    public function imprimirNB($id)
+    {
+         $biopsia = Biopsia::with('paciente')
+        ->where('id', $id)
+        ->firstOrFail();
+         return view('biopsia.imprimir', compact('biopsia'));
+    }
+
+    public function vistaPreviaNB($id)
+    {
+        $biopsia = Biopsia::with('paciente')->findOrFail($id);
+        return view('biopsia.vista-previa', compact('biopsia'));
+    }
+   
 }
