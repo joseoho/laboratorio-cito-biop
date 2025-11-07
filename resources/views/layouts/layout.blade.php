@@ -202,30 +202,15 @@
   </div>
 </nav>
     
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Formularios</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-          </div>
-          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar"></span>
-            This week
-          </button>
-         
-        </div>
-        
-      </div>
-      @yield('content')
-      <!-- <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas> -->
-    
-      {{-- <h2>Section title</h2> --}}
-      
-    
-      </div>
-    </main>
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mb-2 border-bottom">
+    <div class="d-flex align-items-center">
+      <!-- Logo alineado a la izquierda -->
+      <img src="{{ asset('assets/images/logo.png') }}" style="height: 120px; width: auto; margin-right: 10px;" alt="Logo">
+    </div>
+  </div>
+  @yield('content')
+</main>
   </div>
 </div>
 
