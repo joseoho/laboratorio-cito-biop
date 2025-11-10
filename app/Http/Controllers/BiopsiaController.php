@@ -51,7 +51,7 @@ class BiopsiaController extends Controller
         // Crear la biopsia con todos los datos del formulario
         $biopsia = Biopsia::create($request->all());
         if ($biopsia->id) {
-            $paciente = Paciente::find($biopsia->id);
+            $paciente = Paciente::find($request->idpaciente);
             if ($paciente) {
                 $paciente->status = 1;
                 $paciente->save();

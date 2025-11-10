@@ -18,7 +18,7 @@
         @csrf
         
         <!-- Campo oculto para el ID del paciente -->
-        <input type="hidden" name="id" value="{{ $paciente->id}}">
+        <input type="hidden" name="idpaciente" value="{{ $paciente->id}}">
 
         <!-- Frame de Citología -->
         <div class="frame mb-4 p-3 border rounded">

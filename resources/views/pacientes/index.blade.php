@@ -119,43 +119,45 @@
                         <td>{{ $paciente->mail }}</td>
                         {{-- <td>{{ $paciente->NB }}</td>
                         <td>{{ $paciente->NC }}</td> --}}
-                        <td>
-                            @if($paciente->status == 1)
-                                            <!-- Completado - Solo mostrar información -->
-                                            <span class="text-success">
-                                                <i class="fas fa-check-circle"></i> Procesada/{{$paciente->NB}}
-                                            </span>
-                            
-                            @else
-                                @if($paciente->NB)
-                                    <a href="{{ route('biopsias.edit', $paciente->id) }}" 
-                                    class="btn btn-outline-success btn-sm"
-                                    title="Formulario-Crear-NB/{{ $paciente->NB }}">
-                                        {{ $paciente->NB }}
+                        <!-- Biopsia -->
+                            <td>
+                                @if($paciente->status == 1)
+                                    <span class="text-success small">
+                                        <i class="fas fa-check"></i> Listo
+                                    </span>
+                                @elseif($paciente->NB)
+                                     <a href="{{ route('biopsias.edit', $paciente->id) }}" 
+                                     
+                                    class="btn btn-sm {{ $paciente->id ? 'btn-outline-primary' : 'btn-outline-warning' }}">
+                                        B-{{ $paciente->NB }}
                                     </a>
                                 @else
-                                    <span class="text-muted">N/A</span>
+                                N/A
+                                    {{-- <button onclick="asignarBiopsia({{ $paciente->id }})" class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-plus"></i>
+                                    </button> --}}
                                 @endif
-                            @endif
-                        </td>
-                        <td>
-                            @if($paciente->status == 1)
-                                            <!-- Completado - Solo mostrar información -->
-                                            <span class="text-success">
-                                                <i class="fas fa-check-circle"></i> Procesada/{{$paciente->NC}}
-                                            </span>
-                                        @else
-                                    @if($paciente->NC)
+                            </td>
+
+                            <!-- Citología -->
+                            <td>
+                                @if($paciente->status == 1)
+                                    <span class="text-success small">
+                                        <i class="fas fa-check"></i> Listo
+                                    </span>
+                                @elseif($paciente->NC)
                                     <a href="{{ route('citologias.edit', $paciente->id) }}" 
-                                    class="btn btn-outline-success btn-sm"
-                                    title="Formulario-Crear-NC/{{ $paciente->NC }}">
-                                        {{ $paciente->NC }}
+                                    class="btn btn-sm {{ $paciente->NB ? 'btn-outline-success' : 'btn-outline-warning' }}">
+                                        C-{{ $paciente->NC }}
                                     </a>
                                 @else
-                                    <span class="text-muted">N/A</span>
+                                    N/A
+                                    {{-- <button onclick="asignarCitologia({{ $paciente->id }})" class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-plus"></i>
+                                    </button> --}}
                                 @endif
-                            @endif
-                        </td>
+                            </td>
+
                         <td>
                             {{ $paciente->procedencia->Procedencia ?? $paciente->Procedencia }}
                         </td>
@@ -165,12 +167,12 @@
                         </td>
                             <td>
                                 @if($paciente->status == 0)
-                                    <span class="text-warning">
-                                                <i class="fas fa-check"></i> Pendiente
+                                    <span class="text-warning small">
+                                                <i class="fas fa-close"></i> Pendiente
                                     </span>
                                     @elseif($paciente->status == 1)
-                                    <span class="text-success">
-                                                <i class="fas fa-check-circle"></i> Procesada
+                                    <span class="text-success small">
+                                        <i class="fas fa-check"></i> Listo
                                     </span>
                                 @endif
                         </td>
