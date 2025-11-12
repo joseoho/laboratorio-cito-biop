@@ -117,8 +117,6 @@
                         <td>{{ $paciente->medico->Codigo ?? 'N/A' }}</td> --}}
                         
                         <td>{{ $paciente->mail }}</td>
-                        {{-- <td>{{ $paciente->NB }}</td>
-                        <td>{{ $paciente->NC }}</td> --}}
                         <!-- Biopsia -->
                             <td>
                                 @if($paciente->status == 1)
@@ -127,8 +125,7 @@
                                     </span>
                                 @elseif($paciente->NB)
                                      <a href="{{ route('biopsias.edit', $paciente->id) }}" 
-                                     
-                                    class="btn btn-sm {{ $paciente->id ? 'btn-outline-primary' : 'btn-outline-warning' }}">
+                                    class="btn btn-sm {{ $paciente->NB ? 'btn-outline-primary' : 'btn-outline-warning' }}">
                                         B-{{ $paciente->NB }}
                                     </a>
                                 @else
@@ -147,7 +144,7 @@
                                     </span>
                                 @elseif($paciente->NC)
                                     <a href="{{ route('citologias.edit', $paciente->id) }}" 
-                                    class="btn btn-sm {{ $paciente->NB ? 'btn-outline-success' : 'btn-outline-warning' }}">
+                                    class="btn btn-sm {{ $paciente->NC ? 'btn-outline-success' : 'btn-outline-warning' }}">
                                         C-{{ $paciente->NC }}
                                     </a>
                                 @else

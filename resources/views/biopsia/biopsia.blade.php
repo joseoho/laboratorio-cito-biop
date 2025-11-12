@@ -33,7 +33,7 @@
                     <input type="text" value="{{ $paciente->CI }}" name="ci" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
-                    <label for="noCitologia" class="form-label">No. Biopsia:</label>
+                    <label for="noBiopsia" class="form-label">No. Biopsia:</label>
                     <input type="text" value="{{ $paciente->NB }}" name="nb" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">

@@ -46,19 +46,19 @@ class BiopsiaController extends Controller
      */
     public function store(StoreBiopsiaRequest $request)
     {
-  
-            try {
+     
+       try {
         // Crear la biopsia con todos los datos del formulario
         $biopsia = Biopsia::create($request->all());
-        if ($biopsia->id) {
-            $paciente = Paciente::find($request->idpaciente);
+         if ($biopsia->id) {
+            $paciente = Paciente::find($biopsia->id);
             if ($paciente) {
                 $paciente->status = 1;
                 $paciente->save();
             }
         }
         
-         return redirect()->route('biopsia.index')
+         return redirect()->route('biopsias.index')
                 ->with('success', 'Paciente guardado correctamente!');
             return response()->json([
                 'success' => true,
@@ -71,7 +71,7 @@ class BiopsiaController extends Controller
                          ->withInput()
                          ->with('error', '❌ Error: ' . $e->getMessage());
     }
-        }
+   }
     
     /**
      * Display the specified resource.

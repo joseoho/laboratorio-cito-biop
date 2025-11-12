@@ -55,11 +55,11 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="ireccion" class="form-label">Dirección:</label>
-                    <input type="text" id="Dirección" name="Dirección" class="form-control" value="{{ old('Direccion') }}">
+                    <input type="text" id="Dirección" name="Dirección" class="form-control" value="{{ old('Dirección') }}">
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="telefono" class="form-label">Teléfono:</label>
-                    <input type="text" id="Teléfono" name="Teléfono" class="form-control" value="{{ old('Telefono') }}">
+                    <input type="text" id="Teléfono" name="Teléfono" class="form-control" value="{{ old('Teléfono') }}">
                 </div>
             </div>
             <div class="row">

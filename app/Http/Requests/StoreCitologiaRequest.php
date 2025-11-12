@@ -22,7 +22,10 @@ class StoreCitologiaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'id' => 'required|exists:pacientes,id',
+            // 'NB' => 'required_if:tipo_procedimiento,biopsia', // Solo requerido para biopsias
+            // 'NC' => 'required_if:tipo_procedimiento,citologia', // Solo requerido para citologías
+
         ];
     }
 }
