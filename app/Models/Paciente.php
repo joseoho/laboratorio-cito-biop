@@ -61,7 +61,8 @@ class Paciente extends Model
      */
     public function biopsias()
     {
-        return $this->hasMany(Biopsia::class, 'id', 'id');
+        // return $this->hasMany(Biopsia::class, 'id', 'id');
+        return $this->hasOne(Biopsia::class, 'id', 'id');
     }
 
     /**

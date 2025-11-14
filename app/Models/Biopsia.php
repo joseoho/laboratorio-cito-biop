@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+ 
 
 class Biopsia extends Model
 {
     use HasFactory;
     Protected $primaryKey = "id";
     protected $table ='biopsias';
+    public $incrementing = false;
+
     protected $fillable = [
         'id',
         'FechaRecibido',
@@ -38,6 +41,7 @@ class Biopsia extends Model
      */
     public function paciente()
     {
+        // return $this->belongsTo(Paciente::class, 'id', 'id');
         return $this->belongsTo(Paciente::class, 'id', 'id');
     }
 }

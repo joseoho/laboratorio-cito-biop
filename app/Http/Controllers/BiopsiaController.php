@@ -47,30 +47,66 @@ class BiopsiaController extends Controller
     public function store(StoreBiopsiaRequest $request)
     {
      
-       try {
-        // Crear la biopsia con todos los datos del formulario
-        $biopsia = Biopsia::create($request->all());
-         if ($biopsia->id) {
-            $paciente = Paciente::find($biopsia->id);
-            if ($paciente) {
-                $paciente->status = 1;
-                $paciente->save();
-            }
+    //    try {
+    //     // Crear la biopsia con todos los datos del formulario
+    //     $biopsia = Biopsia::create($request->all());
+    //      if ($biopsia->id) {
+    //         $paciente = Paciente::find($request->paciente_id);
+    //         if ($paciente) {
+    //             $paciente->status = 1;
+    //             $paciente->save();
+    //         }
+    //     }
+        
+    //      return redirect()->route('biopsias.index')
+    //             ->with('success', 'Paciente guardado correctamente!');
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Biopsia guardada correctamente',
+    //             'data' => $biopsia
+    //         ]);
+
+    // } catch (\Exception $e) {
+    //     return redirect()->back()
+    //                      ->withInput()
+    //                      ->with('error', '❌ Error: ' . $e->getMessage());
+    // }
+
+//////////////////////
+try {
+        $pacienteId = $request->id_paciente ?? $request->paciente_id;
+        
+        if (!$pacienteId) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', '❌ No se recibió el ID del paciente');
         }
         
-         return redirect()->route('biopsias.index')
-                ->with('success', 'Paciente guardado correctamente!');
-            return response()->json([
-                'success' => true,
-                'message' => 'Biopsia guardada correctamente',
-                'data' => $biopsia
-            ]);
+        $paciente = Paciente::find($pacienteId);
+        if (!$paciente) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', '❌ No se encontró el paciente');
+        }
+        
+        // Crear la biopsia normalmente (con auto-increment)
+        $biopsia = Biopsia::create($request->all());
+        
+        // Actualizar el paciente con el ID de la biopsia en el campo NB
+        $paciente->update([
+            'status' => 1,
+            // 'NB' => $biopsia->id // Guardar el ID de la biopsia en NB
+        ]);
+        
+        return redirect()->route('biopsias.index')
+            ->with('success', 'Biopsia guardada correctamente!');
 
     } catch (\Exception $e) {
         return redirect()->back()
-                         ->withInput()
-                         ->with('error', '❌ Error: ' . $e->getMessage());
+            ->withInput()
+            ->with('error', '❌ Error: ' . $e->getMessage());
     }
+
    }
     
     /**
