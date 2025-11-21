@@ -67,27 +67,12 @@ class PacienteController extends Controller
      */
     public function store(StorePacienteRequest $request)
     {
-    
+     \Log::info('Iniciando método store con datos válidos:', $request->all());
+          
      try {
-            // Crear nuevo paciente con status 0 (pendiente)
-            // $paciente = Paciente::create([
-            //     'FechaApertura' => now(),
-            //     'CI' => $request->CI ?? $request->cedula,
-            //     'Nombre' => $request->Nombre ?? $request->nombre,
-            //     'Sexo' => $request->Sexo ?? $request->sexo,
-            //     'Dirección' => $request->Dirección ?? $request->direccion,
-            //     'Teléfono' => $request->Teléfono ?? $request->telefono,
-            //     'Edad' => $request->Edad ?? $request->edad,
-            //     'Procedencia' => $request->Procedencia ?? $request->procedencia,
-            //     'Dr' => $request->Dr ?? $request->medicos,
-            //     'mail' => $request->mail ?? $request->Mail,
-            //     'NB' => $request->NB ?? $request->biopsia,
-            //     'NC' => $request->NC ?? $request->citologia,
-            //     'status' => 0 // Siempre pendiente al crear
-            // ]);
-            
-            $paciente = Paciente::create($request->all());
-            return redirect()->route('pacientes.index')
+             \Log::info('Paciente creado exitosamente:', ['id' => $paciente->id]);
+             $paciente = Paciente::create($request->all());
+             return redirect()->route('pacientes.index')
                 ->with('success', 'Paciente guardado correctamente!');
 
         } catch (\Exception $e) {

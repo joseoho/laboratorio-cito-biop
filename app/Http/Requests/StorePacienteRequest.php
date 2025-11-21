@@ -22,65 +22,64 @@ class StorePacienteRequest extends FormRequest
      */
     public function rules(): array
     {
-        $pacienteId = $this->route('pacientes') ? $this->route('pacientes')->id : null;
-        return [
-        // 'id' => 'required|exists:pacientes,id',
-                'NB' => [
+        // $pacienteId = $this->route('pacientes') ? $this->route('pacientes')->id : null;
+        return 
+        [
+            // 'NB' => 'nullable|numeric|unique:pacientes,NB|required_without:NC',
+            // 'NC' => 'nullable|numeric|unique:pacientes,NC|required_without:NB',
+            'mail' => 'required|email|max:100',
+            'NB' => [
                 'nullable',
                 'numeric',
-                'min:1',
-                'max:9999999999', // 10 dígitos máximo
-                Rule::unique('pacientes')->ignore($pacienteId),
-                function ($attribute, $value, $fail) {
-                    // Validar que NB y NC no estén ambos presentes
-                    if ($value && $this->NC) {
-                        $fail('El Paciente solo se puede asignar número de Biopsia (NB) ó número de Citología (NC). ambos NO.');
-                    }
-                    
-                    // Validar que tenga máximo 10 caracteres numéricos
-                    if ($value && strlen((string)$value) > 10) {
-                        $fail('El número de Biopsia (NB) no puede tener más de 10 dígitos.');
-                    }
-                },
+                Rule::unique('pacientes', 'NB'),
             ],
             'NC' => [
-                'nullable',
+                'nullable', 
                 'numeric',
-                'min:1',
-                'max:9999999999', // 10 dígitos máximo
-                Rule::unique('pacientes')->ignore($pacienteId),
-                function ($attribute, $value, $fail) {
-                    // Validar que NB y NC no estén ambos presentes
-                    if ($value && $this->NB) {
-                        $fail('El Paciente solo se puede asignar número de Citología (NC) ó número de Biopsia (NB). ambos NO.');
-                    }
-                    
-                    // Validar que tenga máximo 10 caracteres numéricos
-                    if ($value && strlen((string)$value) > 10) {
-                        $fail('El número de Citología (NC) no puede tener más de 10 dígitos.');
-                    }
-                },
+                Rule::unique('pacientes', 'NC'),
             ],
-            // 'status' => 'sometimes|in:0,1'
+        ];
         
-        // 'NB' => 'required|numeric|digits:7|unique:pacientes,NB',
-        // 'NC' => 'required|numeric|digits:7|unique:pacientes,NC',
-        // 'NB' => 'required_without:NC|numeric|digits:7|unique:pacientes,NB',
-        // 'NC' => 'required_without:NB|numeric|digits:7|unique:pacientes,NC',
-    ];
     }
 
+        public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $data = $this->all();
+            
+            \Log::info('Validando NB y NC:', [
+                'NB' => $data['NB'] ?? null,
+                'NC' => $data['NC'] ?? null
+            ]);
+
+            // Validar que al menos uno de los dos esté presente
+            if (empty($data['NB']) && empty($data['NC'])) {
+                $validator->errors()->add('NB', 'Debe proporcionar al menos un número de Biopsia (NB) o Citología (NC).');
+                \Log::warning('Validación fallida: Ambos campos NB y NC están vacíos');
+            }
+            
+            // Validar que no estén ambos presentes
+            if (!empty($data['NB']) && !empty($data['NC'])) {
+                $validator->errors()->add('NB', 'No puede tener tanto número de Biopsia (NB) como número de Citología (NC). Elija solo uno.');
+                $validator->errors()->add('NC', 'No puede tener tanto número de Biopsia (NB) como número de Citología (NC). Elija solo uno.');
+                \Log::warning('Validación fallida: Ambos campos NB y NC tienen valores');
+            }
+        });
+    }
     public function messages()
     {
+        
         return [
-            // 'NB.required_without' => 'El número de biopsia (NB) es requerido si el número de citología (NC) no se proporciona.',
-            // 'NC.required_without' => 'El número de citología (NC) es requerido si el número de biopsia (NB) no se proporciona.',
-            'NB.numeric' => 'El número de biopsia (NB) debe ser un número.',
-            'NC.numeric' => 'El número de citología (NC) debe ser un número.',
-            'NB.digits' => 'El número de biopsia (NB) debe tener 7 dígitos.',
-            'NC.digits' => 'El número de citología (NC) debe tener 7 dígitos.',
-            'NB.unique' => 'El número de biopsia (NB) ya está en uso.',
-            'NC.unique' => 'El número de citología (NC) ya está en uso.',
+            'mail.required' => 'El correo electrónico es obligatorio.',
+            'mail.email' => 'Debe ingresar un correo electrónico válido.',
+            'mail.max' => 'El correo no puede tener más de 100 caracteres.',
+            
+            'NB.numeric' => 'El número de Biopsia debe ser numérico.',
+            'NB.unique' => 'Este número de Biopsia ya está registrado.',
+            
+            'NC.numeric' => 'El número de Citología debe ser numérico.',
+            'NC.unique' => 'Este número de Citología ya está registrado.',
+        
         ];
     }
 
@@ -89,6 +88,11 @@ class StorePacienteRequest extends FormRequest
         $this->merge([
             'NB' => $this->NB ? (int)$this->NB : null,
             'NC' => $this->NC ? (int)$this->NC : null,
+        ]);
+
+        \Log::info('Datos preparados para validación:', [
+            'NB' => $this->NB,
+            'NC' => $this->NC
         ]);
     }
 }

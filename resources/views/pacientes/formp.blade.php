@@ -31,7 +31,7 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="fechaActual" class="form-label">Fecha de Ingreso:</label>
-                    <input type="text" id="fechaActual" name="fechaActual" class="form-control" value="{{ date('Y-m-d') }}" readonly>
+                    <input type="date" id="fechaActual" name="FechaApertura" class="form-control" value="{{ old('FechaApertura') }}">
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="CI" class="form-label">Cédula Número: *</label>
