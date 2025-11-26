@@ -29,9 +29,13 @@
         <div class="frame mb-4 p-3 border rounded">
             <h3 class="mb-4">Identificación</h3>
             <div class="row">
+                {{-- <div class="col-md-6 mb-3">
+                    <label for="id" class="form-label">ID:</label>
+                    <input type="number" id="id" name="id" class="form-control" value="{{ old('id') }}" readonly>
+                </div> --}}
                 <div class="col-md-6 mb-3">
-                    <label for="fechaActual" class="form-label">Fecha de Ingreso:</label>
-                    <input type="date" id="fechaActual" name="FechaApertura" class="form-control" value="{{ old('FechaApertura') }}">
+                    <label for="FechaApertura" class="form-label">Fecha de Apertura:</label>
+                    <input type="date" id="FechaApertura" name="FechaApertura" class="form-control" value="{{ old('FechaApertura') }}">
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="CI" class="form-label">Cédula Número: *</label>
@@ -59,7 +63,7 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="telefono" class="form-label">Teléfono:</label>
-                    <input type="text" id="Teléfono" name="Teléfono" class="form-control" value="{{ old('Teléfono') }}">
+                    <input type="number" id="Teléfono" name="Teléfono" class="form-control" value="{{ old('Teléfono') }}">
                 </div>
             </div>
             <div class="row">

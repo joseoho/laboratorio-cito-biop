@@ -67,20 +67,24 @@ class PacienteController extends Controller
      */
     public function store(StorePacienteRequest $request)
     {
-     \Log::info('Iniciando método store con datos válidos:', $request->all());
+    //  \Log::info('Iniciando método store con datos válidos:', $request->all());
           
      try {
-             \Log::info('Paciente creado exitosamente:', ['id' => $paciente->id]);
              $paciente = Paciente::create($request->all());
-             return redirect()->route('pacientes.index')
-                ->with('success', 'Paciente guardado correctamente!');
+        return redirect()->route('pacientes.index')
+            ->with('success', 'Paciente guardado correctamente!');
+    //          \Log::info('Paciente creado exitosamente:', ['id' => $paciente->id]);
+    //          $paciente = Paciente::create($request->all());
+             
+    //          return redirect()->route('pacientes.index')
+    //             ->with('success', 'Paciente guardado correctamente!');
 
-        } catch (\Exception $e) {
-            return redirect()->back()
+         } catch (\Exception $e) {
+             return redirect()->back()
                 ->with('error', 'Error al guardar: ' . $e->getMessage())
-                ->withInput();
+                 ->withInput();
         }
-
+   
             
     }
 
