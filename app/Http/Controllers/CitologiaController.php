@@ -49,44 +49,14 @@ class CitologiaController extends Controller
     public function store(StoreCitologiaRequest $request)
     {
         
-            try {
-            // $citologia = new Citologia();
-            
-            // // Datos básicos del paciente (ya vienen en la vista)
-            // $citologia->paciente_id = $request->id;
-            // $citologia->CI = $request->ci;
-            // $citologia->NC = $request->nc;
-            // $citologia->Nombre = $request->nombre;
-            
-            // // Identificación de la muestra
-            // $citologia->FechaRecibido = $request->FechaRecibido;
-            // $citologia->FechaEnvio = $request->FechaEnvio;
-            
-            // // Material y diagnóstico
-            // $citologia->MaterialRemitido = $request->MaterialRemitido;
-            // $citologia->DiagnosticoClinico = $request->DiagnosticoClinico;
-            
-            // // Calidad y descripción
-            // $citologia->calidad_muestra = $request->calidad_muestra;
-            // $citologia->DescripcionMacroscopica = $request->DescripcionMacroscopica;
-            
-            // // Descripción citología
-            // $citologia->codigo = $request->codigo;
-            // $citologia->anexo = $request->anexo;
-            // $citologia->descripcion_citologia = $request->descripcion_citologia;
-            // $citologia->diagnostico_citologia = $request->diagnostico_citologia;
-            // $citologia->notas = $request->notas;
-            
-            // // Índice de valoración hormonal
-            // $citologia->superficiales = $request->superficiales;
-            // $citologia->intermedias = $request->intermedias;
-            // $citologia->parabasales = $request->parabasales;
-            
-            // // Médicos patólogos
-            // $citologia->medico_patologo_1 = $request->medico_patologo_1;
-            // $citologia->medico_patologo_2 = $request->medico_patologo_2;
-            
-            // $citologia->save();
+    try {
+            $pacienteId = $request->id_paciente ?? $request->paciente_id;
+        
+        if (!$pacienteId) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', '❌ No se recibió el ID del paciente');
+        }
             
             $citologia = Citologia::create($request->all());
               // ACTUALIZAR STATUS DEL PACIENTE A 1

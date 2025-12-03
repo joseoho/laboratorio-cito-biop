@@ -13,7 +13,17 @@
     </div>
 
     <!-- Formulario de Citología -->
-    <form action="{{ route('citologias.store') }}" method="POST" id="formCitologia">
+     @if ($errors->any())
+    <div class="alert alert-danger">
+        <h5>Por favor, corrige los siguientes errores:</h5>
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+    <form action="{{ route('citologias.store') }}" method="POST" id="formBiopsia">
         @csrf
         
         <!-- Campo oculto para el ID del paciente -->
@@ -25,7 +35,7 @@
             <div class="row">
                 <div class="col-md-3">
                     <label for="recibo" class="form-label">Recibo:</label>
-                    <input type="text" value="{{ $paciente->id }}" name="id" class="form-control" readonly>
+                    <input type="text" value="{{ $paciente->id }}" name="id_paciente" class="form-control" readonly>
                 </div>
                 <div class="col-md-3">
                     <label for="ci" class="form-label">C.I No.:</label>
@@ -87,6 +97,7 @@
         <div class="frame mb-4 p-3 border rounded">
             <h3>Descripción Citología</h3>
             <div class="row">
+                        <label for="Cod" class="form-label">Cod:</label>
                         <select id="cod" name="cod" class="form-control">
                             <option value="">Seleccione un código</option>
                             @foreach($diagcitos as $diagcito)
