@@ -7,7 +7,7 @@
             <h1>Información del Pacientee</h1>
         </div>
         <div class="col text-right">
-            <a href="{{ route('pacientes.edit', $paciente->id) }}" class="btn btn-warning">Editar</a>
+            {{-- <a href="{{ route('pacientes.edit', $paciente->id) }}" class="btn btn-warning">Editar</a> --}}
             <a href="{{ route('pacientes.index') }}" class="btn btn-secondary">Volver</a>
         </div>
     </div>

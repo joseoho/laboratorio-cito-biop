@@ -50,37 +50,40 @@ class CitologiaController extends Controller
     {
         
     try {
-            $pacienteId = $request->id_paciente ?? $request->paciente_id;
+          \DB::beginTransaction();
+        
+        // Obtener ID del paciente
+        $pacienteId = $request->IdPaciente;
         
         if (!$pacienteId) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', '❌ No se recibió el ID del paciente');
+            throw new \Exception('No se recibió el ID del paciente');
         }
+        
+        // Verificar paciente
+        $paciente = Paciente::find($pacienteId);
+        if (!$paciente) {
+            throw new \Exception("Paciente con ID {$pacienteId} no existe");
+        }
+        
+        // Crear la citología
+        $citologia = Citologia::create($request->all());
+        
+        // ACTUALIZAR STATUS DEL PACIENTE A 1
+        $paciente->status = 1;
+        $paciente->save();
+        
+        \DB::commit();
+        
+        return redirect()->route('citologias.index')
+            ->with('success', '✅ Citología guardada y paciente actualizado correctamente!');
             
-            $citologia = Citologia::create($request->all());
-              // ACTUALIZAR STATUS DEL PACIENTE A 1
-        if ($citologia->IdPaciente) {
-            $paciente = Paciente::find($citologia->IdPaciente);
-            if ($paciente) {
-                $paciente->status = 1;
-                $paciente->save();
-            }
-        }
-            return redirect()->route('citologias.index')
-                ->with('success', 'Paciente guardado correctamente!');
-            return response()->json([
-                'success' => true,
-                'message' => 'Citología guardada correctamente',
-                'data' => $citologia
-            ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al guardar la citología: ' . $e->getMessage()
-            ], 500);
-        }
+    } catch (\Exception $e) {
+        \DB::rollBack();
+        
+        return redirect()->back()
+            ->withInput()
+            ->with('error', '❌ Error: ' . $e->getMessage());
+    }
     }
 
     /**

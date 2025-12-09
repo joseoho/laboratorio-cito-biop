@@ -108,7 +108,7 @@
             <td>
                 <div class="btn-group" role="group">
                     <a href="{{ route('citologias.show', $citologia->IdPaciente) }}" class="btn btn-info btn-sm">Ver</a>
-                    <a href="{{ route('citologias.edit', $citologia->IdPaciente) }}" class="btn btn-warning btn-sm">Editar</a>
+                    {{-- <a href="{{ route('citologias.edit', $citologia->IdPaciente) }}" class="btn btn-warning btn-sm">Editar</a> --}}
                     <a href="{{ route('citologias.imprimir', $citologia->IdPaciente) }}" class="btn btn-success print">Imprimir</a>
                     
                     {{-- <form action="{{ route('citologias.destroy', $citologia->paciente->NC) }}" 

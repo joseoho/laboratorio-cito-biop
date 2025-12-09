@@ -79,7 +79,7 @@
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a href="{{ route('biopsias.show', $biopsia->id) }}" class="btn btn-info btn-sm">Ver</a>
-                                        <a href="{{ route('biopsias.edit', $biopsia->id) }}" class="btn btn-warning btn-sm">Editar</a>
+                                        {{-- <a href="{{ route('biopsias.edit', $biopsia->id) }}" class="btn btn-warning btn-sm">Editar</a>--}}
                                         <a href="{{ route('biopsias.imprimir', $biopsia->id) }}" class="btn btn-success print">Imprimir</a>
                                         {{-- <form action="{{ route('biopsias.destroy', $biopsia->id) }}" method="POST" class="d-inline">
                                             @csrf

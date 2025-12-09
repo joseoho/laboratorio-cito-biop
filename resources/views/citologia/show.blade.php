@@ -11,9 +11,9 @@
             <a href="{{ route('citologias.index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Volver
             </a>
-            <a href="{{ route('citologias.edit', $citologia->paciente->id) }}" class="btn btn-warning">
+            {{-- <a href="{{ route('citologias.edit', $citologia->paciente->id) }}" class="btn btn-warning">
                 <i class="fas fa-edit"></i> Editar
-            </a> 
+            </a> --}} 
             <a href="{{ route('citologias.imprimir', $citologia->IdPaciente) }}" class="btn btn-primary" target="_blank">
                 <i class="fas fa-print"></i> Imprimir
             </a>

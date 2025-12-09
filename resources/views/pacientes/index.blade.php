@@ -179,7 +179,7 @@
                                    class="btn btn-info" title="Ver detalles">
                                     <i class="fas fa-eye"></i> Ver
                                 </a>
-                                <a href="{{ route('pacientes.edit', $paciente->id) }}" class="btn btn-warning" title="Editar">
+                                {{-- <a href="{{ route('pacientes.edit', $paciente->id) }}" class="btn btn-warning" title="Editar">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
                                 <form action="{{ route('pacientes.destroy', $paciente->id) }}" 
@@ -191,7 +191,7 @@
                                             title="Eliminar">
                                         <i class="fas fa-trash"></i> Eliminar
                                     </button>
-                                </form>
+                                </form> --}}
                               
                             </div>
                         </td>
