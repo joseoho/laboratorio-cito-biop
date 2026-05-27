@@ -204,9 +204,9 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Guardar Citología
                     </button>
-                    <button type="button" class="btn btn-success">
+                    {{-- <button type="button" class="btn btn-success">
                         <i class="fas fa-print"></i> Imprimir
-                    </button>
+                    </button> --}}
                     <a href="{{ route('pacientes.index') }}" class="btn btn-secondary">
                         <i class="fas fa-times"></i> Cancelar
                     </a>
