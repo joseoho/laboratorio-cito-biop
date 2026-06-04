@@ -8,9 +8,9 @@
                 <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Jose R. Becker Reyes"</h1>
                 <h2>Lista de Biopsias</h2>
             </div>
-            <a href="{{ route('biopsias.create') }}" class="btn btn-custom">
+            {{-- <a href="{{ route('biopsias.create') }}" class="btn btn-custom">
                 <i class="fas fa-plus"></i> Nueva Biopsia
-            </a>
+            </a> --}}
         </div>
 
         <!-- Formulario de Búsqueda -->
