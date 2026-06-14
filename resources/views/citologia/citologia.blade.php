@@ -58,7 +58,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <label for="FechaRecibido" class="form-label">Fecha Recibido:</label>
-                    <input type="date" id="FechaRecibido" name="FechaRecibido" class="form-control">
+                    <input type="text" value="{{ $paciente->FechaApertura }}" id="FechaRecibido" name="FechaRecibido" class="form-control" readonly>
                 </div>
                 <div class="col-md-6">
                     <label for="FechaEnvio" class="form-label">Fecha Envio:</label>

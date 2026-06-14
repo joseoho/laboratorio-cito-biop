@@ -51,14 +51,8 @@
                 <h3>Identificación de la muestra</h3>
                 <div class="row">
                     <div class="col-md-6">
-                        {{-- <label for="FechaRecibido">Fecha Recib.:</label>
-                        <input type="date" name="FechaRecibido" id="FechaRecibido" class="form-control"> --}}
-                         <input type="date" 
-                            class="form-control" 
-                            id="FechaRecibido" 
-                            name="FechaRecibido" 
-                            value="{{ old('FechaRecibido', $fechaApertura ?? now()->format('Y-m-d')) }}"
-                            required>
+                        <label for="FechaRecibido">Fecha Recib.:</label>
+                        <input type="text" name="FechaRecibido" id="FechaRecibido"  value="{{ $paciente->FechaApertura }}" class="form-control" readonly>
                     </div>
                     <div class="col-md-6">
                         <label for="fechaEnvio">Fecha Envio:</label>
