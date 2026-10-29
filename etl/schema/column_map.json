@@ -1,0 +1,32 @@
+{
+  "_comment": "Mapa posicional: columnas de Access (en el orden del esquema) -> columnas de staging. Se valida el conteo contra el manifest del export.",
+  "legacy_pacientes": [
+    "id_paciente", "fecha_apertura", "ci", "nombre", "sexo", "direccion", "cod_telf", "telefono",
+    "fecha_nac", "edad", "procedencia", "dr", "resto", "abono", "descuento", "nb", "nc",
+    "sms", "sms_status", "fecha_comp"
+  ],
+  "legacy_biopsias": [
+    "id_paciente", "fecha_recibido", "fecha_envio", "material_remitido", "diagnostico_clinico",
+    "sitio_lesion", "descripcion_macroscopica", "descripcion_microscopica", "diagnostico_microscopico",
+    "notas", "medico_patologo_1", "medico_patologo_2", "foto_1", "foto_2", "foto_3",
+    "com_1", "com_2", "com_3"
+  ],
+  "legacy_citologia": [
+    "id_paciente", "fecha_recibido", "fecha_envio", "material_remitido", "diagnostico_clinico",
+    "descripcion_macroscopica", "descripcion_citologica", "diagnostico_citologico", "notas",
+    "medico_patologo_1", "medico_patologo_2", "superficiales", "intermedias", "parabasales",
+    "conclusion", "calidad"
+  ],
+  "legacy_diagcito":     ["cod", "descripcion", "diagnostico", "orden"],
+  "legacy_anexo":        ["cod", "anexo", "orden"],
+  "legacy_medico":       ["codigo", "nombre", "telefono"],
+  "legacy_procedencia":  ["codigo", "lista_precio"],
+  "legacy_patologo":     ["patologo"],
+  "legacy_plantillas":   ["modulo", "nombre", "contenido"],
+  "legacy_facturas":     ["no_recibo", "id_paciente", "total", "fecha_hora", "dcto", "resto", "abono", "cancelado_por", "procedencia"],
+  "legacy_detalle_examenes": ["no_recibo", "cod_exa", "monto", "dcto", "fecha_hora"],
+  "legacy_detalle_abonos":   ["no_recibo", "abono", "fecha_hora"],
+  "legacy_examenes":     ["cod_exa", "descripcion", "precio_1", "precio_2", "precio_3"],
+  "legacy_exadetails":   ["cod_exa", "item_name", "fraction"],
+  "legacy_verif_tabla":  ["numero", "problema"]
+}
