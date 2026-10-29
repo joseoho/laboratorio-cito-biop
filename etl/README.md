@@ -81,6 +81,9 @@ tabla `Pacientes` a mano.
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File etl/transform.ps1
+
+# una vez, tras el transform: recupera médico y procedencia del legado
+Get-Content etl/transform/004_backfill_referrals.sql -Raw | & C:\xampp\mysql\bin\mysql.exe -u root
 ```
 
 Crea el modelo clínico destino y carga 13 años de historia en **40 s**:
