@@ -19,6 +19,12 @@
         .muted { color:#6c757d; }
         .section-title { font-size:.75rem; text-transform:uppercase; letter-spacing:.6px; color:#6c757d; margin-bottom:.5rem; }
         .flag { font-size:.7rem; }
+        @@media print {
+            nav, .alert, .no-print { display: none !important; }
+            body { background:#fff; }
+            main { padding:0 !important; }
+            .card { box-shadow:none; border:1px solid #ccc; }
+        }
     </style>
     @stack('head')
 </head>

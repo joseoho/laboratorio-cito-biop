@@ -85,7 +85,7 @@ class CoreScreensTest extends TestCase
         $this->actingAs($this->user())
             ->get('/estudios/' . $case->id . '/imprimir')
             ->assertOk()
-            ->assertSee('LABORATORIO DE ANATOMÍA PATOLÓGICA');
+            ->assertSee('LABORATORIO BECOMARCA');
     }
 
     public function test_guests_are_redirected_to_login(): void

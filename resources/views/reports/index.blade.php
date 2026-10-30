@@ -22,6 +22,25 @@
         }
     </style>
 
+    <div class="card mb-3">
+        <div class="card-body d-flex align-items-center gap-3">
+            <img src="{{ asset('assets/images/logo.png') }}" alt="Becomarca" style="height:78px;width:auto">
+            <div>
+                <div class="fw-bold" style="font-size:1.15rem">LABORATORIO BECOMARCA</div>
+                <div class="small">Anatomía Patológica · Dr. José R. Becker Reyes</div>
+                <div class="small muted">Urb. San Inés, Hotel Valle Santiango, CENTROMED, San Cristóbal, Edo. Táchira</div>
+                <div class="small muted">Tel. 0276-3410380 · becomarca@gmail.com · RIF J-29890247-7</div>
+            </div>
+            <div class="ms-auto text-end">
+                <div class="section-title mb-1">Reporte de producción</div>
+                <div class="fs-4 fw-bold">{{ $year }}</div>
+                <div class="small muted">
+                    {{ $type === 'biopsy' ? 'Biopsias' : ($type === 'cytology' ? 'Citologías' : 'Todos los estudios') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="d-flex justify-content-between align-items-end mb-3">
         <div>
             <h4 class="mb-0">Reportes</h4>
