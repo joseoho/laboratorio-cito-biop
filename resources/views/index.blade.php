@@ -6,7 +6,7 @@
 @section('content')
 <style>
     .background {
-        background-image: url("{{ asset('assets/images/logo.png') }}");
+        background-image: url("{{ asset('assets/images/logo.jpg') }}");
         background-size: cover; 
         background-position: center;
         background-repeat: no-repeat;

@@ -206,7 +206,7 @@
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-1 pb-1 mb-2 border-bottom">
     <div class="d-flex align-items-center">
       <!-- Logo alineado a la izquierda -->
-      <img src="{{ asset('assets/images/logo.png') }}" style="height: 120px; width: auto; margin-right: 10px;" alt="Logo">
+      <img src="{{ asset('assets/images/logo.jpg') }}" style="height: 120px; width: auto; margin-right: 10px;" alt="Logo">
     </div>
   </div>
   @yield('content')

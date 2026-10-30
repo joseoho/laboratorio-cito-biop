@@ -40,7 +40,7 @@
 
 <div class="sheet">
     <div class="head">
-        <img src="{{ asset('assets/images/logo.png') }}" alt="Logo">
+        <img src="{{ asset('assets/images/logo.jpg') }}" alt="Logo">
         <div>
             <div class="lab-name">LABORATORIO BECOMARCA</div>
             <div class="lab-sub">Anatomía Patológica · "Dr. José R. Becker Reyes"</div>

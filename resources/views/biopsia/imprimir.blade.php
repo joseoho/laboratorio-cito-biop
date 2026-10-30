@@ -47,7 +47,7 @@
         <!-- Header -->
         <div class="header-content">
             <div>
-                <img src="{{ asset('assets/images/logo.png') }}" class="logo" alt="Logo Laboratorio">
+                <img src="{{ asset('assets/images/logo.jpg') }}" class="logo" alt="Logo Laboratorio">
             </div>
             <div class="lab-info">
                 <div class="lab-name">LABORATORIO DE ANATOMIA PATOLOGICA</div>
