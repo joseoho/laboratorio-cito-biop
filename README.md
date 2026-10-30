@@ -74,7 +74,22 @@ No requiere Node.js: los estilos vienen por CDN y no hay build de Vite en uso.
 
 ## Instalación
 
-### Sin datos históricos (desarrollo)
+### Automática (recomendada)
+
+Con MySQL encendido en XAMPP, doble clic en **`instalar.bat`**. Verifica requisitos,
+crea `.env` y la clave, crea la base, instala dependencias, migra, crea el
+administrador, prepara carpetas y (opcional) la base de pruebas.
+
+```bat
+instalar.bat            :: interactivo
+instalar.bat -Check     :: solo verifica requisitos
+instalar.bat -Si        :: sin preguntas
+instalar.bat -DbPass "clave"   :: si MySQL tiene contrasena
+```
+
+Guía paso a paso, verificación y problemas comunes: **[docs/INSTALACION.md](docs/INSTALACION.md)**.
+
+### Manual (resumen)
 
 ```powershell
 composer install
@@ -83,6 +98,7 @@ php artisan key:generate
 # crear la base lapt_core y ajustar DB_* en .env
 php artisan migrate --force
 php artisan db:seed --force
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\test_db.ps1
 ```
 
 ### Con el histórico de Access
@@ -115,6 +131,7 @@ Los demás usuarios se crean desde **Usuarios** (solo admin).
 | Base | Uso |
 |---|---|
 | `lapt_core` | operativa: pacientes, estudios, informes, PDFs, auditoría |
+| `lapt_test` | copia aislada para los tests (`scripts/test_db.ps1`) |
 | `lapt_staging` | staging crudo del ETL (la aplicación no la usa) |
 
 ## Tests
@@ -127,9 +144,10 @@ C:\xampp\php\php.exe artisan test
 bloqueo y reapertura, PDF con hash, roles, usuarios, auditoría, reportes, cuarentena,
 respaldos, validación de fechas y redirección de invitados.
 
-> Los tests corren contra la base configurada en `.env` (`lapt_core`) y envuelven las
-> escrituras en transacciones con rollback. **No los ejecutes apuntando a producción**:
-> todavía no existe una base de pruebas aislada (`phpunit.xml` no define `DB_DATABASE`).
+> `phpunit.xml` fija `DB_DATABASE=lapt_test`: los tests corren sobre una **copia aislada**
+> de la operativa, creada con `scripts/test_db.ps1`. Nunca tocan `lapt_core`, y las
+> escrituras van en transacciones con rollback. Si falta la base, el test falla con
+> `Unknown database 'lapt_test'`.
 
 ## Respaldos
 
