@@ -18,6 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class CaseController extends Controller
@@ -209,6 +210,50 @@ class CaseController extends Controller
         return redirect()
             ->route('cases.edit', $case)
             ->with('warning', 'Guardado como borrador. Falta para poder imprimir: ' . implode(', ', $missing) . '.');
+    }
+
+    public function editHeader(ClinicalCase $case): View
+    {
+        $case->load('patient');
+
+        return view('cases.header', compact('case'));
+    }
+
+    /**
+     * Corrige número y fecha de recepción. El tipo NO se cambia: el informe
+     * ya tiene la estructura del tipo original.
+     */
+    public function updateHeader(Request $request, ClinicalCase $case, CaseNumberGenerator $numbers): RedirectResponse
+    {
+        $data = $request->validate([
+            'case_code' => [
+                'required',
+                'string',
+                Rule::unique('cases', 'case_code')
+                    ->where(fn ($q) => $q->where('type', $case->type->value))
+                    ->ignore($case->id),
+            ],
+            'received_at' => ['nullable', 'date', 'before_or_equal:today'],
+        ]);
+
+        $parsed = $numbers->parse($case->type, (string) $data['case_code']);
+
+        if (! $parsed) {
+            throw ValidationException::withMessages([
+                'case_code' => 'El número no respeta el formato del tipo de estudio.',
+            ]);
+        }
+
+        $case->update([
+            'case_code' => trim((string) $data['case_code']),
+            'sequence_no' => $parsed[0],
+            'year_no' => $parsed[1],
+            'received_at' => $data['received_at'] ?: $case->received_at,
+        ]);
+
+        return redirect()
+            ->route('cases.show', $case)
+            ->with('success', 'Datos del estudio actualizados.');
     }
 
     public function print(ClinicalCase $case): View|RedirectResponse

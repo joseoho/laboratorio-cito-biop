@@ -17,6 +17,9 @@
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('cases.index') }}" class="btn btn-sm btn-outline-secondary">Volver</a>
+            <a href="{{ route('cases.header', $case) }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-hashtag me-1"></i>Datos
+            </a>
             <a href="{{ route('cases.edit', $case) }}" class="btn btn-sm btn-primary"><i class="fas fa-pen me-1"></i>Editar</a>
             @if ($case->isPrintable())
                 <a href="{{ route('cases.print', $case) }}" target="_blank" class="btn btn-sm btn-success">

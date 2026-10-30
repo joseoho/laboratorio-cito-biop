@@ -29,6 +29,9 @@
                         <i class="fas fa-print me-1"></i>Imprimir
                     </a>
                 @endif
+                <a href="{{ route('cases.header', $case) }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-hashtag me-1"></i>Datos
+                </a>
                 <a href="{{ route('cases.show', $case) }}" class="btn btn-sm btn-outline-secondary">Cancelar</a>
                 <button type="submit" class="btn btn-sm btn-primary" id="btnSave">
                     <i class="fas fa-save me-1"></i>Guardar informe

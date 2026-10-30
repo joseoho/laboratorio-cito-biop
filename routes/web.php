@@ -19,6 +19,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('pacientes/crear', [PatientController::class, 'create'])->name('patients.create');
     Route::post('pacientes', [PatientController::class, 'store'])->name('patients.store');
     Route::get('pacientes/{patient}', [PatientController::class, 'show'])->name('patients.show');
+    Route::get('pacientes/{patient}/editar', [PatientController::class, 'edit'])->name('patients.edit');
+    Route::put('pacientes/{patient}', [PatientController::class, 'update'])->name('patients.update');
 
     // Estudios
     Route::get('pacientes/{patient}/estudios/crear', [CaseController::class, 'create'])->name('cases.create');
@@ -28,5 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('estudios/{case}', [CaseController::class, 'show'])->name('cases.show');
     Route::get('estudios/{case}/editar', [CaseController::class, 'edit'])->name('cases.edit');
     Route::put('estudios/{case}', [CaseController::class, 'update'])->name('cases.update');
+    Route::get('estudios/{case}/datos', [CaseController::class, 'editHeader'])->name('cases.header');
+    Route::put('estudios/{case}/datos', [CaseController::class, 'updateHeader'])->name('cases.header.update');
     Route::get('estudios/{case}/imprimir', [CaseController::class, 'print'])->name('cases.print');
 });

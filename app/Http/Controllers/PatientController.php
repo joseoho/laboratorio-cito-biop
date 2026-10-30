@@ -33,42 +33,12 @@ class PatientController extends Controller
 
     public function create(): View
     {
-        return view('patients.create', [
-            'doctors' => Doctor::query()->whereNotNull('name')->orderBy('name')->get(),
-            'origins' => Origin::query()->orderBy('legacy_code')->get(),
-        ]);
+        return view('patients.create', $this->catalogs());
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $data = $request->validate([
-            'full_name' => ['required', 'string', 'max:120'],
-            'document_number' => ['nullable', 'string', 'max:50'],
-            'sex' => ['nullable', Rule::in(['F', 'M', 'X'])],
-            'age_at_entry' => ['nullable', 'integer', 'min:0', 'max:120'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string', 'max:200'],
-            'email' => ['nullable', 'email', 'max:150'],
-            'doctor_id' => ['nullable', 'integer', 'exists:doctors,id'],
-            'origin_id' => ['nullable', 'integer', 'exists:origins,id'],
-        ], [
-            'full_name.required' => 'El nombre del paciente es obligatorio.',
-        ]);
-
-        $document = trim((string) ($data['document_number'] ?? ''));
-
-        $patient = Patient::create([
-            'document_number' => $document !== '' ? $document : null,
-            'document_is_placeholder' => in_array(mb_strtoupper($document), self::PLACEHOLDERS, true),
-            'full_name' => trim($data['full_name']),
-            'sex' => $data['sex'] ?? null,
-            'age_at_entry' => $data['age_at_entry'] ?? null,
-            'phone' => $data['phone'] ?? null,
-            'address' => $data['address'] ?? null,
-            'email' => $data['email'] ?? null,
-            'doctor_id' => $data['doctor_id'] ?? null,
-            'origin_id' => $data['origin_id'] ?? null,
-        ]);
+        $patient = Patient::create($this->payload($this->validateData($request)));
 
         return redirect()
             ->route('patients.show', $patient)
@@ -86,5 +56,70 @@ class PatientController extends Controller
         ]);
 
         return view('patients.show', compact('patient'));
+    }
+
+    public function edit(Patient $patient): View
+    {
+        $patient->load(['doctor', 'origin']);
+
+        return view('patients.edit', array_merge(
+            ['patient' => $patient],
+            $this->catalogs()
+        ));
+    }
+
+    public function update(Request $request, Patient $patient): RedirectResponse
+    {
+        $patient->update($this->payload($this->validateData($request)));
+
+        return redirect()
+            ->route('patients.show', $patient)
+            ->with('success', 'Paciente actualizado.');
+    }
+
+    /**
+     * @return array{doctors: \Illuminate\Support\Collection, origins: \Illuminate\Support\Collection}
+     */
+    private function catalogs(): array
+    {
+        return [
+            'doctors' => Doctor::query()->whereNotNull('name')->orderBy('name')->get(),
+            'origins' => Origin::query()->orderBy('legacy_code')->get(),
+        ];
+    }
+
+    private function validateData(Request $request): array
+    {
+        return $request->validate([
+            'full_name' => ['required', 'string', 'max:120'],
+            'document_number' => ['nullable', 'string', 'max:50'],
+            'sex' => ['nullable', Rule::in(['F', 'M', 'X'])],
+            'age_at_entry' => ['nullable', 'integer', 'min:0', 'max:120'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:200'],
+            'email' => ['nullable', 'email', 'max:150'],
+            'doctor_id' => ['nullable', 'integer', 'exists:doctors,id'],
+            'origin_id' => ['nullable', 'integer', 'exists:origins,id'],
+        ], [
+            'full_name.required' => 'El nombre del paciente es obligatorio.',
+        ]);
+    }
+
+    private function payload(array $data): array
+    {
+        $document = trim((string) ($data['document_number'] ?? ''));
+
+        return [
+            'document_number' => $document !== '' ? $document : null,
+            'document_is_placeholder' => in_array(mb_strtoupper($document), self::PLACEHOLDERS, true),
+            'full_name' => trim($data['full_name']),
+            'sex' => $data['sex'] ?? null,
+            'age_at_entry' => $data['age_at_entry'] ?? null,
+            'phone' => $data['phone'] ?? null,
+            'address' => $data['address'] ?? null,
+            'email' => $data['email'] ?? null,
+            'doctor_id' => $data['doctor_id'] ?? null,
+            'origin_id' => $data['origin_id'] ?? null,
+        ];
     }
 }
