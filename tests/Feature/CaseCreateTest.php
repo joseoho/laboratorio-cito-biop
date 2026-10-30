@@ -162,9 +162,10 @@ class CaseCreateTest extends TestCase
             'cyto_description' => 'Extendido con células escamosas maduras.',
             'cyto_diagnosis' => 'Negativo para lesión intraepitelial.',
             'quality' => 'Muestra adecuada.',
-        ])->assertRedirect(route('cases.edit', $case));
+        ])->assertRedirect(route('cases.show', $case));
 
-        $this->assertSame(CaseStatus::InProgress, $case->fresh()->status);
+        $this->assertSame(CaseStatus::Delivered, $case->fresh()->status);
+        $this->assertNotNull($case->fresh()->completed_at);
         $this->assertSame('Negativo para lesión intraepitelial.', $case->fresh()->cytology->cyto_diagnosis);
     }
 }

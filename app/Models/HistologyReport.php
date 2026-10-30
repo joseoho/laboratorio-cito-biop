@@ -25,14 +25,18 @@ class HistologyReport extends Model
         return $this->belongsTo(ClinicalCase::class, 'case_id');
     }
 
-    /** Campos que deben existir para poder firmar. */
-    public function missingForSignature(): array
+    /**
+     * Campos que definen un informe terminado. Se exigen solo los que el
+     * laboratorio llena de verdad: material 98,7%, macro 99,3% y diagnóstico
+     * microscópico 99%. La descripción microscópica (7% del histórico), el
+     * sitio de la lesión (87%) y el diagnóstico clínico (76%) quedan opcionales.
+     */
+    public function missingForEmission(): array
     {
         return array_keys(array_filter([
+            'Material remitido' => blank($this->material),
             'Descripción macroscópica' => blank($this->macro_description),
-            'Descripción microscópica' => blank($this->micro_description),
             'Diagnóstico microscópico' => blank($this->micro_diagnosis),
-            'Sitio de la lesión' => blank($this->lesion_site),
         ]));
     }
 }

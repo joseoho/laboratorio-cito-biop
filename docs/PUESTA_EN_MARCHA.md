@@ -76,7 +76,45 @@ y eso impedía que una persona tuviera más de un estudio en su vida.
    médico que remite y procedencia. Una cédula `NS`, `SN`, `MENOR`, `S/N`, `?` se guarda
    y se marca como *placeholder* (no se pierde el dato original).
 2. **Estudio** (`/pacientes/{id}/estudios/crear`): tipo (biopsia/citología), número,
-   fecha de recepción, material y diagnóstico clínico.
+   fecha de recepción. El material y el diagnóstico clínico se cargan **días después**,
+   en el editor, junto con macro/micro y el diagnóstico.
+
+## Ciclo de vida y emisión
+
+```
+recibido ──(primer guardado)──► en proceso ──(informe completo)──► ENTREGADO
+                                      ▲                                 │
+                                      └──────(se borra un campo)────────┘
+```
+
+**"Entregado" no significa entregado al paciente**: significa *informe terminado y
+habilitado para imprimir*. Es el mismo criterio con el que la operadora veía activarse
+el botón de imprimir en Access.
+
+| Tipo | Campos exigidos para emitir |
+|---|---|
+| Biopsia | material remitido, descripción macroscópica, diagnóstico microscópico |
+| Citología | descripción citológica, diagnóstico citológico, calidad de la muestra |
+
+Por qué **no** se exigen (medido sobre 91.457 estudios reales):
+
+| Campo | Uso histórico | Consecuencia |
+|---|---|---|
+| Patólogo 1 | 0 de 399 biopsias en 2023 | exigirlo bloquearía todo |
+| Descripción microscópica (biopsia) | 6,9% | es opcional en la práctica |
+| Macro (citología) | 2,3% | casi nunca se usa |
+| Sitio de la lesión | 87% | opcional |
+| Diagnóstico clínico | 76% (bio) / 51% (cit) | opcional |
+
+Otras reglas:
+
+- Al guardar completo: `status = entregado`, `completed_at = ahora`, y **redirige a la
+  ficha del estudio** con la impresión ya activa.
+- Si se borra un campo exigido, el estudio **vuelve a "en proceso"** y se bloquea la impresión.
+- **Casos históricos**: no se revalidan; siguen imprimibles aunque estén "en proceso".
+- La impresión de un estudio nuevo sin emitir redirige al editor con un mensaje claro.
+
+## Pruebas
 
 **Numeración** (`App\Services\CaseNumberGenerator`): el sistema propone el siguiente
 número del año con el formato histórico.
@@ -98,10 +136,11 @@ número del año con el formato histórico.
 php artisan test
 ```
 
-32 pruebas / 79 aserciones: renderizado de las pantallas contra datos reales,
+38 pruebas / 102 aserciones: renderizado de las pantallas contra datos reales,
 búsqueda, alta de pacientes y estudios, numeración (formato, secuencia, unicidad),
-guardado dentro de una transacción con rollback, validación de fechas y cosignante,
-y redirección de invitados.
+emisión del informe (completo → entregado, incompleto → en proceso, bloqueo de
+impresión), guardado con rollback, validación de fechas y cosignante, y redirección
+de invitados.
 
 > `phpunit.xml` fija `APP_URL=http://localhost` a propósito: con un `APP_URL` que
 > incluya subdirectorio (`/laboratorio-cito-biop/public`), el helper de tests
@@ -110,7 +149,7 @@ y redirección de invitados.
 
 ## Pendiente (siguiente iteración)
 
-- Firma: bloquear el paso a `delivered` si faltan campos (`missingForSignature()` ya existe).
+- Auditoría: quién emitió/modificó cada informe (hoy no se registra).
 - Adjuntos (fotos macro/micro) y PDF server-side.
 - Roles y permisos (hoy solo autenticación).
 - Edición de pacientes y estudios ya creados.

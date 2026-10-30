@@ -39,8 +39,11 @@ class CytologyReport extends Model
             || ($this->parabasal ?? 0) > 0;
     }
 
-    /** Campos que deben existir para poder firmar. */
-    public function missingForSignature(): array
+    /**
+     * La descripción macroscópica de citología solo se usa en el 2% del
+     * histórico y el diagnóstico clínico en el 51%: no pueden ser requisito.
+     */
+    public function missingForEmission(): array
     {
         return array_keys(array_filter([
             'Descripción citológica' => blank($this->cyto_description),

@@ -56,6 +56,28 @@ class ClinicalCase extends Model
         return $this->type === CaseType::Biopsy ? $this->histology : $this->cytology;
     }
 
+    /** Campos que faltan para que el informe quede terminado y emitido. */
+    public function missingForEmission(): array
+    {
+        $report = $this->report();
+
+        return $report ? $report->missingForEmission() : ['Informe'];
+    }
+
+    public function isComplete(): bool
+    {
+        return $this->missingForEmission() === [];
+    }
+
+    /**
+     * Solo se imprime lo emitido. Los casos históricos siguen imprimibles
+     * aunque estén "En proceso": no se revalida el pasado.
+     */
+    public function isPrintable(): bool
+    {
+        return $this->status === CaseStatus::Delivered || $this->legacy_source !== null;
+    }
+
     public function isBiopsy(): bool
     {
         return $this->type === CaseType::Biopsy;

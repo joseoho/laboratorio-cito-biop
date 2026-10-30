@@ -44,7 +44,7 @@ class CaseUpdateTest extends TestCase
                 'notes' => $report->notes,
             ]);
 
-            $response->assertRedirect(route('cases.edit', $case));
+            $response->assertRedirect();
 
             $this->assertDatabaseHas('histology_reports', [
                 'case_id' => $case->id,

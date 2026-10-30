@@ -4,7 +4,7 @@
 
 @php($report = $case->report())
 @php($biopsy = $case->isBiopsy())
-@php($missing = $report?->missingForSignature() ?? [])
+@php($missing = $case->missingForEmission())
 @php($macroTemplates = $templates->get(\App\Models\Template::MODULE_MACRO, collect()))
 @php($microTemplates = $templates->get(\App\Models\Template::MODULE_MICRO, collect()))
 @php($dxTemplates = $templates->get(\App\Models\Template::MODULE_DIAGNOSIS, collect()))
@@ -24,6 +24,11 @@
                 <span class="muted small">{{ $case->patient?->display_name }} · Recibo {{ $case->patient?->id }}</span>
             </div>
             <div class="d-flex gap-2">
+                @if ($case->isPrintable())
+                    <a href="{{ route('cases.print', $case) }}" target="_blank" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-print me-1"></i>Imprimir
+                    </a>
+                @endif
                 <a href="{{ route('cases.show', $case) }}" class="btn btn-sm btn-outline-secondary">Cancelar</a>
                 <button type="submit" class="btn btn-sm btn-primary" id="btnSave">
                     <i class="fas fa-save me-1"></i>Guardar informe
@@ -42,10 +47,21 @@
             </div>
         @endif
 
-        @if (count($missing) > 0)
+        @if ($case->status === \App\Enums\CaseStatus::Delivered)
+            <div class="alert alert-success">
+                <i class="fas fa-check me-1"></i>
+                Informe <strong>Entregado</strong>: ya se puede imprimir.
+            </div>
+        @elseif (count($missing) > 0)
             <div class="alert alert-warning">
                 <i class="fas fa-lock me-1"></i>
-                Aún no se puede firmar. Faltan: <strong>{{ implode(', ', $missing) }}</strong>.
+                Al guardar con todos los campos, el estudio pasa a <strong>Entregado</strong> y se habilita la impresión.
+                Falta: <strong>{{ implode(', ', $missing) }}</strong>.
+            </div>
+        @else
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-1"></i>
+                El informe está completo: al guardar quedará <strong>Entregado</strong> y listo para imprimir.
             </div>
         @endif
 

@@ -54,22 +54,6 @@
             </div>
         </div>
 
-        <div class="card mb-3">
-            <div class="card-body">
-                <div class="section-title">Muestra</div>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">Material remitido</label>
-                        <input type="text" name="material" class="form-control" value="{{ old('material') }}">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Diagnóstico clínico</label>
-                        <input type="text" name="clinical_diagnosis" class="form-control" value="{{ old('clinical_diagnosis') }}">
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="d-flex justify-content-between align-items-center">
             <span class="muted small">
                 El número se propone automáticamente (secuencia + año). Puede corregirlo si el laboratorio ya lo asignó.

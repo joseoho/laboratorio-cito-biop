@@ -18,9 +18,13 @@
         <div class="d-flex gap-2">
             <a href="{{ route('cases.index') }}" class="btn btn-sm btn-outline-secondary">Volver</a>
             <a href="{{ route('cases.edit', $case) }}" class="btn btn-sm btn-primary"><i class="fas fa-pen me-1"></i>Editar</a>
-            <a href="{{ route('cases.print', $case) }}" target="_blank" class="btn btn-sm btn-success">
-                <i class="fas fa-print me-1"></i>Imprimir
-            </a>
+            @if ($case->isPrintable())
+                <a href="{{ route('cases.print', $case) }}" target="_blank" class="btn btn-sm btn-success">
+                    <i class="fas fa-print me-1"></i>Imprimir
+                </a>
+            @else
+                <span class="badge text-bg-light border">Complete el informe para imprimir</span>
+            @endif
         </div>
     </div>
 

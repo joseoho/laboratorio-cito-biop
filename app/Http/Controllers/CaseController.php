@@ -177,18 +177,48 @@ class CaseController extends Controller
                 'sent_at' => $data['sent_at'] ?? null,
             ]);
 
-            if ($case->status === CaseStatus::Received) {
-                $case->update(['status' => CaseStatus::InProgress]);
+            // Emisión: el informe terminado pasa a Entregado y habilita la
+            // impresión. Solo aplica a casos nuevos; el histórico no se revalida.
+            if ($case->legacy_source === null) {
+                $case->refresh();
+
+                if ($case->isComplete()) {
+                    $case->update([
+                        'status' => CaseStatus::Delivered,
+                        'completed_at' => $case->completed_at ?? now(),
+                    ]);
+                } else {
+                    $case->update([
+                        'status' => CaseStatus::InProgress,
+                        'completed_at' => null,
+                    ]);
+                }
             }
         });
 
+        $case->refresh();
+
+        if ($case->status === CaseStatus::Delivered) {
+            return redirect()
+                ->route('cases.show', $case)
+                ->with('success', 'Informe completo: el estudio quedó Entregado y ya se puede imprimir.');
+        }
+
+        $missing = $case->missingForEmission();
+
         return redirect()
             ->route('cases.edit', $case)
-            ->with('success', 'Informe guardado.');
+            ->with('warning', 'Guardado como borrador. Falta para poder imprimir: ' . implode(', ', $missing) . '.');
     }
 
-    public function print(ClinicalCase $case): View
+    public function print(ClinicalCase $case): View|RedirectResponse
     {
+        if (! $case->isPrintable()) {
+            return redirect()
+                ->route('cases.edit', $case)
+                ->with('error', 'El informe aún no está completo. Complete los campos y guarde para habilitar la impresión.');
+        }
+
         $case->load(['patient', 'assignments.pathologist', 'histology', 'cytology']);
 
         return view('cases.print', compact('case'));

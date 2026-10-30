@@ -83,7 +83,11 @@
                         <td class="text-end text-nowrap">
                             <a href="{{ route('cases.show', $case) }}" class="btn btn-sm btn-outline-dark">Ver</a>
                             <a href="{{ route('cases.edit', $case) }}" class="btn btn-sm btn-outline-primary">Editar</a>
-                            <a href="{{ route('cases.print', $case) }}" target="_blank" class="btn btn-sm btn-outline-success">Imprimir</a>
+                            @if ($case->isPrintable())
+                                <a href="{{ route('cases.print', $case) }}" target="_blank" class="btn btn-sm btn-outline-success">Imprimir</a>
+                            @else
+                                <span class="text-muted small" title="Complete el informe para habilitar la impresión">Sin emitir</span>
+                            @endif
                         </td>
                     </tr>
                 @empty
