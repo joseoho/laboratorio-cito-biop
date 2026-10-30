@@ -5,6 +5,7 @@ use App\Http\Controllers\CaseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\QuarantineController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -59,5 +60,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('respaldos', [BackupController::class, 'index'])->name('backups.index');
         Route::post('respaldos', [BackupController::class, 'store'])->name('backups.store');
         Route::get('respaldos/{file}', [BackupController::class, 'download'])->name('backups.download');
+
+        Route::get('usuarios', [UserController::class, 'index'])->name('users.index');
+        Route::get('usuarios/crear', [UserController::class, 'create'])->name('users.create');
+        Route::post('usuarios', [UserController::class, 'store'])->name('users.store');
+        Route::get('usuarios/{user}/editar', [UserController::class, 'edit'])->whereNumber('user')->name('users.edit');
+        Route::put('usuarios/{user}', [UserController::class, 'update'])->whereNumber('user')->name('users.update');
+        Route::delete('usuarios/{user}', [UserController::class, 'destroy'])->whereNumber('user')->name('users.destroy');
     });
 });

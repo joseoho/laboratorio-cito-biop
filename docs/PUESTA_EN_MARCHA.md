@@ -175,11 +175,31 @@ El laboratorio usa **dos roles**:
 | `admin` | todo: operación diaria, reabrir informes emitidos, cuarentena y respaldos |
 | `operador` | alta y edición de pacientes y estudios, informes, emisión, impresión y reportes |
 
-El registro público está deshabilitado. Los usuarios se crean por consola:
+El registro público está deshabilitado. Los usuarios se administran desde la app
+(ver abajo) o por consola:
 
 ```powershell
 php artisan tinker --execute="App\Models\User::create(['name'=>'Operador','email'=>'operador@laboratorio.local','password'=>bcrypt('cambiar123'),'role'=>'operador','email_verified_at'=>now()]);"
 ```
+
+## Usuarios
+
+`/usuarios` — solo administradores.
+
+| Acción | Ruta | Notas |
+|---|---|---|
+| Listar y buscar | `/usuarios` | por nombre o correo; filtro por rol |
+| Crear | `/usuarios/crear` | nombre, correo, rol y contraseña (mín. 8, confirmada) |
+| Editar | `/usuarios/{id}/editar` | la contraseña es opcional: vacía = no cambia |
+| Eliminar | botón en el listado | con confirmación |
+
+Protecciones:
+
+- No se puede **eliminar el propio usuario**.
+- No se puede **cambiar el propio rol** (evita quedarse sin acceso de administrador).
+- No se puede eliminar al **último administrador**.
+- Correo único; la contraseña se guarda con hash.
+- Todo queda auditado: `user.created`, `user.updated`, `user.deleted`.
 
 ## PDF archivado
 
@@ -244,11 +264,11 @@ número del año con el formato histórico.
 php artisan test
 ```
 
-75 pruebas / 203 aserciones: renderizado de pantallas contra datos reales, búsqueda,
+85 pruebas / 241 aserciones: renderizado de pantallas contra datos reales, búsqueda,
 alta y **edición** de pacientes y estudios, numeración (formato, secuencia, unicidad),
 emisión del informe, **PDF archivado con hash**, **bloqueo y reapertura**, **roles**,
-**auditoría**, **reportes**, **cuarentena**, **respaldos**, validación de fechas y
-cosignante, y redirección de invitados.
+**gestión de usuarios**, **auditoría**, **reportes**, **cuarentena**, **respaldos**,
+validación de fechas y cosignante, y redirección de invitados.
 
 > `phpunit.xml` fija `APP_URL=http://localhost` a propósito: con un `APP_URL` que
 > incluya subdirectorio (`/laboratorio-cito-biop/public`), el helper de tests

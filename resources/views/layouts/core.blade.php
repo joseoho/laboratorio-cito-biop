@@ -44,6 +44,7 @@
                 @if (auth()->user()->isAdmin())
                     <a class="nav-link text-white-50" href="{{ route('quarantine.index') }}">Cuarentena</a>
                     <a class="nav-link text-white-50" href="{{ route('backups.index') }}">Respaldos</a>
+                    <a class="nav-link text-white-50" href="{{ route('users.index') }}">Usuarios</a>
                 @endif
                 <span class="text-white-50 small">{{ auth()->user()->name }}</span>
                 <form method="POST" action="{{ route('logout') }}">
