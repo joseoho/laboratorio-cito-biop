@@ -35,6 +35,9 @@
                 @if (auth()->user()->canViewReports())
                     <a class="nav-link text-white-50" href="{{ route('reports.index') }}">Reportes</a>
                 @endif
+                @if (auth()->user()->isAdmin())
+                    <a class="nav-link text-white-50" href="{{ route('quarantine.index') }}">Cuarentena</a>
+                @endif
                 <span class="text-white-50 small">{{ auth()->user()->name }}</span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CaseController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\QuarantineController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -47,8 +48,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('estudios/{case}/datos', [CaseController::class, 'updateHeader'])->whereNumber('case')->name('cases.header.update');
     });
 
-    // Solo administración: reabrir un informe emitido
+    // Solo administración: reabrir un informe emitido y resolver cuarentena
     Route::middleware('role:admin')->group(function () {
         Route::post('estudios/{case}/reabrir', [CaseController::class, 'reopen'])->whereNumber('case')->name('cases.reopen');
+
+        Route::get('cuarentena', [QuarantineController::class, 'index'])->name('quarantine.index');
+        Route::post('cuarentena/{quarantine}/resolver', [QuarantineController::class, 'resolve'])
+            ->whereNumber('quarantine')
+            ->name('quarantine.resolve');
     });
 });

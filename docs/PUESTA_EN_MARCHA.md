@@ -82,6 +82,31 @@ password: cambiar123
 Todas las cifras salen de `cases.received_at`; el histórico de Access entra completo.
 La página se imprime con el botón del navegador (`window.print()`).
 
+## Cuarentena
+
+`/cuarentena` (solo admin) — las **4.245 anomalías** que el ETL no corrigió, en 12 grupos:
+
+| Grupo | Casos | Qué decidir |
+|---|---:|---|
+| `DUPLICADO_NC` | 1.496 | número de citología repetido |
+| `CI_PLACEHOLDER` | 1.096 | cédula `NS`/`SN`/`MENOR`: completar o dejar |
+| `SIN_ESTUDIO` | 835 | paciente sin biopsia ni citología |
+| `DUPLICADO_NB` | 271 | número de biopsia repetido |
+| `INFORME_SIN_NUMERO` | 200 | informe emitido sin número |
+| `NUMERO_SIN_INFORME` | 186 | número asignado sin informe |
+| `FECHA_CORRUPTA` | 97 | años 0222/5202/9202 |
+| `SEXO_INVALIDO` | 36 | valores `A`, `?`, `}` |
+| `NUMERO_FUERA_PATRON` | 19 | no cumple secuencia+año |
+| `HUERFANO_*` | 6 | informe sin paciente |
+| `AMBOS_NB_NC` | 3 | paciente con biopsia y citología juntas |
+
+Cada fila se resuelve como **Revisado** (con nota) o **Ignorar**; queda registrado en
+auditoría (`quarantine.reviewed` / `quarantine.ignored`) con el usuario y la fecha.
+Cuando la clave corresponde a un paciente del legado, la fila enlaza a su ficha.
+
+El módulo **no corrige solo**: no renumera, no fusiona pacientes ni inventa valores.
+La decisión es del laboratorio y queda auditada.
+
 ## Alta de pacientes y estudios
 
 El alta está **separada** a propósito: en Access el paciente y el estudio eran la misma fila,
@@ -206,10 +231,10 @@ número del año con el formato histórico.
 php artisan test
 ```
 
-63 pruebas / 167 aserciones: renderizado de pantallas contra datos reales, búsqueda,
+68 pruebas / 180 aserciones: renderizado de pantallas contra datos reales, búsqueda,
 alta y **edición** de pacientes y estudios, numeración (formato, secuencia, unicidad),
 emisión del informe, **bloqueo y reapertura**, **roles**, **auditoría**, **reportes**,
-respaldo, validación de fechas y cosignante, y redirección de invitados.
+**cuarentena**, respaldo, validación de fechas y cosignante, y redirección de invitados.
 
 > `phpunit.xml` fija `APP_URL=http://localhost` a propósito: con un `APP_URL` que
 > incluya subdirectorio (`/laboratorio-cito-biop/public`), el helper de tests
@@ -220,5 +245,5 @@ respaldo, validación de fechas y cosignante, y redirección de invitados.
 
 - Cargar el tramo 2023-09 → 2026-09 cuando llegue el archivo del laboratorio.
 - Adjuntos (fotos macro/micro) y PDF server-side.
-- Pantalla de cuarentena (4.245 casos por resolver).
+- CI en GitHub (requiere primero tests independientes de los datos reales).
 - Facturación: **fuera de alcance**, no se migra; se construirá con el modelo nuevo.
