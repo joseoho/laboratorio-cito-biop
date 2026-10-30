@@ -82,7 +82,9 @@
                         <td class="small">{{ $case->assignments->pluck('pathologist_name')->filter()->join(', ') ?: '—' }}</td>
                         <td class="text-end text-nowrap">
                             <a href="{{ route('cases.show', $case) }}" class="btn btn-sm btn-outline-dark">Ver</a>
-                            <a href="{{ route('cases.edit', $case) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                            @if (auth()->user()->canEditReports())
+                                <a href="{{ route('cases.edit', $case) }}" class="btn btn-sm btn-outline-primary">Editar</a>
+                            @endif
                             @if ($case->isPrintable())
                                 <a href="{{ route('cases.print', $case) }}" target="_blank" class="btn btn-sm btn-outline-success">Imprimir</a>
                             @else

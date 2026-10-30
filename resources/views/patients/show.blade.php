@@ -9,12 +9,14 @@
             <span class="muted small">Recibo {{ $patient->id }} · {{ $patient->cases->count() }} estudio(s)</span>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('patients.edit', $patient) }}" class="btn btn-sm btn-outline-primary">
-                <i class="fas fa-pen me-1"></i>Editar
-            </a>
-            <a href="{{ route('cases.create', $patient) }}" class="btn btn-sm btn-primary">
-                <i class="fas fa-plus me-1"></i>Nuevo estudio
-            </a>
+            @if (auth()->user()->canManagePatients())
+                <a href="{{ route('patients.edit', $patient) }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-pen me-1"></i>Editar
+                </a>
+                <a href="{{ route('cases.create', $patient) }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus me-1"></i>Nuevo estudio
+                </a>
+            @endif
             <a href="{{ route('patients.index') }}" class="btn btn-sm btn-outline-secondary">
                 <i class="fas fa-arrow-left me-1"></i>Volver
             </a>

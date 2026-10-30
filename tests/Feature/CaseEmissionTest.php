@@ -140,7 +140,7 @@ class CaseEmissionTest extends TestCase
             ->assertOk();
     }
 
-    public function test_removing_a_required_field_reverts_to_in_progress(): void
+    public function test_delivered_report_is_locked_and_admin_can_reopen(): void
     {
         $case = $this->biopsyCase($this->patient(), [
             'material' => 'Fragmento de piel',
@@ -156,7 +156,32 @@ class CaseEmissionTest extends TestCase
 
         $this->assertSame(CaseStatus::Delivered, $case->fresh()->status);
 
-        // El operador borra el diagnóstico: deja de estar emitido.
+        // Emitido: cualquier edición se rechaza.
+        $this->actingAs($this->user())
+            ->put('/estudios/' . $case->id, [
+                'material' => 'Fragmento de piel',
+                'macro_description' => 'Lesión de 1 cm.',
+                'micro_diagnosis' => '',
+            ])
+            ->assertRedirect(route('cases.show', $case))
+            ->assertSessionHas('error');
+
+        $this->assertSame(CaseStatus::Delivered, $case->fresh()->status);
+
+        // Un administrador lo reabre y queda auditado.
+        $this->actingAs($this->user())
+            ->post('/estudios/' . $case->id . '/reabrir')
+            ->assertRedirect(route('cases.edit', $case));
+
+        $case->refresh();
+        $this->assertSame(CaseStatus::InProgress, $case->status);
+        $this->assertNull($case->completed_at);
+        $this->assertDatabaseHas('audit_events', [
+            'action' => 'case.reopened',
+            'subject_id' => $case->id,
+        ]);
+
+        // Ya reabierto, se puede guardar incompleto.
         $this->actingAs($this->user())->put('/estudios/' . $case->id, [
             'material' => 'Fragmento de piel',
             'macro_description' => 'Lesión de 1 cm.',
@@ -165,7 +190,7 @@ class CaseEmissionTest extends TestCase
 
         $case->refresh();
         $this->assertSame(CaseStatus::InProgress, $case->status);
-        $this->assertNull($case->completed_at);
         $this->assertFalse($case->isPrintable());
+        $this->assertNotSame([], $case->missingForEmission());
     }
 }

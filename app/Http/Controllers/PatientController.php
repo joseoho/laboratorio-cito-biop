@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Doctor;
 use App\Models\Origin;
 use App\Models\Patient;
+use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -36,9 +37,11 @@ class PatientController extends Controller
         return view('patients.create', $this->catalogs());
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditLogger $audit): RedirectResponse
     {
         $patient = Patient::create($this->payload($this->validateData($request)));
+
+        $audit->log('patient.created', $patient, ['full_name' => $patient->full_name]);
 
         return redirect()
             ->route('patients.show', $patient)
@@ -68,9 +71,11 @@ class PatientController extends Controller
         ));
     }
 
-    public function update(Request $request, Patient $patient): RedirectResponse
+    public function update(Request $request, Patient $patient, AuditLogger $audit): RedirectResponse
     {
         $patient->update($this->payload($this->validateData($request)));
+
+        $audit->log('patient.updated', $patient, $patient->getChanges());
 
         return redirect()
             ->route('patients.show', $patient)

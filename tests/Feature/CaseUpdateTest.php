@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\CaseStatus;
 use App\Models\ClinicalCase;
 use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase;
@@ -26,7 +27,11 @@ class CaseUpdateTest extends TestCase
 
     public function test_update_report_persists_inside_transaction(): void
     {
-        $case = ClinicalCase::query()->where('type', 'biopsy')->has('histology')->firstOrFail();
+        $case = ClinicalCase::query()
+            ->where('type', 'biopsy')
+            ->where('status', CaseStatus::InProgress)
+            ->has('histology')
+            ->firstOrFail();
         $report = $case->histology;
 
         DB::beginTransaction();

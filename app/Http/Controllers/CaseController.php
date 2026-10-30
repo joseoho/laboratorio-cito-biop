@@ -6,12 +6,14 @@ use App\Enums\CaseStatus;
 use App\Enums\CaseType;
 use App\Http\Requests\StoreCaseRequest;
 use App\Models\Annex;
+use App\Models\AuditEvent;
 use App\Models\CaseAssignment;
 use App\Models\ClinicalCase;
 use App\Models\CytologyDiagnosis;
 use App\Models\Pathologist;
 use App\Models\Patient;
 use App\Models\Template;
+use App\Services\AuditLogger;
 use App\Services\CaseCreator;
 use App\Services\CaseNumberGenerator;
 use Illuminate\Http\RedirectResponse;
@@ -60,8 +62,12 @@ class CaseController extends Controller
         ]);
     }
 
-    public function store(StoreCaseRequest $request, Patient $patient, CaseCreator $creator): RedirectResponse
-    {
+    public function store(
+        StoreCaseRequest $request,
+        Patient $patient,
+        CaseCreator $creator,
+        AuditLogger $audit
+    ): RedirectResponse {
         $type = CaseType::from((string) $request->input('type'));
 
         $case = $creator->create(
@@ -73,6 +79,11 @@ class CaseController extends Controller
             $request->input('clinical_diagnosis') ?: null,
         );
 
+        $audit->log('case.created', $case, [
+            'code' => $case->case_code,
+            'type' => $case->type->value,
+        ]);
+
         return redirect()
             ->route('cases.edit', $case)
             ->with('success', 'Estudio ' . $case->codeLabel() . ' creado. Complete el informe.');
@@ -82,7 +93,15 @@ class CaseController extends Controller
     {
         $case->load(['patient', 'assignments.pathologist', 'histology', 'cytology']);
 
-        return view('cases.show', compact('case'));
+        $history = AuditEvent::query()
+            ->where('subject_type', ClinicalCase::class)
+            ->where('subject_id', $case->id)
+            ->with('actor:id,name')
+            ->orderByDesc('id')
+            ->limit(20)
+            ->get();
+
+        return view('cases.show', compact('case', 'history'));
     }
 
     public function edit(ClinicalCase $case): View
@@ -103,11 +122,24 @@ class CaseController extends Controller
         $annexes = Annex::query()->orderBy('sort_order')->orderBy('code')->get();
         $pathologists = Pathologist::query()->orderBy('name')->get();
 
-        return view('cases.edit', compact('case', 'templates', 'diagnoses', 'annexes', 'pathologists'));
+        return view('cases.edit', [
+            'case' => $case,
+            'templates' => $templates,
+            'diagnoses' => $diagnoses,
+            'annexes' => $annexes,
+            'pathologists' => $pathologists,
+            'locked' => $case->status === CaseStatus::Delivered,
+        ]);
     }
 
-    public function update(Request $request, ClinicalCase $case): RedirectResponse
+    public function update(Request $request, ClinicalCase $case, AuditLogger $audit): RedirectResponse
     {
+        if ($case->status === CaseStatus::Delivered) {
+            return redirect()
+                ->route('cases.show', $case)
+                ->with('error', 'El informe está emitido y no se puede modificar. Un administrador debe reabrirlo.');
+        }
+
         $isBiopsy = $case->isBiopsy();
 
         $data = $request->validate([
@@ -131,7 +163,7 @@ class CaseController extends Controller
             'pathologist_2' => ['nullable', 'string', 'max:100', Rule::notIn([$request->input('pathologist_1')])],
         ]);
 
-        DB::transaction(function () use ($case, $data, $isBiopsy) {
+        DB::transaction(function () use ($case, $data, $isBiopsy, $audit) {
             $report = $case->report();
 
             if (! $report) {
@@ -182,6 +214,7 @@ class CaseController extends Controller
             // impresión. Solo aplica a casos nuevos; el histórico no se revalida.
             if ($case->legacy_source === null) {
                 $case->refresh();
+                $wasDelivered = $case->status === CaseStatus::Delivered;
 
                 if ($case->isComplete()) {
                     $case->update([
@@ -194,7 +227,17 @@ class CaseController extends Controller
                         'completed_at' => null,
                     ]);
                 }
+
+                $nowDelivered = $case->status === CaseStatus::Delivered;
+
+                if ($nowDelivered && ! $wasDelivered) {
+                    $audit->log('case.emitted', $case, ['code' => $case->case_code]);
+                } elseif (! $nowDelivered && $wasDelivered) {
+                    $audit->log('case.reverted', $case, ['missing' => $case->missingForEmission()]);
+                }
             }
+
+            $audit->log('case.updated', $case, ['fields' => array_keys($payload)]);
         });
 
         $case->refresh();
@@ -223,8 +266,12 @@ class CaseController extends Controller
      * Corrige número y fecha de recepción. El tipo NO se cambia: el informe
      * ya tiene la estructura del tipo original.
      */
-    public function updateHeader(Request $request, ClinicalCase $case, CaseNumberGenerator $numbers): RedirectResponse
-    {
+    public function updateHeader(
+        Request $request,
+        ClinicalCase $case,
+        CaseNumberGenerator $numbers,
+        AuditLogger $audit
+    ): RedirectResponse {
         $data = $request->validate([
             'case_code' => [
                 'required',
@@ -244,6 +291,8 @@ class CaseController extends Controller
             ]);
         }
 
+        $before = $case->case_code;
+
         $case->update([
             'case_code' => trim((string) $data['case_code']),
             'sequence_no' => $parsed[0],
@@ -251,12 +300,33 @@ class CaseController extends Controller
             'received_at' => $data['received_at'] ?: $case->received_at,
         ]);
 
+        $audit->log('case.header_updated', $case, [
+            'from' => $before,
+            'to' => $case->case_code,
+        ]);
+
         return redirect()
             ->route('cases.show', $case)
             ->with('success', 'Datos del estudio actualizados.');
     }
 
-    public function print(ClinicalCase $case): View|RedirectResponse
+    public function reopen(ClinicalCase $case, AuditLogger $audit): RedirectResponse
+    {
+        abort_unless($case->status === CaseStatus::Delivered, 422, 'El estudio no está emitido.');
+
+        $case->update([
+            'status' => CaseStatus::InProgress,
+            'completed_at' => null,
+        ]);
+
+        $audit->log('case.reopened', $case, ['code' => $case->case_code]);
+
+        return redirect()
+            ->route('cases.edit', $case)
+            ->with('success', 'Estudio reabierto para corrección. Al guardar completo vuelve a quedar Entregado.');
+    }
+
+    public function print(ClinicalCase $case, AuditLogger $audit): View|RedirectResponse
     {
         if (! $case->isPrintable()) {
             return redirect()
@@ -265,6 +335,8 @@ class CaseController extends Controller
         }
 
         $case->load(['patient', 'assignments.pathologist', 'histology', 'cytology']);
+
+        $audit->log('case.printed', $case, ['code' => $case->case_code]);
 
         return view('cases.print', compact('case'));
     }

@@ -110,12 +110,67 @@ Otras reglas:
 
 - Al guardar completo: `status = entregado`, `completed_at = ahora`, y **redirige a la
   ficha del estudio** con la impresión ya activa.
-- Si se borra un campo exigido, el estudio **vuelve a "en proceso"** y se bloquea la impresión.
+- Un informe **emitido queda bloqueado**: no se puede editar. Solo un administrador
+  puede **reabrirlo**, y la reapertura queda auditada.
 - **Casos históricos**: no se revalidan; siguen imprimibles aunque estén "en proceso".
 - La impresión de un estudio nuevo sin emitir redirige al editor con un mensaje claro.
 
-## Pruebas
+## Edición
 
+| Qué | Ruta | Quién |
+|---|---|---|
+| Paciente (datos, contacto, médico, procedencia) | `/pacientes/{id}/editar` | admin, recepción |
+| Cabecera del estudio (número y fecha) | `/estudios/{id}/datos` | admin, patólogo |
+| Informe | `/estudios/{id}/editar` | admin, patólogo |
+
+El **tipo** del estudio no se puede cambiar: el informe ya tiene esa estructura.
+Corregir el número recalcula secuencia y año, y valida que no exista otro igual.
+
+## Roles
+
+| Rol | Puede |
+|---|---|
+| `admin` | todo, incluido reabrir informes emitidos |
+| `recepcion` | alta y edición de pacientes y estudios; no escribe informes |
+| `patologo` | escribe y corrige informes y datos del estudio; no da de alta pacientes |
+| `auditor` | solo lectura |
+
+El registro público está deshabilitado. Los usuarios se crean por consola:
+
+```powershell
+php artisan tinker --execute="App\Models\User::create(['name'=>'Recepción','email'=>'recepcion@laboratorio.local','password'=>bcrypt('cambiar123'),'role'=>'recepcion','email_verified_at'=>now()]);"
+```
+
+## Auditoría
+
+Cada acción importante queda en `audit_events` (append-only):
+
+`patient.created`, `patient.updated`, `case.created`, `case.updated`, `case.emitted`,
+`case.reverted`, `case.header_updated`, `case.reopened`, `case.printed`.
+
+Se guarda actor, acción, registro afectado, cambios, IP y user-agent. El historial se
+ve al final de la ficha del estudio (últimos 20 eventos).
+
+## Respaldo
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/backup_db.ps1
+```
+
+Genera `storage/backups/lapt_core-AAAAMMDD-HHMMSS.sql.gz` (≈7,5 MB, 2 s), conserva los
+últimos 14 y verifica que no salga vacío. Para programarlo a diario a las 20:00:
+
+```powershell
+schtasks /Create /TN "Laboratorio backup" /SC DAILY /ST 20:00 /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\xampp\htdocs\laboratorio-cito-biop\scripts\backup_db.ps1"
+```
+
+Restaurar:
+
+```powershell
+gunzip -c storage\backups\lapt_core-XXXX.sql.gz | C:\xampp\mysql\bin\mysql.exe -u root lapt_core
+```
+
+## Numeración
 **Numeración** (`App\Services\CaseNumberGenerator`): el sistema propone el siguiente
 número del año con el formato histórico.
 
@@ -136,11 +191,10 @@ número del año con el formato histórico.
 php artisan test
 ```
 
-38 pruebas / 102 aserciones: renderizado de las pantallas contra datos reales,
-búsqueda, alta de pacientes y estudios, numeración (formato, secuencia, unicidad),
-emisión del informe (completo → entregado, incompleto → en proceso, bloqueo de
-impresión), guardado con rollback, validación de fechas y cosignante, y redirección
-de invitados.
+56 pruebas / 155 aserciones: renderizado de pantallas contra datos reales, búsqueda,
+alta y **edición** de pacientes y estudios, numeración (formato, secuencia, unicidad),
+emisión del informe, **bloqueo y reapertura**, **roles**, **auditoría**, respaldo,
+validación de fechas y cosignante, y redirección de invitados.
 
 > `phpunit.xml` fija `APP_URL=http://localhost` a propósito: con un `APP_URL` que
 > incluya subdirectorio (`/laboratorio-cito-biop/public`), el helper de tests
@@ -149,8 +203,7 @@ de invitados.
 
 ## Pendiente (siguiente iteración)
 
-- Auditoría: quién emitió/modificó cada informe (hoy no se registra).
+- Cargar el tramo 2023-09 → 2026-09 cuando llegue el archivo del laboratorio.
 - Adjuntos (fotos macro/micro) y PDF server-side.
-- Roles y permisos (hoy solo autenticación).
-- Edición de pacientes y estudios ya creados.
+- Reportes por período y productividad; pantalla de cuarentena.
 - Facturación: **fuera de alcance**, no se migra; se construirá con el modelo nuevo.

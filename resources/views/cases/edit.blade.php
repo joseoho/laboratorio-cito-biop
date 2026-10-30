@@ -33,11 +33,31 @@
                     <i class="fas fa-hashtag me-1"></i>Datos
                 </a>
                 <a href="{{ route('cases.show', $case) }}" class="btn btn-sm btn-outline-secondary">Cancelar</a>
-                <button type="submit" class="btn btn-sm btn-primary" id="btnSave">
-                    <i class="fas fa-save me-1"></i>Guardar informe
-                </button>
+                @unless ($locked)
+                    <button type="submit" class="btn btn-sm btn-primary" id="btnSave">
+                        <i class="fas fa-save me-1"></i>Guardar informe
+                    </button>
+                @endunless
             </div>
         </div>
+
+        @if ($locked)
+            <div class="alert alert-secondary d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="fas fa-lock me-1"></i>
+                    Informe <strong>emitido</strong>: solo lectura. Para corregirlo hay que reabrirlo.
+                </span>
+                @if (auth()->user()->isAdmin())
+                    <form method="POST" action="{{ route('cases.reopen', $case) }}" class="d-inline">
+                        @csrf
+                        <button class="btn btn-sm btn-warning"
+                                onclick="return confirm('¿Reabrir el informe emitido para corregirlo?')">
+                            Reabrir para corregir
+                        </button>
+                    </form>
+                @endif
+            </div>
+        @endif
 
         @if ($errors->any())
             <div class="alert alert-danger">

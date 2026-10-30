@@ -15,22 +15,35 @@ Route::get('/home', fn () => redirect()->route('patients.index'))
     ->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('pacientes', [PatientController::class, 'index'])->name('patients.index');
-    Route::get('pacientes/crear', [PatientController::class, 'create'])->name('patients.create');
-    Route::post('pacientes', [PatientController::class, 'store'])->name('patients.store');
-    Route::get('pacientes/{patient}', [PatientController::class, 'show'])->name('patients.show');
-    Route::get('pacientes/{patient}/editar', [PatientController::class, 'edit'])->name('patients.edit');
-    Route::put('pacientes/{patient}', [PatientController::class, 'update'])->name('patients.update');
+    // Recepción: alta y corrección de pacientes y estudios (antes de las rutas con {patient})
+    Route::middleware('role:admin,recepcion')->group(function () {
+        Route::get('pacientes/crear', [PatientController::class, 'create'])->name('patients.create');
+        Route::post('pacientes', [PatientController::class, 'store'])->name('patients.store');
+        Route::get('pacientes/{patient}/editar', [PatientController::class, 'edit'])->whereNumber('patient')->name('patients.edit');
+        Route::put('pacientes/{patient}', [PatientController::class, 'update'])->whereNumber('patient')->name('patients.update');
 
-    // Estudios
-    Route::get('pacientes/{patient}/estudios/crear', [CaseController::class, 'create'])->name('cases.create');
-    Route::post('pacientes/{patient}/estudios', [CaseController::class, 'store'])->name('cases.store');
+        Route::get('pacientes/{patient}/estudios/crear', [CaseController::class, 'create'])->whereNumber('patient')->name('cases.create');
+        Route::post('pacientes/{patient}/estudios', [CaseController::class, 'store'])->whereNumber('patient')->name('cases.store');
+    });
+
+    // Lectura: cualquier usuario autenticado (incluye auditor)
+    Route::get('pacientes', [PatientController::class, 'index'])->name('patients.index');
+    Route::get('pacientes/{patient}', [PatientController::class, 'show'])->whereNumber('patient')->name('patients.show');
 
     Route::get('estudios', [CaseController::class, 'index'])->name('cases.index');
-    Route::get('estudios/{case}', [CaseController::class, 'show'])->name('cases.show');
-    Route::get('estudios/{case}/editar', [CaseController::class, 'edit'])->name('cases.edit');
-    Route::put('estudios/{case}', [CaseController::class, 'update'])->name('cases.update');
-    Route::get('estudios/{case}/datos', [CaseController::class, 'editHeader'])->name('cases.header');
-    Route::put('estudios/{case}/datos', [CaseController::class, 'updateHeader'])->name('cases.header.update');
-    Route::get('estudios/{case}/imprimir', [CaseController::class, 'print'])->name('cases.print');
+    Route::get('estudios/{case}', [CaseController::class, 'show'])->whereNumber('case')->name('cases.show');
+    Route::get('estudios/{case}/imprimir', [CaseController::class, 'print'])->whereNumber('case')->name('cases.print');
+
+    // Patólogo: escribe y corrige informes y datos del estudio
+    Route::middleware('role:admin,patologo')->group(function () {
+        Route::get('estudios/{case}/editar', [CaseController::class, 'edit'])->whereNumber('case')->name('cases.edit');
+        Route::put('estudios/{case}', [CaseController::class, 'update'])->whereNumber('case')->name('cases.update');
+        Route::get('estudios/{case}/datos', [CaseController::class, 'editHeader'])->whereNumber('case')->name('cases.header');
+        Route::put('estudios/{case}/datos', [CaseController::class, 'updateHeader'])->whereNumber('case')->name('cases.header.update');
+    });
+
+    // Solo administración: reabrir un informe emitido
+    Route::middleware('role:admin')->group(function () {
+        Route::post('estudios/{case}/reabrir', [CaseController::class, 'reopen'])->whereNumber('case')->name('cases.reopen');
+    });
 });

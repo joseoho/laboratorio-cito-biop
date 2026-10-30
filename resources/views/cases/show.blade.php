@@ -17,10 +17,20 @@
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('cases.index') }}" class="btn btn-sm btn-outline-secondary">Volver</a>
-            <a href="{{ route('cases.header', $case) }}" class="btn btn-sm btn-outline-secondary">
-                <i class="fas fa-hashtag me-1"></i>Datos
-            </a>
-            <a href="{{ route('cases.edit', $case) }}" class="btn btn-sm btn-primary"><i class="fas fa-pen me-1"></i>Editar</a>
+            @if (auth()->user()->canEditReports())
+                <a href="{{ route('cases.header', $case) }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-hashtag me-1"></i>Datos
+                </a>
+                <a href="{{ route('cases.edit', $case) }}" class="btn btn-sm btn-primary"><i class="fas fa-pen me-1"></i>Editar</a>
+            @endif
+            @if ($case->status === \App\Enums\CaseStatus::Delivered && auth()->user()->isAdmin())
+                <form method="POST" action="{{ route('cases.reopen', $case) }}" class="d-inline">
+                    @csrf
+                    <button class="btn btn-sm btn-warning" onclick="return confirm('¿Reabrir el informe emitido para corregirlo?')">
+                        <i class="fas fa-lock-open me-1"></i>Reabrir
+                    </button>
+                </form>
+            @endif
             @if ($case->isPrintable())
                 <a href="{{ route('cases.print', $case) }}" target="_blank" class="btn btn-sm btn-success">
                     <i class="fas fa-print me-1"></i>Imprimir
@@ -112,6 +122,26 @@
                         </div>
                     @empty
                         <p class="muted mb-0">Sin patólogos asignados.</p>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <div class="section-title">Historial</div>
+                    @forelse ($history as $event)
+                        <div class="d-flex justify-content-between border-bottom py-1 small">
+                            <span>
+                                <strong>{{ $event->action }}</strong>
+                                · {{ $event->actor?->name ?? 'sistema' }}
+                                @if (! empty($event->changes['from']) || ! empty($event->changes['to']))
+                                    <span class="muted">({{ $event->changes['from'] ?? '—' }} → {{ $event->changes['to'] ?? '—' }})</span>
+                                @endif
+                            </span>
+                            <span class="muted">{{ $event->created_at?->format('d/m/Y H:i') }}</span>
+                        </div>
+                    @empty
+                        <p class="muted mb-0">Sin eventos registrados.</p>
                     @endforelse
                 </div>
             </div>

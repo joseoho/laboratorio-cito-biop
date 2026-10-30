@@ -14,9 +14,11 @@
                     <i class="fas fa-times me-1"></i>Limpiar búsqueda
                 </a>
             @endif
-            <a href="{{ route('patients.create') }}" class="btn btn-sm btn-primary">
-                <i class="fas fa-plus me-1"></i>Nuevo paciente
-            </a>
+            @if (auth()->user()->canManagePatients())
+                <a href="{{ route('patients.create') }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus me-1"></i>Nuevo paciente
+                </a>
+            @endif
         </div>
     </div>
 
