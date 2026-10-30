@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CaseController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\QuarantineController;
@@ -17,8 +18,8 @@ Route::get('/home', fn () => redirect()->route('patients.index'))
     ->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Recepción: alta y corrección de pacientes y estudios (antes de las rutas con {patient})
-    Route::middleware('role:admin,recepcion')->group(function () {
+    // Operación diaria: alta, corrección e informes (antes de las rutas con {patient})
+    Route::middleware('role:admin,operador')->group(function () {
         Route::get('pacientes/crear', [PatientController::class, 'create'])->name('patients.create');
         Route::post('pacientes', [PatientController::class, 'store'])->name('patients.store');
         Route::get('pacientes/{patient}/editar', [PatientController::class, 'edit'])->whereNumber('patient')->name('patients.edit');
@@ -26,29 +27,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('pacientes/{patient}/estudios/crear', [CaseController::class, 'create'])->whereNumber('patient')->name('cases.create');
         Route::post('pacientes/{patient}/estudios', [CaseController::class, 'store'])->whereNumber('patient')->name('cases.store');
-    });
 
-    // Lectura: cualquier usuario autenticado (incluye auditor)
-    Route::get('pacientes', [PatientController::class, 'index'])->name('patients.index');
-    Route::get('pacientes/{patient}', [PatientController::class, 'show'])->whereNumber('patient')->name('patients.show');
-
-    Route::get('estudios', [CaseController::class, 'index'])->name('cases.index');
-    Route::get('estudios/{case}', [CaseController::class, 'show'])->whereNumber('case')->name('cases.show');
-    Route::get('estudios/{case}/imprimir', [CaseController::class, 'print'])->whereNumber('case')->name('cases.print');
-
-    Route::get('reportes', [ReportController::class, 'index'])
-        ->middleware('role:admin,patologo,auditor')
-        ->name('reports.index');
-
-    // Patólogo: escribe y corrige informes y datos del estudio
-    Route::middleware('role:admin,patologo')->group(function () {
         Route::get('estudios/{case}/editar', [CaseController::class, 'edit'])->whereNumber('case')->name('cases.edit');
         Route::put('estudios/{case}', [CaseController::class, 'update'])->whereNumber('case')->name('cases.update');
         Route::get('estudios/{case}/datos', [CaseController::class, 'editHeader'])->whereNumber('case')->name('cases.header');
         Route::put('estudios/{case}/datos', [CaseController::class, 'updateHeader'])->whereNumber('case')->name('cases.header.update');
     });
 
-    // Solo administración: reabrir un informe emitido y resolver cuarentena
+    // Lectura
+    Route::get('pacientes', [PatientController::class, 'index'])->name('patients.index');
+    Route::get('pacientes/{patient}', [PatientController::class, 'show'])->whereNumber('patient')->name('patients.show');
+
+    Route::get('estudios', [CaseController::class, 'index'])->name('cases.index');
+    Route::get('estudios/{case}', [CaseController::class, 'show'])->whereNumber('case')->name('cases.show');
+    Route::get('estudios/{case}/imprimir', [CaseController::class, 'print'])->whereNumber('case')->name('cases.print');
+    Route::get('estudios/{case}/pdf', [CaseController::class, 'downloadPdf'])->whereNumber('case')->name('cases.pdf');
+
+    Route::get('reportes', [ReportController::class, 'index'])
+        ->middleware('role:admin,operador')
+        ->name('reports.index');
+
+    // Solo administración: reabrir emitidos, cuarentena y respaldos
     Route::middleware('role:admin')->group(function () {
         Route::post('estudios/{case}/reabrir', [CaseController::class, 'reopen'])->whereNumber('case')->name('cases.reopen');
 
@@ -56,5 +55,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('cuarentena/{quarantine}/resolver', [QuarantineController::class, 'resolve'])
             ->whereNumber('quarantine')
             ->name('quarantine.resolve');
+
+        Route::get('respaldos', [BackupController::class, 'index'])->name('backups.index');
+        Route::post('respaldos', [BackupController::class, 'store'])->name('backups.store');
+        Route::get('respaldos/{file}', [BackupController::class, 'download'])->name('backups.download');
     });
 });

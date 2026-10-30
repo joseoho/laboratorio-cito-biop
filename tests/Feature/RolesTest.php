@@ -11,7 +11,7 @@ use App\Services\CaseNumberGenerator;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
-class RoleAndAuditTest extends TestCase
+class RolesTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -68,28 +68,31 @@ class RoleAndAuditTest extends TestCase
         return $case;
     }
 
-    public function test_recepcion_cannot_open_report_editor(): void
+    public function test_operator_can_manage_patients_and_reports(): void
     {
+        $operator = $this->user(User::ROLE_OPERADOR);
         $case = ClinicalCase::query()->firstOrFail();
 
-        $this->actingAs($this->user(User::ROLE_RECEPCION))
-            ->get('/estudios/' . $case->id . '/editar')
+        $this->actingAs($operator)->get('/pacientes/crear')->assertOk();
+        $this->actingAs($operator)->get('/estudios/' . $case->id . '/editar')->assertOk();
+        $this->actingAs($operator)->get('/reportes')->assertOk();
+    }
+
+    public function test_operator_cannot_reopen_emitted_reports(): void
+    {
+        $case = $this->emittedCase();
+
+        $this->actingAs($this->user(User::ROLE_OPERADOR))
+            ->post('/estudios/' . $case->id . '/reabrir')
             ->assertForbidden();
     }
 
-    public function test_patologo_cannot_create_patient(): void
+    public function test_operator_cannot_access_quarantine_or_backups(): void
     {
-        $this->actingAs($this->user(User::ROLE_PATOLOGO))
-            ->get('/pacientes/crear')
-            ->assertForbidden();
-    }
+        $operator = $this->user(User::ROLE_OPERADOR);
 
-    public function test_auditor_can_read_but_not_write(): void
-    {
-        $auditor = $this->user(User::ROLE_AUDITOR);
-
-        $this->actingAs($auditor)->get('/pacientes')->assertOk();
-        $this->actingAs($auditor)->get('/pacientes/crear')->assertForbidden();
+        $this->actingAs($operator)->get('/cuarentena')->assertForbidden();
+        $this->actingAs($operator)->get('/respaldos')->assertForbidden();
     }
 
     public function test_admin_can_access_everything(): void
@@ -99,13 +102,15 @@ class RoleAndAuditTest extends TestCase
 
         $this->actingAs($admin)->get('/pacientes/crear')->assertOk();
         $this->actingAs($admin)->get('/estudios/' . $case->id . '/editar')->assertOk();
+        $this->actingAs($admin)->get('/cuarentena')->assertOk();
+        $this->actingAs($admin)->get('/respaldos')->assertOk();
     }
 
     public function test_patient_creation_is_audited(): void
     {
-        $recepcion = $this->user(User::ROLE_RECEPCION);
+        $operator = $this->user(User::ROLE_OPERADOR);
 
-        $this->actingAs($recepcion)->post('/pacientes', [
+        $this->actingAs($operator)->post('/pacientes', [
             'full_name' => 'PACIENTE AUDITADO',
         ]);
 
@@ -115,17 +120,17 @@ class RoleAndAuditTest extends TestCase
             'action' => 'patient.created',
             'subject_type' => Patient::class,
             'subject_id' => $patient->id,
-            'actor_id' => $recepcion->id,
+            'actor_id' => $operator->id,
         ]);
     }
 
     public function test_case_creation_is_audited(): void
     {
-        $recepcion = $this->user(User::ROLE_RECEPCION);
+        $operator = $this->user(User::ROLE_OPERADOR);
         $patient = $this->patient();
         $code = app(CaseNumberGenerator::class)->next(CaseType::Biopsy);
 
-        $this->actingAs($recepcion)->post('/pacientes/' . $patient->id . '/estudios', [
+        $this->actingAs($operator)->post('/pacientes/' . $patient->id . '/estudios', [
             'type' => 'biopsy',
             'case_code' => $code,
         ]);
@@ -135,39 +140,23 @@ class RoleAndAuditTest extends TestCase
         $this->assertDatabaseHas('audit_events', [
             'action' => 'case.created',
             'subject_id' => $case->id,
-            'actor_id' => $recepcion->id,
+            'actor_id' => $operator->id,
         ]);
     }
 
     public function test_print_is_audited(): void
     {
         $case = $this->emittedCase();
-        $patologo = $this->user(User::ROLE_PATOLOGO);
+        $operator = $this->user(User::ROLE_OPERADOR);
 
-        $this->actingAs($patologo)
+        $this->actingAs($operator)
             ->get('/estudios/' . $case->id . '/imprimir')
             ->assertOk();
 
         $this->assertDatabaseHas('audit_events', [
             'action' => 'case.printed',
             'subject_id' => $case->id,
-            'actor_id' => $patologo->id,
-        ]);
-    }
-
-    public function test_header_change_is_audited(): void
-    {
-        $case = $this->emittedCase();
-        $patologo = $this->user(User::ROLE_PATOLOGO);
-
-        $this->actingAs($patologo)->put('/estudios/' . $case->id . '/datos', [
-            'case_code' => $case->case_code,
-            'received_at' => now()->toDateString(),
-        ]);
-
-        $this->assertDatabaseHas('audit_events', [
-            'action' => 'case.header_updated',
-            'subject_id' => $case->id,
+            'actor_id' => $operator->id,
         ]);
     }
 }

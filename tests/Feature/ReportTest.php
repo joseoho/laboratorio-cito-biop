@@ -66,11 +66,11 @@ class ReportTest extends TestCase
             ->assertSee('Producción por mes');
     }
 
-    public function test_recepcion_is_forbidden(): void
+    public function test_operator_can_see_reports(): void
     {
-        $this->actingAs($this->user(User::ROLE_RECEPCION))
+        $this->actingAs($this->user(User::ROLE_OPERADOR))
             ->get('/reportes')
-            ->assertForbidden();
+            ->assertOk();
     }
 
     public function test_totals_for_a_year(): void
@@ -97,7 +97,7 @@ class ReportTest extends TestCase
         $this->case('biopsy', CaseStatus::Delivered, '2099-05-10 09:00:00');
         $this->case('cytology', CaseStatus::InProgress, '2099-05-11 09:00:00');
 
-        $response = $this->actingAs($this->user(User::ROLE_PATOLOGO))
+        $response = $this->actingAs($this->user(User::ROLE_OPERADOR))
             ->get('/reportes?anio=2099&tipo=biopsy');
 
         $response->assertOk();
@@ -108,7 +108,7 @@ class ReportTest extends TestCase
     {
         $this->case('biopsy', CaseStatus::InProgress, '2099-04-01 09:00:00');
 
-        $response = $this->actingAs($this->user(User::ROLE_AUDITOR))
+        $response = $this->actingAs($this->user(User::ROLE_OPERADOR))
             ->get('/reportes?anio=2099');
 
         $response->assertViewHas('pending', fn ($p) => (int) $p->total === 1);

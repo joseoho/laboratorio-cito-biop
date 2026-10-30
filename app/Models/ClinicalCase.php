@@ -51,6 +51,16 @@ class ClinicalCase extends Model
         return $this->hasMany(CaseAssignment::class, 'case_id')->orderBy('role');
     }
 
+    public function pdfs(): HasMany
+    {
+        return $this->hasMany(ReportPdf::class, 'case_id')->orderByDesc('id');
+    }
+
+    public function latestPdf(): ?ReportPdf
+    {
+        return $this->pdfs()->first();
+    }
+
     public function report(): HistologyReport|CytologyReport|null
     {
         return $this->type === CaseType::Biopsy ? $this->histology : $this->cytology;

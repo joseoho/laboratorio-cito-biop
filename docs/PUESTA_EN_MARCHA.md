@@ -159,34 +159,47 @@ Otras reglas:
 
 | Qué | Ruta | Quién |
 |---|---|---|
-| Paciente (datos, contacto, médico, procedencia) | `/pacientes/{id}/editar` | admin, recepción |
-| Cabecera del estudio (número y fecha) | `/estudios/{id}/datos` | admin, patólogo |
-| Informe | `/estudios/{id}/editar` | admin, patólogo |
+| Paciente (datos, contacto, médico, procedencia) | `/pacientes/{id}/editar` | admin, operador |
+| Cabecera del estudio (número y fecha) | `/estudios/{id}/datos` | admin, operador |
+| Informe | `/estudios/{id}/editar` | admin, operador |
 
 El **tipo** del estudio no se puede cambiar: el informe ya tiene esa estructura.
 Corregir el número recalcula secuencia y año, y valida que no exista otro igual.
 
 ## Roles
 
+El laboratorio usa **dos roles**:
+
 | Rol | Puede |
 |---|---|
-| `admin` | todo, incluido reabrir informes emitidos |
-| `recepcion` | alta y edición de pacientes y estudios; no escribe informes |
-| `patologo` | escribe y corrige informes y datos del estudio; no da de alta pacientes |
-| `auditor` | solo lectura |
+| `admin` | todo: operación diaria, reabrir informes emitidos, cuarentena y respaldos |
+| `operador` | alta y edición de pacientes y estudios, informes, emisión, impresión y reportes |
 
 El registro público está deshabilitado. Los usuarios se crean por consola:
 
 ```powershell
-php artisan tinker --execute="App\Models\User::create(['name'=>'Recepción','email'=>'recepcion@laboratorio.local','password'=>bcrypt('cambiar123'),'role'=>'recepcion','email_verified_at'=>now()]);"
+php artisan tinker --execute="App\Models\User::create(['name'=>'Operador','email'=>'operador@laboratorio.local','password'=>bcrypt('cambiar123'),'role'=>'operador','email_verified_at'=>now()]);"
 ```
+
+## PDF archivado
+
+Al emitirse un informe se genera el **PDF en el servidor** (dompdf) y se archiva en
+`storage/app/private/reports` con:
+
+- **hash SHA-256** del archivo (verificable),
+- **número de versión** (cada reemisión crea una nueva),
+- usuario que lo generó y fecha.
+
+La ficha del estudio muestra el botón **PDF** (versión y hash). Es la copia fiel del
+informe emitido; la impresión desde el navegador sigue disponible como antes.
 
 ## Auditoría
 
 Cada acción importante queda en `audit_events` (append-only):
 
 `patient.created`, `patient.updated`, `case.created`, `case.updated`, `case.emitted`,
-`case.reverted`, `case.header_updated`, `case.reopened`, `case.printed`.
+`case.reverted`, `case.header_updated`, `case.reopened`, `case.printed`,
+`case.pdf_generated`, `quarantine.reviewed`, `backup.created`.
 
 Se guarda actor, acción, registro afectado, cambios, IP y user-agent. El historial se
 ve al final de la ficha del estudio (últimos 20 eventos).
@@ -231,10 +244,11 @@ número del año con el formato histórico.
 php artisan test
 ```
 
-68 pruebas / 180 aserciones: renderizado de pantallas contra datos reales, búsqueda,
+75 pruebas / 203 aserciones: renderizado de pantallas contra datos reales, búsqueda,
 alta y **edición** de pacientes y estudios, numeración (formato, secuencia, unicidad),
-emisión del informe, **bloqueo y reapertura**, **roles**, **auditoría**, **reportes**,
-**cuarentena**, respaldo, validación de fechas y cosignante, y redirección de invitados.
+emisión del informe, **PDF archivado con hash**, **bloqueo y reapertura**, **roles**,
+**auditoría**, **reportes**, **cuarentena**, **respaldos**, validación de fechas y
+cosignante, y redirección de invitados.
 
 > `phpunit.xml` fija `APP_URL=http://localhost` a propósito: con un `APP_URL` que
 > incluya subdirectorio (`/laboratorio-cito-biop/public`), el helper de tests
@@ -244,6 +258,7 @@ emisión del informe, **bloqueo y reapertura**, **roles**, **auditoría**, **rep
 ## Pendiente (siguiente iteración)
 
 - Cargar el tramo 2023-09 → 2026-09 cuando llegue el archivo del laboratorio.
-- Adjuntos (fotos macro/micro) y PDF server-side.
+- Adjuntos (fotos macro/micro).
 - CI en GitHub (requiere primero tests independientes de los datos reales).
+- Endurecer dependencias: `composer audit` reporta avisos en Guzzle y otros (actualizar).
 - Facturación: **fuera de alcance**, no se migra; se construirá con el modelo nuevo.

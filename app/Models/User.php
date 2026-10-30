@@ -12,9 +12,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     public const ROLE_ADMIN = 'admin';
-    public const ROLE_RECEPCION = 'recepcion';
-    public const ROLE_PATOLOGO = 'patologo';
-    public const ROLE_AUDITOR = 'auditor';
+    public const ROLE_OPERADOR = 'operador';
 
     protected $fillable = [
         'name',
@@ -46,28 +44,32 @@ class User extends Authenticatable
         return $this->role === self::ROLE_ADMIN;
     }
 
+    public function isOperator(): bool
+    {
+        return $this->role === self::ROLE_OPERADOR;
+    }
+
+    /** El operador hace todo el trabajo diario; el administrador además reabre, depura y respalda. */
     public function canManagePatients(): bool
     {
-        return in_array($this->role, [self::ROLE_ADMIN, self::ROLE_RECEPCION], true);
+        return $this->isAdmin() || $this->isOperator();
     }
 
     public function canEditReports(): bool
     {
-        return in_array($this->role, [self::ROLE_ADMIN, self::ROLE_PATOLOGO], true);
+        return $this->isAdmin() || $this->isOperator();
     }
 
     public function canViewReports(): bool
     {
-        return in_array($this->role, [self::ROLE_ADMIN, self::ROLE_PATOLOGO, self::ROLE_AUDITOR], true);
+        return $this->isAdmin() || $this->isOperator();
     }
 
     public function roleLabel(): string
     {
         return match ($this->role) {
             self::ROLE_ADMIN => 'Administrador',
-            self::ROLE_RECEPCION => 'Recepción',
-            self::ROLE_PATOLOGO => 'Patólogo',
-            self::ROLE_AUDITOR => 'Auditor',
+            self::ROLE_OPERADOR => 'Operador',
             default => (string) $this->role,
         };
     }

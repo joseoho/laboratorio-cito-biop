@@ -12,16 +12,20 @@ use App\Models\ClinicalCase;
 use App\Models\CytologyDiagnosis;
 use App\Models\Pathologist;
 use App\Models\Patient;
+use App\Models\ReportPdf;
 use App\Models\Template;
 use App\Services\AuditLogger;
 use App\Services\CaseCreator;
 use App\Services\CaseNumberGenerator;
+use App\Services\ReportPdfService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CaseController extends Controller
 {
@@ -91,7 +95,7 @@ class CaseController extends Controller
 
     public function show(ClinicalCase $case): View
     {
-        $case->load(['patient', 'assignments.pathologist', 'histology', 'cytology']);
+        $case->load(['patient', 'assignments.pathologist', 'histology', 'cytology', 'pdfs']);
 
         $history = AuditEvent::query()
             ->where('subject_type', ClinicalCase::class)
@@ -242,10 +246,21 @@ class CaseController extends Controller
 
         $case->refresh();
 
+        // Al emitirse se archiva el PDF firmado (hash + versión) como copia legal.
         if ($case->status === CaseStatus::Delivered) {
+            try {
+                $pdf = app(ReportPdfService::class)->generate($case, auth()->id());
+                $audit->log('case.pdf_generated', $case, [
+                    'hash' => $pdf->hash,
+                    'version' => $pdf->version,
+                ]);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return redirect()
                 ->route('cases.show', $case)
-                ->with('success', 'Informe completo: el estudio quedó Entregado y ya se puede imprimir.');
+                ->with('success', 'Informe completo: el estudio quedó Entregado, se archivó el PDF y ya se puede imprimir.');
         }
 
         $missing = $case->missingForEmission();
@@ -253,6 +268,24 @@ class CaseController extends Controller
         return redirect()
             ->route('cases.edit', $case)
             ->with('warning', 'Guardado como borrador. Falta para poder imprimir: ' . implode(', ', $missing) . '.');
+    }
+
+    public function downloadPdf(ClinicalCase $case, ReportPdfService $service): BinaryFileResponse
+    {
+        /** @var ReportPdf|null $pdf */
+        $pdf = $case->latestPdf();
+
+        abort_if(! $pdf, 404, 'Este estudio no tiene PDF archivado.');
+
+        $path = $service->path($pdf);
+
+        abort_unless(File::exists($path), 404, 'El archivo del informe no está disponible.');
+
+        return response()->download(
+            $path,
+            sprintf('%s-%s.pdf', $case->codeLabel(), $pdf->version),
+            ['Content-Type' => 'application/pdf']
+        );
     }
 
     public function editHeader(ClinicalCase $case): View

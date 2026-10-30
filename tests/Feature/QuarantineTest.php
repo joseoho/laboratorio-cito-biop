@@ -41,9 +41,9 @@ class QuarantineTest extends TestCase
             ->assertSee('SIN_ESTUDIO');
     }
 
-    public function test_patologo_is_forbidden(): void
+    public function test_operator_is_forbidden(): void
     {
-        $this->actingAs($this->user(User::ROLE_PATOLOGO))
+        $this->actingAs($this->user(User::ROLE_OPERADOR))
             ->get('/cuarentena')
             ->assertForbidden();
     }
