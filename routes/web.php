@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CaseController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('estudios', [CaseController::class, 'index'])->name('cases.index');
     Route::get('estudios/{case}', [CaseController::class, 'show'])->whereNumber('case')->name('cases.show');
     Route::get('estudios/{case}/imprimir', [CaseController::class, 'print'])->whereNumber('case')->name('cases.print');
+
+    Route::get('reportes', [ReportController::class, 'index'])
+        ->middleware('role:admin,patologo,auditor')
+        ->name('reports.index');
 
     // Patólogo: escribe y corrige informes y datos del estudio
     Route::middleware('role:admin,patologo')->group(function () {

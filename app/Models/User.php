@@ -56,6 +56,11 @@ class User extends Authenticatable
         return in_array($this->role, [self::ROLE_ADMIN, self::ROLE_PATOLOGO], true);
     }
 
+    public function canViewReports(): bool
+    {
+        return in_array($this->role, [self::ROLE_ADMIN, self::ROLE_PATOLOGO, self::ROLE_AUDITOR], true);
+    }
+
     public function roleLabel(): string
     {
         return match ($this->role) {

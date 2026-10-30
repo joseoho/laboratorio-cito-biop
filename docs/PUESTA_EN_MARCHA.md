@@ -66,6 +66,21 @@ password: cambiar123
 | `/estudios/{id}` | `cases.show` | Detalle del informe |
 | `/estudios/{id}/editar` | `cases.edit` | Editor de dos columnas con plantillas |
 | `/estudios/{id}/imprimir` | `cases.print` | Informe listo para `window.print()` |
+| `/reportes` | `reports.index` | Producción, pendientes y productividad (admin, patólogo, auditor) |
+
+## Reportes
+
+`/reportes?anio=2023&tipo=biopsy` — filtrable por año y tipo:
+
+- **Totales del período**: estudios, biopsias, citologías, emitidos y en proceso.
+- **Producción por mes** con barra proporcional y total anual.
+- **Pendientes por antigüedad**: hasta 7 días, 8–30 y más de 30.
+- **Sin patólogo titular** (porcentaje del período).
+- **Productividad por patólogo**: casos y emitidos (rol titular).
+- **Procedencia** y **médicos que remiten**: top 10.
+
+Todas las cifras salen de `cases.received_at`; el histórico de Access entra completo.
+La página se imprime con el botón del navegador (`window.print()`).
 
 ## Alta de pacientes y estudios
 
@@ -191,10 +206,10 @@ número del año con el formato histórico.
 php artisan test
 ```
 
-56 pruebas / 155 aserciones: renderizado de pantallas contra datos reales, búsqueda,
+63 pruebas / 167 aserciones: renderizado de pantallas contra datos reales, búsqueda,
 alta y **edición** de pacientes y estudios, numeración (formato, secuencia, unicidad),
-emisión del informe, **bloqueo y reapertura**, **roles**, **auditoría**, respaldo,
-validación de fechas y cosignante, y redirección de invitados.
+emisión del informe, **bloqueo y reapertura**, **roles**, **auditoría**, **reportes**,
+respaldo, validación de fechas y cosignante, y redirección de invitados.
 
 > `phpunit.xml` fija `APP_URL=http://localhost` a propósito: con un `APP_URL` que
 > incluya subdirectorio (`/laboratorio-cito-biop/public`), el helper de tests
@@ -205,5 +220,5 @@ validación de fechas y cosignante, y redirección de invitados.
 
 - Cargar el tramo 2023-09 → 2026-09 cuando llegue el archivo del laboratorio.
 - Adjuntos (fotos macro/micro) y PDF server-side.
-- Reportes por período y productividad; pantalla de cuarentena.
+- Pantalla de cuarentena (4.245 casos por resolver).
 - Facturación: **fuera de alcance**, no se migra; se construirá con el modelo nuevo.

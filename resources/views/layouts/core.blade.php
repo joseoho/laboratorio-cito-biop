@@ -32,6 +32,9 @@
             <a class="nav-link text-white-50" href="{{ route('patients.index') }}">Pacientes</a>
             <a class="nav-link text-white-50" href="{{ route('cases.index') }}">Estudios</a>
             @auth
+                @if (auth()->user()->canViewReports())
+                    <a class="nav-link text-white-50" href="{{ route('reports.index') }}">Reportes</a>
+                @endif
                 <span class="text-white-50 small">{{ auth()->user()->name }}</span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
