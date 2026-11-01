@@ -11,14 +11,18 @@
       5. Aplica migraciones
       6. Crea el usuario administrador
       7. Prepara carpetas de PDF y respaldos
-      8. (opcional) crea la base de pruebas lapt_test
-      9. (opcional) genera el primer respaldo
+      8. (opcional) restaura datos y PDFs desde un kit de traslado
+      9. (opcional) crea la base de pruebas lapt_test
+     10. (opcional) genera el primer respaldo
 
     Uso:
-        instalar.bat                  (interactivo)
-        instalar.bat -Check           (solo verifica requisitos, no instala)
-        instalar.bat -Si              (sin preguntas, valores por defecto)
-        instalar.bat -DbName lapt_core -DbUser root -DbPass ""
+        instalar.bat                                    (interactivo)
+        instalar.bat -Check                             (solo verifica requisitos)
+        instalar.bat -Si                                (sin preguntas)
+        instalar.bat -Si -Kit "D:\kit\laboratorio-kit-XXXX.zip"
+                                                        (instala y carga los datos)
+        instalar.bat -DbName lapt_core -DbUser root -DbPass "clave"
+        instalar.bat -Kit "...zip" -UsarEnvDelKit       (tambien copia el .env del kit)
 
 .NOTES
     Sin acentos a proposito: Windows PowerShell 5.1 lee este archivo como ANSI.
@@ -31,17 +35,21 @@ param(
     [string]$DbUser = 'root',
     [string]$DbPass = '',
     [string]$PhpExe = 'C:\xampp\php\php.exe',
-    [string]$MysqlBin = 'C:\xampp\mysql\bin'
+    [string]$MysqlBin = 'C:\xampp\mysql\bin',
+    [string]$Kit = '',
+    [switch]$UsarEnvDelKit
 )
 
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
 $mysql = Join-Path $MysqlBin 'mysql.exe'
+$total = 10
+$dataInfo = 'Base vacia: sin datos del laboratorio'
 
-function Paso([int]$n, [int]$total, [string]$texto) {
+function Paso([int]$n, [string]$texto) {
     Write-Host ''
-    Write-Host ("[{0}/{1}] {2}" -f $n, $total, $texto) -ForegroundColor Cyan
+    Write-Host ("[{0}/{1}] {2}" -f $n, $script:total, $texto) -ForegroundColor Cyan
 }
 
 function Ok([string]$texto) { Write-Host ("      OK  " + $texto) -ForegroundColor Green }
@@ -54,10 +62,8 @@ function Ejecutar([string]$exe, [string[]]$argumentos, [string]$que) {
     }
 }
 
-$total = 9
-
 # ---------------------------------------------------------------------------
-Paso 1 $total 'Verificando requisitos'
+Paso 1 'Verificando requisitos'
 
 if (-not (Test-Path $PhpExe)) {
     throw "No se encontro PHP en $PhpExe. Instala XAMPP o indica -PhpExe."
@@ -97,7 +103,7 @@ if ($Check) {
 }
 
 # ---------------------------------------------------------------------------
-Paso 2 $total 'Preparando .env'
+Paso 2 'Preparando .env'
 Push-Location $root
 try {
     if (-not (Test-Path '.env')) {
@@ -110,8 +116,12 @@ try {
 
     $envDb = (Select-String -Path '.env' -Pattern '^DB_DATABASE=(.*)$').Matches.Groups[1].Value
     if ($envDb -and $envDb.Trim() -ne $DbName) {
-        Aviso (".env apunta a la base '" + $envDb.Trim() + "' y el instalador usara '" + $DbName + "'.")
-        Aviso 'Si quieres otra base, edita DB_DATABASE en .env o pasa -DbName.'
+        Aviso (".env apuntaba a la base '" + $envDb.Trim() + "'; se cambia a '" + $DbName + "'.")
+        Copy-Item '.env' '.env.bak' -Force
+        $contenido = Get-Content '.env' -Raw
+        $contenido = $contenido -replace '(?m)^DB_DATABASE=.*$', ("DB_DATABASE=" + $DbName)
+        Set-Content '.env' -Value $contenido -Encoding ASCII -NoNewline
+        Ok ("DB_DATABASE actualizado (respaldo en .env.bak)")
     }
 
     $keyOk = (Select-String -Path '.env' -Pattern '^APP_KEY=base64:.+$') -ne $null
@@ -127,14 +137,14 @@ finally {
 }
 
 # ---------------------------------------------------------------------------
-Paso 3 $total ("Creando la base de datos '" + $DbName + "'")
+Paso 3 ("Creando la base de datos '" + $DbName + "'")
 $sql = "CREATE DATABASE IF NOT EXISTS ``$DbName`` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 & $mysql @mysqlArgs -e $sql
 if ($LASTEXITCODE -ne 0) { throw "No se pudo crear la base $DbName." }
 Ok ("Base '" + $DbName + "' lista")
 
 # ---------------------------------------------------------------------------
-Paso 4 $total 'Instalando dependencias'
+Paso 4 'Instalando dependencias'
 Push-Location $root
 try {
     if (Test-Path 'vendor\autoload.php') {
@@ -150,7 +160,7 @@ finally {
 }
 
 # ---------------------------------------------------------------------------
-Paso 5 $total 'Aplicando migraciones'
+Paso 5 'Aplicando migraciones'
 Push-Location $root
 try {
     Ejecutar $PhpExe @('artisan', 'migrate', '--force') 'migrate'
@@ -161,7 +171,7 @@ finally {
 }
 
 # ---------------------------------------------------------------------------
-Paso 6 $total 'Creando el usuario administrador'
+Paso 6 'Creando el usuario administrador'
 Push-Location $root
 try {
     Ejecutar $PhpExe @('artisan', 'db:seed', '--force') 'db:seed'
@@ -172,7 +182,7 @@ finally {
 }
 
 # ---------------------------------------------------------------------------
-Paso 7 $total 'Preparando carpetas'
+Paso 7 'Preparando carpetas'
 foreach ($dir in @('storage\backups', 'storage\app\private\reports', 'storage\logs')) {
     $path = Join-Path $root $dir
     if (-not (Test-Path $path)) { New-Item -ItemType Directory -Path $path -Force | Out-Null }
@@ -180,7 +190,71 @@ foreach ($dir in @('storage\backups', 'storage\app\private\reports', 'storage\lo
 Ok 'storage\backups y storage\app\private\reports'
 
 # ---------------------------------------------------------------------------
-Paso 8 $total 'Base de pruebas (opcional)'
+Paso 8 'Restaurando datos del kit (opcional)'
+
+if ($Kit) {
+    if (-not (Test-Path $Kit)) { throw "No se encontro el kit: $Kit" }
+
+    $extract = $Kit
+    $tempExtract = $null
+
+    if ((Get-Item $Kit).PSIsContainer -eq $false) {
+        $tempExtract = Join-Path $env:TEMP ("kit_" + [guid]::NewGuid().ToString('N'))
+        Expand-Archive -Path $Kit -DestinationPath $tempExtract -Force
+        $extract = $tempExtract
+        Ok 'Kit descomprimido'
+    }
+
+    $sqlFile = Get-ChildItem $extract -Recurse -Filter *.sql.gz -File | Select-Object -First 1
+    if (-not $sqlFile) { throw 'El kit no contiene base\*.sql.gz' }
+
+    $restore = Join-Path $PSScriptRoot 'restore_db.ps1'
+    if (-not (Test-Path $restore)) { throw 'No se encontro scripts/restore_db.ps1' }
+
+    $restoreArgs = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $restore,
+                     '-File', $sqlFile.FullName, '-Database', $DbName, '-User', $DbUser, '-Force')
+    if ($DbPass) { $restoreArgs += @('-Password', $DbPass) }
+
+    & powershell.exe @restoreArgs
+    if ($LASTEXITCODE -ne 0) { throw 'Fallo la restauracion de la base.' }
+
+    $reportsSrc = Get-ChildItem $extract -Recurse -Directory -Filter 'reports' | Select-Object -First 1
+    $pdfCount = 0
+    if ($reportsSrc) {
+        $reportsDst = Join-Path $root 'storage\app\private\reports'
+        Get-ChildItem $reportsSrc.FullName -Filter *.pdf -File | ForEach-Object {
+            Copy-Item $_.FullName -Destination $reportsDst -Force
+            $pdfCount++
+        }
+    }
+    Ok ("PDFs copiados: " + $pdfCount)
+
+    if ($UsarEnvDelKit) {
+        $kitEnv = Join-Path $extract '.env'
+        if (Test-Path $kitEnv) {
+            Copy-Item $kitEnv (Join-Path $root '.env') -Force
+            $contenido = Get-Content (Join-Path $root '.env') -Raw
+            $contenido = $contenido -replace '(?m)^DB_DATABASE=.*$', ("DB_DATABASE=" + $DbName)
+            Set-Content (Join-Path $root '.env') -Value $contenido -Encoding ASCII -NoNewline
+            Ok '.env del kit copiado (misma APP_KEY; DB_DATABASE ajustada)'
+        } else {
+            Aviso 'El kit no trae .env; se mantiene el generado.'
+        }
+    } else {
+        Aviso 'Se mantiene el .env generado (las sesiones se reinician, los datos no se afectan).'
+    }
+
+    $dataInfo = 'Datos restaurados desde el kit: ' + $sqlFile.Name
+
+    if ($tempExtract -and (Test-Path $tempExtract)) {
+        Remove-Item $tempExtract -Recurse -Force -ErrorAction SilentlyContinue
+    }
+} else {
+    Aviso 'Sin -Kit: la base queda vacia (solo esquema y usuario admin).'
+}
+
+# ---------------------------------------------------------------------------
+Paso 9 'Base de pruebas (opcional)'
 $crearTest = $true
 if (-not $Si) {
     $r = Read-Host '      Crear la base de pruebas lapt_test? (S/n)'
@@ -202,7 +276,7 @@ if ($crearTest) {
 }
 
 # ---------------------------------------------------------------------------
-Paso 9 $total 'Primer respaldo (opcional)'
+Paso 10 'Primer respaldo (opcional)'
 $backup = $false
 if (-not $Si) {
     $r = Read-Host '      Generar un respaldo ahora? (s/N)'
@@ -225,6 +299,9 @@ Write-Host '============================================================' -Foreg
 Write-Host ' Instalacion terminada' -ForegroundColor Green
 Write-Host '============================================================' -ForegroundColor Green
 Write-Host ''
+Write-Host ("  Base de datos: " + $DbName)
+Write-Host ("  Datos:         " + $dataInfo)
+Write-Host ''
 Write-Host '  Abrir:      http://localhost/laboratorio-cito-biop/public/login'
 Write-Host '  Usuario:    admin@laboratorio.local'
 Write-Host '  Clave:      cambiar123'
@@ -233,7 +310,6 @@ Write-Host '  Siguientes pasos:'
 Write-Host '   1. Cambiar la clave del administrador (Usuarios -> Editar).'
 Write-Host '   2. Crear los usuarios operadores (Usuarios -> Nuevo usuario).'
 Write-Host '   3. Programar el respaldo diario (ver docs/INSTALACION.md).'
-Write-Host '   4. Si hay datos del laboratorio: seguir docs/INSTALACION.md, seccion Legado.'
 Write-Host ''
 Write-Host '  Tests:      php artisan test    (usa lapt_test, no la base operativa)'
 Write-Host '  Respaldo:   scripts\backup_db.ps1'

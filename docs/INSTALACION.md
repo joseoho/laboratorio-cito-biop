@@ -21,24 +21,27 @@ Guía explícita y en orden. Si algo falla, cada paso dice qué deberías ver.
 
 1. Abrí el Panel de Control de XAMPP y **encendé MySQL** (Apache no hace falta todavía).
 2. Doble clic en **`instalar.bat`** (en la raíz del proyecto).
+   Si ya tenés el kit de traslado del otro equipo, pasalo como parámetro y hace todo:
+   `instalar.bat -Si -Kit "D:\laboratorio-kit-XXXX.zip"`.
 3. Respondé dos preguntas:
    - ¿Crear la base de pruebas `lapt_test`? → **S/n** (recomendado S)
    - ¿Generar un respaldo ahora? → **s/N** (recomendado N la primera vez)
-4. Al terminar vas a ver un resumen con la URL y las credenciales.
+4. Al terminar vas a ver un resumen con la URL, las credenciales y si quedó **con datos o vacía**.
 
 El instalador hace, en este orden:
 
 | Paso | Qué hace |
 |---|---|
 | 1 | Verifica PHP, MySQL, conexión y Composer. Si falta algo, se detiene y lo dice. |
-| 2 | Crea `.env` desde `.env.example` y genera `APP_KEY` si falta. |
+| 2 | Crea `.env`, ajusta `DB_DATABASE` al nombre pedido y genera `APP_KEY` si falta. |
 | 3 | Crea la base `lapt_core` (utf8mb4) si no existe. |
 | 4 | `composer install` (solo si falta `vendor/`). |
 | 5 | `php artisan migrate --force` (idempotente). |
 | 6 | `php artisan db:seed --force` (usuario administrador). |
 | 7 | Prepara `storage/backups` y `storage/app/private/reports`. |
-| 8 | Clona la base operativa en `lapt_test` para los tests. |
-| 9 | Respaldo inicial (opcional). |
+| 8 | **Si hay `-Kit`**: restaura la base, copia los PDFs y (opcional) el `.env`. |
+| 9 | Clona la base operativa en `lapt_test` para los tests. |
+| 10 | Respaldo inicial (opcional). |
 
 **Se puede volver a ejecutar** sin romper nada: omite lo que ya está hecho.
 
@@ -52,6 +55,18 @@ Sin preguntas:
 
 ```bat
 instalar.bat -Si
+```
+
+Con datos del laboratorio (kit generado con `scripts\exportar_kit.ps1`):
+
+```bat
+instalar.bat -Si -Kit "D:\laboratorio-kit-20261101-183016.zip"
+```
+
+Opcional: copiar también el `.env` del kit (misma `APP_KEY`, sesiones intactas):
+
+```bat
+instalar.bat -Si -Kit "D:\kit.zip" -UsarEnvDelKit
 ```
 
 Si tu MySQL tiene contraseña:
@@ -228,25 +243,29 @@ y un `LEEME.txt` con los pasos. Copiá ese `.zip` a un pendrive.
 
 ```powershell
 # 1) XAMPP 8.2 + Composer instalados y MySQL encendido
+
 # 2) Código
 git clone https://github.com/joseoho/laboratorio-cito-biop.git C:\xampp\htdocs\laboratorio-cito-biop
 cd C:\xampp\htdocs\laboratorio-cito-biop
 
-# 3) Dependencias + base vacía + usuario admin
-instalar.bat -Si
+# 3) TODO en un paso: dependencias, base, admin, datos del kit y PDFs
+instalar.bat -Si -Kit "D:\laboratorio-kit-20261101-183016.zip"
 
-# 4) Restaurar la base del kit (reemplaza la base vacía)
-powershell -File scripts\restore_db.ps1 -File "RUTA\laboratorio-kit-...\base\lapt_core-XXXX.sql.gz"
-
-# 5) PDFs archivados
-xcopy /E /I "RUTA\laboratorio-kit-...\reports" "storage\app\private\reports"
-
-# 6) .env del kit (o crear uno y ajustar DB_* y APP_URL)
-#    copiar "RUTA\laboratorio-kit-...\.env" a la raíz del proyecto
-
-# 7) Limpiar cachés y probar
+# 4) Limpiar cachés y probar
 C:\xampp\php\php.exe artisan optimize:clear
 # abrir http://localhost/laboratorio-cito-biop/public/login
+```
+
+El instalador informa al final `Datos: Datos restaurados desde el kit: ...` y el
+conteo de pacientes/estudios.
+
+Si preferís hacerlo manual (o el kit se descomprimió a una carpeta):
+
+```powershell
+instalar.bat -Si
+powershell -File scripts\restore_db.ps1 -File "RUTA\base\lapt_core-XXXX.sql.gz"
+xcopy /E /I "RUTA\reports" "storage\app\private\reports"
+C:\xampp\php\php.exe artisan optimize:clear
 ```
 
 ### Cuidados

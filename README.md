@@ -81,11 +81,16 @@ crea `.env` y la clave, crea la base, instala dependencias, migra, crea el
 administrador, prepara carpetas y (opcional) la base de pruebas.
 
 ```bat
-instalar.bat            :: interactivo
-instalar.bat -Check     :: solo verifica requisitos
-instalar.bat -Si        :: sin preguntas
+instalar.bat                   :: interactivo
+instalar.bat -Check            :: solo verifica requisitos
+instalar.bat -Si               :: sin preguntas
+instalar.bat -Si -Kit "D:\laboratorio-kit-XXXX.zip"   :: instala Y carga los datos
 instalar.bat -DbPass "clave"   :: si MySQL tiene contrasena
 ```
+
+Con `-Kit` el instalador restaura la base, copia los PDFs archivados y deja el
+sistema **con los datos del laboratorio**, no vacío (a menos que se pase
+`-UsarEnvDelKit`, usa un `.env` nuevo y los usuarios solo deben volver a entrar).
 
 Guía paso a paso, verificación y problemas comunes: **[docs/INSTALACION.md](docs/INSTALACION.md)**.
 
