@@ -52,6 +52,25 @@ $total = 12
 $dataInfo = 'Base vacia: sin datos del laboratorio'
 $urlFinal = 'http://localhost/laboratorio-cito-biop/public/login'
 
+# Registro en archivo: si la ventana se cierra o algo falla, queda el detalle.
+$script:logFile = Join-Path $root ('storage\logs\instalacion-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '.log')
+$script:transcript = $false
+try {
+    New-Item -ItemType Directory -Path (Split-Path $script:logFile) -Force | Out-Null
+    Start-Transcript -Path $script:logFile -Force | Out-Null
+    $script:transcript = $true
+} catch {
+    $script:transcript = $false
+}
+
+trap {
+    if ($script:transcript) { try { Stop-Transcript | Out-Null } catch { } }
+    Write-Host ''
+    Write-Host (' ERROR: ' + $_.Exception.Message) -ForegroundColor Red
+    Write-Host (' Log:   ' + $script:logFile)
+    exit 1
+}
+
 function Paso([int]$n, [string]$texto) {
     Write-Host ''
     Write-Host ("[{0}/{1}] {2}" -f $n, $script:total, $texto) -ForegroundColor Cyan
@@ -110,6 +129,8 @@ Ok ("Composer: " + $composer)
 if ($Check) {
     Write-Host ''
     Write-Host 'Verificacion completada. No se modifico nada (-Check).' -ForegroundColor Green
+    Write-Host (' Log: ' + $script:logFile)
+    if ($script:transcript) { try { Stop-Transcript | Out-Null } catch { } }
     exit 0
 }
 
@@ -394,3 +415,7 @@ Write-Host ''
 Write-Host '  Tests:      php artisan test    (usa lapt_test, no la base operativa)'
 Write-Host '  Respaldo:   scripts\backup_db.ps1'
 Write-Host ''
+Write-Host ("  Log:        " + $script:logFile)
+Write-Host ''
+
+if ($script:transcript) { try { Stop-Transcript | Out-Null } catch { } }
