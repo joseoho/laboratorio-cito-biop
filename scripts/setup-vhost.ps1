@@ -24,7 +24,8 @@ param(
     [string]$AppPath,
     [string]$ApacheRoot = 'C:\xampp\apache',
     [switch]$Remove,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$NoRestart
 )
 
 $ErrorActionPreference = 'Stop'
@@ -59,6 +60,42 @@ function Respaldo([string]$path, [string]$suffix) {
     }
 }
 
+# Escribe conservando la codificacion ANSI del archivo original: el
+# httpd-vhosts.conf es compartido con otras apps y tiene comentarios con acentos.
+function EscribirArchivo([string]$path, [string]$texto) {
+    [IO.File]::WriteAllText($path, $texto, [Text.Encoding]::Default)
+}
+
+# Valida la configuracion ANTES de reiniciar y no reinicia si hay un error.
+function ReiniciarApache {
+    if ($DryRun) {
+        Write-Host '      (simulacion) httpd -t y reinicio'
+        return
+    }
+
+    $httpd = Join-Path $apacheBin 'httpd.exe'
+    $test = & $httpd -t 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host '      ERROR en la configuracion de Apache; NO se reinicio:' -ForegroundColor Red
+        $test | ForEach-Object { Write-Host ('      ' + $_) }
+        Write-Host '      Restaura los .bak-laboratorio si hace falta.' -ForegroundColor Yellow
+        return
+    }
+    Write-Host '      configuracion valida (httpd -t)'
+
+    if ($NoRestart) {
+        Write-Host '      reinicio omitido (-NoRestart): hacelo desde el panel de XAMPP'
+        return
+    }
+
+    & $httpd -k restart 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host '      Apache reiniciado'
+    } else {
+        Write-Host '      no se pudo reiniciar solo: reinicialo desde el panel de XAMPP' -ForegroundColor Yellow
+    }
+}
+
 if (-not (Test-Path $docRoot)) { throw "No existe $docRoot" }
 if (-not (Test-Path $httpdConf)) { throw "No se encontro $httpdConf" }
 
@@ -77,11 +114,11 @@ if (-not $DryRun -and -not (Test-Admin)) {
 if ($Remove) {
     Write-Host "[1/3] Quitando el vhost..."
     if (Test-Path $vhostConf) {
-        $texto = Get-Content $vhostConf -Raw
+        $texto = [IO.File]::ReadAllText($vhostConf, [Text.Encoding]::Default)
         if ($texto -match [regex]::Escape($begin)) {
             $nuevo = [regex]::Replace($texto, [regex]::Escape($begin) + '[\s\S]*?' + [regex]::Escape($end), '')
             if ($DryRun) { Write-Host '      (simulacion) se quitaria el bloque del vhost' }
-            else { Set-Content $vhostConf $nuevo -Encoding ASCII; Write-Host '      bloque del vhost quitado' }
+            else { EscribirArchivo $vhostConf $nuevo; Write-Host '      bloque del vhost quitado (resto del archivo intacto)' }
         } else {
             Write-Host '      no habia bloque del vhost'
         }
@@ -90,11 +127,10 @@ if ($Remove) {
     Write-Host "[2/3] Quitando la linea del hosts..."
     $lineas = Get-Content $hostsFile | Where-Object { $_ -notmatch ('^\s*127\.0\.0\.1\s+' + [regex]::Escape($Domain) + '\s*$') }
     if ($DryRun) { Write-Host '      (simulacion) se quitaria la linea del hosts' }
-    else { Respaldo $hostsFile 'hosts'; Set-Content $hostsFile $lineas -Encoding ASCII; Write-Host '      hosts actualizado' }
+    else { Respaldo $hostsFile 'hosts'; EscribirArchivo $hostsFile (($lineas -join "`r`n") + "`r`n"); Write-Host '      hosts actualizado' }
 
     Write-Host "[3/3] Reiniciando Apache..."
-    if ($DryRun) { Write-Host '      (simulacion) httpd -k restart' }
-    else { & (Join-Path $apacheBin 'httpd.exe') -k restart 2>&1 | Out-Null; Write-Host '      Apache reiniciado' }
+    ReiniciarApache
     exit 0
 }
 
@@ -127,7 +163,7 @@ if ($conf -match [regex]::Escape($activo)) {
         Write-Host '      (simulacion) descomentaria el Include de httpd-vhosts.conf'
     } else {
         $conf = $conf.Replace($comentado, $activo)
-        Set-Content $httpdConf $conf -Encoding ASCII -NoNewline
+        EscribirArchivo $httpdConf $conf
         Write-Host '      Include habilitado'
     }
 } else {
@@ -172,14 +208,8 @@ $end
     }
 }
 
-Write-Host "[4/4] Reiniciando Apache..."
-if ($DryRun) {
-    Write-Host '      (simulacion) httpd -k restart'
-} else {
-    & (Join-Path $apacheBin 'httpd.exe') -k restart 2>&1 | Out-Null
-    if ($LASTEXITCODE -eq 0) { Write-Host '      Apache reiniciado' }
-    else { Write-Host '      no se pudo reiniciar: hace-lo desde el panel de XAMPP' -ForegroundColor Yellow }
-}
+Write-Host "[4/4] Validando y reiniciando Apache..."
+ReiniciarApache
 
 Write-Host ""
 if ($DryRun) {
