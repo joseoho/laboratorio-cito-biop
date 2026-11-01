@@ -175,6 +175,16 @@ gunzip -c storage\backups\lapt_core-XXXX.sql.gz | C:\xampp\mysql\bin\mysql.exe -
 > Un respaldo en el mismo equipo no protege contra un daño del disco: cópialo a otro
 > medio y **probá la restauración** al menos una vez.
 
+Para llevar el sistema a otro equipo (base + PDFs + `.env` + instrucciones):
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\exportar_kit.ps1
+```
+
+Genera un `.zip` en `storage\kit` y en el equipo nuevo se restaura con
+`scripts\restore_db.ps1`. Detalle en
+[docs/INSTALACION.md](docs/INSTALACION.md#llevar-el-sistema-a-otro-equipo).
+
 ## Seguridad
 
 - CSRF en todos los formularios y sesiones con `APP_KEY`.

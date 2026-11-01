@@ -196,6 +196,72 @@ Access. El detalle completo está en [../etl/README.md](../etl/README.md).
 
 ---
 
+## Llevar el sistema a otro equipo
+
+La data **no viaja en el código**: vive en MySQL. Para que el sistema funcione igual en
+otra máquina hacen falta cuatro cosas.
+
+| Qué | Dónde está | Cómo viaja |
+|---|---|---|
+| Código | repo de GitHub | `git clone` |
+| Base operativa (`lapt_core`) | MySQL, 135 MB | respaldo `.sql.gz` (7,5 MB) |
+| PDFs archivados | `storage/app/private/reports` | carpeta tal cual (no están en la base ni en git) |
+| `.env` | raíz del proyecto | copia manual (APP_KEY y credenciales) |
+
+**No hace falta copiar**: `lapt_staging` (intermedia del ETL, se regenera), `lapt_test`
+(se crea con `scripts/test_db.ps1`), `vendor/`, el `.mdb` original ni los respaldos viejos.
+
+### Kit automático
+
+En el equipo actual:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\exportar_kit.ps1
+```
+
+Genera `storage\kit\laboratorio-kit-AAAAMMDD-HHMMSS.zip` con la base, los PDFs, el `.env`
+y un `LEEME.txt` con los pasos. Copiá ese `.zip` a un pendrive.
+
+> El `.env` del kit da acceso a la base y contiene la `APP_KEY`: tratalo como una credencial.
+
+### En el equipo nuevo, en orden
+
+```powershell
+# 1) XAMPP 8.2 + Composer instalados y MySQL encendido
+# 2) Código
+git clone https://github.com/joseoho/laboratorio-cito-biop.git C:\xampp\htdocs\laboratorio-cito-biop
+cd C:\xampp\htdocs\laboratorio-cito-biop
+
+# 3) Dependencias + base vacía + usuario admin
+instalar.bat -Si
+
+# 4) Restaurar la base del kit (reemplaza la base vacía)
+powershell -File scripts\restore_db.ps1 -File "RUTA\laboratorio-kit-...\base\lapt_core-XXXX.sql.gz"
+
+# 5) PDFs archivados
+xcopy /E /I "RUTA\laboratorio-kit-...\reports" "storage\app\private\reports"
+
+# 6) .env del kit (o crear uno y ajustar DB_* y APP_URL)
+#    copiar "RUTA\laboratorio-kit-...\.env" a la raíz del proyecto
+
+# 7) Limpiar cachés y probar
+C:\xampp\php\php.exe artisan optimize:clear
+# abrir http://localhost/laboratorio-cito-biop/public/login
+```
+
+### Cuidados
+
+- La restauración **reemplaza** las tablas (`mysqldump` incluye `DROP TABLE`). No la corras
+  sobre una base con datos nuevos: usá una base limpia o hacé respaldo antes.
+- Si copiás el `.env` del equipo viejo, las sesiones siguen válidas y la `APP_KEY` es la misma.
+  Si generás una nueva, los usuarios solo tienen que volver a entrar (no hay columnas cifradas).
+- **Sin la carpeta `reports`**, el botón PDF devuelve 404 aunque la base tenga los registros,
+  y los hashes guardados no coinciden con ningún archivo.
+- Restaurá en MariaDB 10.4+ o MySQL 8; evitar una versión más vieja que la de origen.
+- Si cambia la carpeta o el dominio, ajustá `APP_URL` (siempre la raíz, sin subdirectorio).
+
+---
+
 ## Actualizar la base de pruebas
 
 Cuando cambien los datos o el esquema:
