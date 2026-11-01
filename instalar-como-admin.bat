@@ -28,7 +28,7 @@ if not "%CODE%"=="0" (
     echo.
     echo  No se pudo completar la instalacion. Codigo %CODE%.
     echo  Si rechazaste el permiso de administrador, proba con instalar.bat
-    echo  (instalacion basica, sin dominio .test ni arranque automatico).
+    echo  ^(instalacion basica, sin dominio .test ni arranque automatico^).
     echo.
     pause
     exit /b 1

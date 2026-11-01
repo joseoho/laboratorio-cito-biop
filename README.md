@@ -88,6 +88,27 @@ Con datos: `instalar-como-admin.bat -Kit "D:\laboratorio-kit-XXXX.zip"`.
 
 Si se rechaza el permiso de administrador no rompe nada; queda para usar `instalar.bat`.
 
+### Equipo nuevo, sin clonar a mano: `instalar-desde-cero.bat`
+
+Copia al pendrive estos tres archivos y ejecutá el `.bat` en el equipo nuevo:
+
+| Archivo | Se genera en el equipo de origen con |
+|---|---|
+| `instalar-desde-cero.bat` | copiarlo de la raíz del proyecto |
+| `laboratorio-codigo.zip` | `scripts\exportar_codigo.ps1` (≈0,7 MB) |
+| `laboratorio-kit-XXXX.zip` | `scripts\exportar_kit.ps1` (≈7,5 MB) |
+
+El lanzador **clona el repo** si hay Git y credenciales; si no (el repo es privado),
+descomprime `laboratorio-codigo.zip`. Después detecta el kit y llama a
+`instalar-como-admin.bat`: instala, carga datos y PDFs, configura el dominio `.test` y el
+arranque automático. Requiere XAMPP instalado.
+
+```bat
+instalar-desde-cero.bat              :: clona (o usa el zip) + instala con datos
+instalar-desde-cero.bat -SinGit      :: no intentar clonar
+instalar-desde-cero.bat -SoloCodigo  :: solo obtener el código
+```
+
 ### Automática con preguntas
 
 Con MySQL encendido en XAMPP, doble clic en **`instalar.bat`**. Verifica requisitos,

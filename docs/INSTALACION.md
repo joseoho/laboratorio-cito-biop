@@ -279,13 +279,43 @@ otra máquina hacen falta cuatro cosas.
 
 | Qué | Dónde está | Cómo viaja |
 |---|---|---|
-| Código | repo de GitHub | `git clone` |
+| Código | repo de GitHub | `instalar-desde-cero.bat` (clona) o `laboratorio-codigo.zip` |
 | Base operativa (`lapt_core`) | MySQL, 135 MB | respaldo `.sql.gz` (7,5 MB) |
 | PDFs archivados | `storage/app/private/reports` | carpeta tal cual (no están en la base ni en git) |
 | `.env` | raíz del proyecto | copia manual (APP_KEY y credenciales) |
 
 **No hace falta copiar**: `lapt_staging` (intermedia del ETL, se regenera), `lapt_test`
 (se crea con `scripts/test_db.ps1`), `vendor/`, el `.mdb` original ni los respaldos viejos.
+
+### Equipo nuevo desde el pendrive (recomendado)
+
+El repositorio es **privado**: `git clone` pide usuario y contraseña. Por eso el pendrive
+lleva tres archivos y el lanzador resuelve el resto:
+
+| Archivo | Cómo se genera en el equipo de origen |
+|---|---|
+| `instalar-desde-cero.bat` | se copia tal cual desde la raíz del proyecto |
+| `laboratorio-codigo.zip` | `powershell -File scripts\exportar_codigo.ps1` (≈0,7 MB) |
+| `laboratorio-kit-XXXX.zip` | `powershell -File scripts\exportar_kit.ps1` (≈7,5 MB) |
+
+En el equipo nuevo, **doble clic en `instalar-desde-cero.bat`**. El lanzador:
+
+1. Verifica que XAMPP esté instalado.
+2. Si hay Git y credenciales: `git clone` (o `git pull` si ya existe).
+3. Si no hay Git, o el clon falla: descomprime `laboratorio-codigo.zip`.
+4. Detecta el `laboratorio-kit-*.zip` que esté al lado y lo pasa como `-Kit`.
+5. Llama a `instalar-como-admin.bat`, que pide administrador **una vez** e instala todo
+   (dependencias, base, datos, PDFs, dominio `.test` y arranque al encender).
+
+Opciones:
+
+```bat
+instalar-desde-cero.bat                       :: todo automático
+instalar-desde-cero.bat -Kit "D:\otro.zip"    :: usar otro kit
+instalar-desde-cero.bat -SinGit               :: no intentar clonar
+instalar-desde-cero.bat -SoloCodigo           :: solo bajar/extraer el código
+instalar-desde-cero.bat -Destino "D:\otra"    :: otra carpeta (default C:\xampp\htdocs\laboratorio-cito-biop)
+```
 
 ### Kit automático
 
