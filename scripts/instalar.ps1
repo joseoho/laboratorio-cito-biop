@@ -40,7 +40,8 @@ param(
     [switch]$UsarEnvDelKit,
     [string]$Dominio = 'laboratorio-cito-biop.test',
     [switch]$SinVhost,
-    [switch]$ConAutoarranque
+    [switch]$ConAutoarranque,
+    [switch]$AlArrancar
 )
 
 $ErrorActionPreference = 'Stop'
@@ -287,7 +288,7 @@ if ($crearTest) {
 
 # ---------------------------------------------------------------------------
 Paso 10 'Primer respaldo (opcional)'
-$backup = $false
+$backup = ($Si -and $Kit -ne '')
 if (-not $Si) {
     $r = Read-Host '      Generar un respaldo ahora? (s/N)'
     if ($r -and $r.Trim().ToLower().StartsWith('s')) { $backup = $true }
@@ -335,8 +336,8 @@ if (-not $hacerVhost) {
 # ---------------------------------------------------------------------------
 Paso 12 'Arranque automatico de servicios (opcional)'
 
-$auto = $ConAutoarranque
-if (-not $Si -and -not $ConAutoarranque) {
+$auto = $ConAutoarranque -or $AlArrancar
+if (-not $Si -and -not $auto) {
     $r = Read-Host '      Arrancar Apache y MySQL al iniciar sesion? (s/N)'
     if ($r -and $r.Trim().ToLower().StartsWith('s')) { $auto = $true }
 }
@@ -346,10 +347,15 @@ if ($auto) {
     if ($LASTEXITCODE -eq 0) { Ok 'Arranque al iniciar sesion configurado' }
 
     if ($esAdmin) {
-        $r2 = Read-Host '      Tambien al arrancar Windows, sin iniciar sesion? (s/N)'
-        if ($r2 -and $r2.Trim().ToLower().StartsWith('s')) {
+        $crearArranque = $AlArrancar
+        if (-not $crearArranque -and -not $Si) {
+            $r2 = Read-Host '      Tambien al arrancar Windows, sin iniciar sesion? (s/N)'
+            if ($r2 -and $r2.Trim().ToLower().StartsWith('s')) { $crearArranque = $true }
+        }
+
+        if ($crearArranque) {
             & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'autostart.ps1') -Modo Arranque
-            if ($LASTEXITCODE -eq 0) { Ok 'Tarea al arrancar Windows creada' }
+            if ($LASTEXITCODE -eq 0) { Ok 'Tarea al arrancar Windows creada (sobrevive a un corte de luz)' }
         }
     } else {
         Aviso 'Para arrancar sin iniciar sesion hace falta administrador (autostart.ps1 -Modo Arranque).'

@@ -74,7 +74,21 @@ No requiere Node.js: los estilos vienen por CDN y no hay build de Vite en uso.
 
 ## Instalación
 
-### Automática (recomendada)
+### Para no expertos: `instalar-como-admin.bat`
+
+Con MySQL encendido en XAMPP, **doble clic en `instalar-como-admin.bat`** y aceptar el
+aviso de administrador. Hace todo sin preguntas:
+
+- instala dependencias, crea la base y el usuario administrador;
+- configura **`http://laboratorio-cito-biop.test`**;
+- deja Apache y MySQL arrancando **al encender la PC** (sobrevive a un corte de luz);
+- crea la base de pruebas `lapt_test`.
+
+Con datos: `instalar-como-admin.bat -Kit "D:\laboratorio-kit-XXXX.zip"`.
+
+Si se rechaza el permiso de administrador no rompe nada; queda para usar `instalar.bat`.
+
+### Automática con preguntas
 
 Con MySQL encendido en XAMPP, doble clic en **`instalar.bat`**. Verifica requisitos,
 crea `.env` y la clave, crea la base, instala dependencias, migra, crea el

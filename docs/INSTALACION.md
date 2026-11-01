@@ -19,6 +19,23 @@ Guía explícita y en orden. Si algo falla, cada paso dice qué deberías ver.
 
 ## Opción A — Instalador automático (recomendada)
 
+### Si no sos técnico: `instalar-como-admin.bat`
+
+1. Encendé **MySQL** desde el Panel de Control de XAMPP.
+2. **Doble clic en `instalar-como-admin.bat`.**
+3. Windows va a pedir permiso de administrador: elegí **Sí**.
+4. Esperá. Al final queda:
+   - la app instalada y con la base lista,
+   - el dominio **`http://laboratorio-cito-biop.test`** funcionando,
+   - Apache y MySQL arrancando **solo al encender la PC** (sirve tras un corte de luz),
+   - la base de pruebas `lapt_test`.
+5. Si tenés el kit con los datos: `instalar-como-admin.bat -Kit "D:\laboratorio-kit-XXXX.zip"`.
+
+No pregunta nada y no hay que escribir comandos. Si rechazás el permiso de administrador,
+no rompe nada: usá `instalar.bat` (instalación básica, sin dominio ni arranque).
+
+### Instalación paso a paso (con preguntas)
+
 1. Abrí el Panel de Control de XAMPP y **encendé MySQL** (Apache no hace falta todavía).
 2. Doble clic en **`instalar.bat`** (en la raíz del proyecto).
    Si ya tenés el kit de traslado del otro equipo, pasalo como parámetro y hace todo:
