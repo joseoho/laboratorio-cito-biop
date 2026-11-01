@@ -42,6 +42,50 @@ El instalador hace, en este orden:
 | 8 | **Si hay `-Kit`**: restaura la base, copia los PDFs y (opcional) el `.env`. |
 | 9 | Clona la base operativa en `lapt_test` para los tests. |
 | 10 | Respaldo inicial (opcional). |
+| 11 | **Sitio local** `http://laboratorio-cito-biop.test` (si hay administrador). |
+| 12 | **Arranque automático** de Apache y MySQL (opcional). |
+
+### Dominio local y arranque automático
+
+El instalador **pregunta** por el dominio y por el arranque, pero los dos requieren
+acciones del sistema que se pueden hacer aparte:
+
+**Dominio `http://laboratorio-cito-biop.test`** (requiere consola **como administrador**):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup-vhost.ps1 -DryRun   # ver qué haría
+powershell -ExecutionPolicy Bypass -File scripts\setup-vhost.ps1           # aplicar
+powershell -ExecutionPolicy Bypass -File scripts\setup-vhost.ps1 -Remove   # quitar
+```
+
+Agrega la línea al `hosts`, habilita el `Include` de vhosts si está comentado y agrega
+el `<VirtualHost>` con `DocumentRoot` a `...\public`. Respalda `hosts`, `httpd.conf` y
+`httpd-vhosts.conf` como `*.bak-laboratorio` antes de tocar nada. **No borra** vhosts
+existentes (en este equipo ya conviven `localhost`, `ganaderia_SaaS.test` y
+`facturacion-inventario.test`). Después hay que reiniciar Apache; el script lo intenta y,
+si no puede, avisa.
+
+**Arranque de servicios** (para que el sistema vuelva solo después de un corte de luz):
+
+```powershell
+# Al iniciar sesión (no requiere administrador)
+powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Login
+
+# Al ARRANCAR Windows, sin que nadie inicie sesión (requiere administrador)
+powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Arranque
+
+# Quitar
+powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Login -Remove
+powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Arranque -Remove
+```
+
+| Modo | Cuándo arranca | Requiere admin | Sirve para corte de luz |
+|---|---|---|---|
+| `Login` | al iniciar sesión del usuario | no | solo si alguien inicia sesión |
+| `Arranque` | al encender Windows (tarea como SYSTEM) | sí | **sí** |
+
+En los dos casos el script es idempotente: si Apache o MySQL ya están corriendo, no hace
+nada, y deja rastro en `storage\logs\xampp-autostart.log`.
 
 **Se puede volver a ejecutar** sin romper nada: omite lo que ya está hecho.
 

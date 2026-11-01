@@ -37,15 +37,19 @@ param(
     [string]$PhpExe = 'C:\xampp\php\php.exe',
     [string]$MysqlBin = 'C:\xampp\mysql\bin',
     [string]$Kit = '',
-    [switch]$UsarEnvDelKit
+    [switch]$UsarEnvDelKit,
+    [string]$Dominio = 'laboratorio-cito-biop.test',
+    [switch]$SinVhost,
+    [switch]$ConAutoarranque
 )
 
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
 $mysql = Join-Path $MysqlBin 'mysql.exe'
-$total = 10
+$total = 12
 $dataInfo = 'Base vacia: sin datos del laboratorio'
+$urlFinal = 'http://localhost/laboratorio-cito-biop/public/login'
 
 function Paso([int]$n, [string]$texto) {
     Write-Host ''
@@ -60,6 +64,12 @@ function Ejecutar([string]$exe, [string[]]$argumentos, [string]$que) {
     if ($LASTEXITCODE -ne 0) {
         throw ("Fallo " + $que + " (codigo " + $LASTEXITCODE + ").")
     }
+}
+
+function Test-Admin {
+    $id = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($id)
+    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
 # ---------------------------------------------------------------------------
@@ -294,6 +304,70 @@ if ($backup) {
 }
 
 # ---------------------------------------------------------------------------
+Paso 11 ("Sitio local: http://" + $Dominio)
+
+$esAdmin = Test-Admin
+$hacerVhost = -not $SinVhost
+
+if ($hacerVhost -and -not $Si) {
+    $r = Read-Host '      Configurar el dominio local? (S/n)'
+    if ($r -and $r.Trim().ToLower().StartsWith('n')) { $hacerVhost = $false }
+}
+
+if (-not $hacerVhost) {
+    Aviso 'Dominio local omitido.'
+} elseif (-not $esAdmin) {
+    Aviso 'Requiere administrador. Ejecuta en una consola como administrador:'
+    Write-Host ('      powershell -ExecutionPolicy Bypass -File "' + (Join-Path $PSScriptRoot 'setup-vhost.ps1') + '"')
+} else {
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'setup-vhost.ps1') -Domain $Dominio
+    if ($LASTEXITCODE -eq 0) {
+        $contenido = Get-Content (Join-Path $root '.env') -Raw
+        $contenido = $contenido -replace '(?m)^APP_URL=.*$', ('APP_URL=http://' + $Dominio)
+        Set-Content (Join-Path $root '.env') -Value $contenido -Encoding ASCII -NoNewline
+        Ok ('APP_URL actualizado a http://' + $Dominio)
+        $urlFinal = 'http://' + $Dominio + '/login'
+    } else {
+        Aviso 'El vhost no se pudo configurar.'
+    }
+}
+
+# ---------------------------------------------------------------------------
+Paso 12 'Arranque automatico de servicios (opcional)'
+
+$auto = $ConAutoarranque
+if (-not $Si -and -not $ConAutoarranque) {
+    $r = Read-Host '      Arrancar Apache y MySQL al iniciar sesion? (s/N)'
+    if ($r -and $r.Trim().ToLower().StartsWith('s')) { $auto = $true }
+}
+
+if ($auto) {
+    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'autostart.ps1') -Modo Login
+    if ($LASTEXITCODE -eq 0) { Ok 'Arranque al iniciar sesion configurado' }
+
+    if ($esAdmin) {
+        $r2 = Read-Host '      Tambien al arrancar Windows, sin iniciar sesion? (s/N)'
+        if ($r2 -and $r2.Trim().ToLower().StartsWith('s')) {
+            & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'autostart.ps1') -Modo Arranque
+            if ($LASTEXITCODE -eq 0) { Ok 'Tarea al arrancar Windows creada' }
+        }
+    } else {
+        Aviso 'Para arrancar sin iniciar sesion hace falta administrador (autostart.ps1 -Modo Arranque).'
+    }
+} else {
+    Aviso 'Arranque automatico omitido.'
+}
+
+# ---------------------------------------------------------------------------
+# Estado final de la base (para el resumen)
+if (-not $Kit) {
+    $authStr = ($mysqlArgs -join ' ')
+    $conteo = (& cmd.exe /c "`"$mysql`" $authStr -N -e `"SELECT COUNT(*) FROM ``$DbName``.patients`" 2>nul" | Out-String).Trim()
+    if ($conteo -match '^\d+$' -and [int]$conteo -gt 0) {
+        $dataInfo = ('Base existente con ' + $conteo + ' pacientes')
+    }
+}
+
 Write-Host ''
 Write-Host '============================================================' -ForegroundColor Green
 Write-Host ' Instalacion terminada' -ForegroundColor Green
@@ -302,7 +376,7 @@ Write-Host ''
 Write-Host ("  Base de datos: " + $DbName)
 Write-Host ("  Datos:         " + $dataInfo)
 Write-Host ''
-Write-Host '  Abrir:      http://localhost/laboratorio-cito-biop/public/login'
+Write-Host ("  Abrir:      " + $urlFinal)
 Write-Host '  Usuario:    admin@laboratorio.local'
 Write-Host '  Clave:      cambiar123'
 Write-Host ''

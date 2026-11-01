@@ -86,11 +86,23 @@ instalar.bat -Check            :: solo verifica requisitos
 instalar.bat -Si               :: sin preguntas
 instalar.bat -Si -Kit "D:\laboratorio-kit-XXXX.zip"   :: instala Y carga los datos
 instalar.bat -DbPass "clave"   :: si MySQL tiene contrasena
+instalar.bat -Si -SinVhost     :: no toca el dominio local
 ```
 
 Con `-Kit` el instalador restaura la base, copia los PDFs archivados y deja el
 sistema **con los datos del laboratorio**, no vacío (a menos que se pase
 `-UsarEnvDelKit`, usa un `.env` nuevo y los usuarios solo deben volver a entrar).
+
+Los pasos 11 y 12 configuran **dominio local** (`http://laboratorio-cito-biop.test`) y
+**arranque automático** de Apache/MySQL. Requieren permisos de administrador para el
+vhost y para el arranque al encender el equipo; si el instalador no los tiene, deja el
+comando exacto para ejecutarlo aparte:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup-vhost.ps1   # hosts + vhost + reinicio
+powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Login      # al iniciar sesion
+powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Arranque   # al encender (admin)
+```
 
 Guía paso a paso, verificación y problemas comunes: **[docs/INSTALACION.md](docs/INSTALACION.md)**.
 
