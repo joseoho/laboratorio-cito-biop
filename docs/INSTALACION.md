@@ -378,7 +378,6 @@ Nunca apuntes `lapt_test` a producción ni corras los tests contra `lapt_core`:
 | Cambiaste `.env` y no toma | `php artisan optimize:clear`. |
 | "Class not found" | `composer dump-autoload`. |
 | Login da 419 | `php artisan optimize:clear` y entrá siempre por el mismo host. |
-| **No puedo entrar con el admin** | El kit trae los usuarios del equipo de origen. Reseteá la clave: `C:\xampp\php\php.exe scripts\reset_admin.php admin@laboratorio.local "NuevaClave123"`. Para ver qué usuarios hay: `scripts\reset_admin.php --list`. |
 
 ---
 

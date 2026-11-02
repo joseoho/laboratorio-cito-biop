@@ -24,18 +24,7 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $restore = Join-Path $PSScriptRoot 'restore_db.ps1'
 
-if (-not (Test-Path $Kit)) {
-    # Windows suele ocultar la extension: probamos con .zip y .sql.gz.
-    if (Test-Path ($Kit + '.zip')) {
-        $Kit = $Kit + '.zip'
-    } elseif (Test-Path ($Kit + '.sql.gz')) {
-        $Kit = $Kit + '.sql.gz'
-    } else {
-        throw ("No existe el kit: " + $Kit + "`n" +
-               "Verifica el nombre completo, con extension. Para listar los kits del pendrive:`n" +
-               "    dir D:\laboratorio-kit-*.zip")
-    }
-}
+if (-not (Test-Path $Kit)) { throw "No existe el kit: $Kit" }
 if (-not (Test-Path $restore)) { throw 'No se encontro scripts/restore_db.ps1' }
 
 $reportsDst = Join-Path $root 'storage\app\private\reports'
