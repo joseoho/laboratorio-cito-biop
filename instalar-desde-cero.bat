@@ -122,11 +122,11 @@ echo.
 if defined KIT (
     echo [2/3] Datos del kit: !KIT!
     echo [3/3] Lanzando la instalacion completa...
-    call "%DEST%\instalar-como-admin.bat" -Kit "!KIT!"
+    call "%DEST%\instalar.bat" --kit "!KIT!"
 ) else (
     echo [2/3] Sin kit: la base quedara vacia.
     echo [3/3] Lanzando la instalacion completa...
-    call "%DEST%\instalar-como-admin.bat"
+    call "%DEST%\instalar.bat"
 )
 
 pause

@@ -19,55 +19,63 @@ Guía explícita y en orden. Si algo falla, cada paso dice qué deberías ver.
 
 ## Opción A — Instalador automático (recomendada)
 
-### Si no sos técnico: `instalar-como-admin.bat`
+### Un solo archivo: `instalar.bat`
 
 1. Encendé **MySQL** desde el Panel de Control de XAMPP.
-2. **Doble clic en `instalar-como-admin.bat`.**
+2. **Doble clic en `instalar.bat`** (en la raíz del proyecto o en el pendrive).
 3. Windows va a pedir permiso de administrador: elegí **Sí**.
-4. Esperá. Al final queda:
-   - la app instalada y con la base lista,
-   - el dominio **`http://laboratorio-cito-biop.test`** funcionando,
-   - Apache y MySQL arrancando **solo al encender la PC** (sirve tras un corte de luz),
-   - la base de pruebas `lapt_test`.
-5. Si tenés el kit con los datos: `instalar-como-admin.bat -Kit "D:\laboratorio-kit-XXXX.zip"`.
+4. Esperá. No pregunta nada y no hay que escribir comandos.
 
-No pregunta nada y no hay que escribir comandos. Si rechazás el permiso de administrador,
-no rompe nada: usá `instalar.bat` (instalación básica, sin dominio ni arranque).
+Al terminar queda:
 
-### Instalación paso a paso (con preguntas)
+- la app instalada, con `.env`, `APP_KEY`, base `lapt_core` y usuario administrador;
+- el dominio **`http://laboratorio-cito-biop.test`** funcionando;
+- Apache y MySQL arrancando **solo al encender la PC** (sirve tras un corte de luz);
+- si pasaste `--kit`, los datos del laboratorio y los PDFs archivados.
 
-1. Abrí el Panel de Control de XAMPP y **encendé MySQL** (Apache no hace falta todavía).
-2. Doble clic en **`instalar.bat`** (en la raíz del proyecto).
-   Si ya tenés el kit de traslado del otro equipo, pasalo como parámetro y hace todo:
-   `instalar.bat -Si -Kit "D:\laboratorio-kit-XXXX.zip"`.
-3. Respondé dos preguntas:
-   - ¿Crear la base de pruebas `lapt_test`? → **S/n** (recomendado S)
-   - ¿Generar un respaldo ahora? → **s/N** (recomendado N la primera vez)
-4. Al terminar vas a ver un resumen con la URL, las credenciales y si quedó **con datos o vacía**.
+Con datos:
 
-El instalador hace, en este orden:
+```bat
+instalar.bat --kit "D:\laboratorio-kit-20261101-183016.zip"
+```
+
+### Opciones
+
+| Opción | Para qué |
+|---|---|
+| `--kit "ruta"` | restaura la base y copia los PDFs del kit |
+| `--sin-vhost` | no toca `hosts` ni Apache (deja la app en `/public`) |
+| `--sin-arranque` | no programa el arranque automático |
+| `--sin-admin` | no pide elevación (diagnóstico; el vhost y el arranque fallarán) |
+| `--check` | **solo diagnostica**, no instala nada |
+
+Si tu MySQL tiene contraseña, editá `DB_PASS` al inicio de `instalar.bat`.
+
+### Qué hace, en orden
 
 | Paso | Qué hace |
 |---|---|
-| 1 | Verifica PHP, MySQL, conexión y Composer. Si falta algo, se detiene y lo dice. |
-| 2 | Crea `.env`, ajusta `DB_DATABASE` al nombre pedido y genera `APP_KEY` si falta. |
-| 3 | Crea la base `lapt_core` (utf8mb4) si no existe. |
-| 4 | `composer install` (solo si falta `vendor/`). |
-| 5 | `php artisan migrate --force` (idempotente). |
-| 6 | `php artisan db:seed --force` (usuario administrador). |
-| 7 | Prepara `storage/backups` y `storage/app/private/reports`. |
-| 8 | **Si hay `-Kit`**: restaura la base, copia los PDFs y (opcional) el `.env`. |
-| 9 | Clona la base operativa en `lapt_test` para los tests. |
-| 10 | Respaldo inicial (opcional). |
-| 11 | **Sitio local** `http://laboratorio-cito-biop.test` (si hay administrador). |
-| 12 | **Arranque automático** de Apache y MySQL (opcional). |
+| 1 | Descarga el proyecto: `git clone`; si falla, `laboratorio-codigo.zip` o el ZIP del repo. |
+| 2 | Prepara Composer (lo descarga como `composer.phar` si no está). |
+| 3 | Crea `.env` desde `.env.example` (si no existe). |
+| 4 | `composer install` y `APP_KEY`. |
+| 5 | Verifica MySQL (lo arranca si hace falta) y crea `lapt_core`. |
+| 6 | Configura `.env` (`APP_URL`, `DB_*`, zona horaria) y respalda si ya había datos. |
+| 7 | `migrate --force`, `db:seed --force` y, si hay `--kit`, restaura datos y PDFs. |
+| 8 | Configura el vhost `.test` (respalda y valida con `httpd -t`). |
+| 9 | Programa el arranque de Apache/MySQL al encender el equipo. |
 
-### Dominio local y arranque automático
+**Se puede volver a ejecutar** sin romper nada: omite lo que ya está hecho.
 
-El instalador **pregunta** por el dominio y por el arranque, pero los dos requieren
-acciones del sistema que se pueden hacer aparte:
+Si rechazás el permiso de administrador, no rompe nada: podés correr
+`instalar.bat --sin-vhost --sin-arranque` y la app queda funcionando en
+`http://localhost/laboratorio-cito-biop/public`.
 
-**Dominio `http://laboratorio-cito-biop.test`** (requiere consola **como administrador**):
+### Dominio local y arranque automático por separado
+
+El instalador ya los configura. Si preferís hacerlo a mano:
+
+**Dominio `http://laboratorio-cito-biop.test`** (consola **como administrador**):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\setup-vhost.ps1 -DryRun   # ver qué haría
@@ -79,8 +87,8 @@ Agrega la línea al `hosts`, habilita el `Include` de vhosts si está comentado 
 el `<VirtualHost>` con `DocumentRoot` a `...\public`. Respalda `hosts`, `httpd.conf` y
 `httpd-vhosts.conf` como `*.bak-laboratorio` antes de tocar nada. **No borra** vhosts
 existentes (en este equipo ya conviven `localhost`, `ganaderia_SaaS.test` y
-`facturacion-inventario.test`). Después hay que reiniciar Apache; el script lo intenta y,
-si no puede, avisa.
+`facturacion-inventario.test`). Valida con `httpd -t` y reinicia; si no puede reiniciar,
+avisa.
 
 **Arranque de servicios** (para que el sistema vuelva solo después de un corte de luz):
 
@@ -104,36 +112,10 @@ powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Arranque -R
 En los dos casos el script es idempotente: si Apache o MySQL ya están corriendo, no hace
 nada, y deja rastro en `storage\logs\xampp-autostart.log`.
 
-**Se puede volver a ejecutar** sin romper nada: omite lo que ya está hecho.
-
-Solo verificar requisitos, sin instalar:
+Solo verificar requisitos, sin instalar ni pedir administrador:
 
 ```bat
-instalar.bat -Check
-```
-
-Sin preguntas:
-
-```bat
-instalar.bat -Si
-```
-
-Con datos del laboratorio (kit generado con `scripts\exportar_kit.ps1`):
-
-```bat
-instalar.bat -Si -Kit "D:\laboratorio-kit-20261101-183016.zip"
-```
-
-Opcional: copiar también el `.env` del kit (misma `APP_KEY`, sesiones intactas):
-
-```bat
-instalar.bat -Si -Kit "D:\kit.zip" -UsarEnvDelKit
-```
-
-Si tu MySQL tiene contraseña:
-
-```bat
-instalar.bat -DbPass "tu_clave"
+instalar.bat --check
 ```
 
 ---
@@ -303,8 +285,8 @@ En el equipo nuevo, **doble clic en `instalar-desde-cero.bat`**. El lanzador:
 1. Verifica que XAMPP esté instalado.
 2. Si hay Git y credenciales: `git clone` (o `git pull` si ya existe).
 3. Si no hay Git, o el clon falla: descomprime `laboratorio-codigo.zip`.
-4. Detecta el `laboratorio-kit-*.zip` que esté al lado y lo pasa como `-Kit`.
-5. Llama a `instalar-como-admin.bat`, que pide administrador **una vez** e instala todo
+4. Detecta el `laboratorio-kit-*.zip` que esté al lado y lo pasa como `--kit`.
+5. Llama a `instalar.bat`, que pide administrador **una vez** e instala todo
    (dependencias, base, datos, PDFs, dominio `.test` y arranque al encender).
 
 Opciones:
@@ -340,22 +322,20 @@ git clone https://github.com/joseoho/laboratorio-cito-biop.git C:\xampp\htdocs\l
 cd C:\xampp\htdocs\laboratorio-cito-biop
 
 # 3) TODO en un paso: dependencias, base, admin, datos del kit y PDFs
-instalar.bat -Si -Kit "D:\laboratorio-kit-20261101-183016.zip"
+instalar.bat --kit "D:\laboratorio-kit-20261101-183016.zip"
 
 # 4) Limpiar cachés y probar
 C:\xampp\php\php.exe artisan optimize:clear
-# abrir http://localhost/laboratorio-cito-biop/public/login
+# abrir http://laboratorio-cito-biop.test/login
 ```
 
-El instalador informa al final `Datos: Datos restaurados desde el kit: ...` y el
-conteo de pacientes/estudios.
+El instalador informa al final la URL, las credenciales y si aplicó el kit.
 
 Si preferís hacerlo manual (o el kit se descomprimió a una carpeta):
 
 ```powershell
-instalar.bat -Si
-powershell -File scripts\restore_db.ps1 -File "RUTA\base\lapt_core-XXXX.sql.gz"
-xcopy /E /I "RUTA\reports" "storage\app\private\reports"
+instalar.bat --sin-vhost
+powershell -File scripts\aplicar_kit.ps1 -Kit "RUTA\laboratorio-kit-XXXX.zip"
 C:\xampp\php\php.exe artisan optimize:clear
 ```
 
@@ -389,7 +369,7 @@ Nunca apuntes `lapt_test` a producción ni corras los tests contra `lapt_core`:
 
 | Síntoma | Causa / solución |
 |---|---|
-| `No se pudo conectar a MySQL` | MySQL apagado o clave distinta. Encendelo en XAMPP y pasá `-DbPass`. |
+| `No se pudo conectar a MySQL` | MySQL apagado o clave distinta. Encendelo en XAMPP o editá `DB_PASS` al inicio de `instalar.bat`. |
 | `No se encontro Composer` | Instalá desde getcomposer.org y reabrí la consola. |
 | 404 en todas las rutas | Estás entrando por otra URL; debe incluir `/laboratorio-cito-biop/public/`. |
 | 404 solo en los tests | `APP_URL` con subdirectorio en `.env`. Dejalo en `http://localhost`. |

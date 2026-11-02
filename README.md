@@ -74,19 +74,29 @@ No requiere Node.js: los estilos vienen por CDN y no hay build de Vite en uso.
 
 ## Instalación
 
-### Para no expertos: `instalar-como-admin.bat`
+### Un solo archivo: `instalar.bat`
 
-Con MySQL encendido en XAMPP, **doble clic en `instalar-como-admin.bat`** y aceptar el
-aviso de administrador. Hace todo sin preguntas:
+Con MySQL encendido en XAMPP, **doble clic en `instalar.bat`** y aceptar el aviso de
+administrador. No pregunta nada y hace todo:
 
-- instala dependencias, crea la base y el usuario administrador;
+- descarga el proyecto si no está (`git clone`, o `laboratorio-codigo.zip`);
+- instala Composer si falta y las dependencias PHP;
+- crea `.env`, `APP_KEY`, la base `lapt_core` y el usuario administrador;
 - configura **`http://laboratorio-cito-biop.test`**;
 - deja Apache y MySQL arrancando **al encender la PC** (sobrevive a un corte de luz);
-- crea la base de pruebas `lapt_test`.
+- con `--kit`, restaura los datos del laboratorio y los PDFs archivados.
 
-Con datos: `instalar-como-admin.bat -Kit "D:\laboratorio-kit-XXXX.zip"`.
+```bat
+instalar.bat                                       :: instala todo
+instalar.bat --kit "D:\laboratorio-kit-XXXX.zip"   :: instala Y carga los datos
+instalar.bat --check                               :: solo diagnostica
+instalar.bat --sin-vhost                           :: no toca hosts ni Apache
+instalar.bat --sin-arranque                        :: no programa el arranque
+```
 
-Si se rechaza el permiso de administrador no rompe nada; queda para usar `instalar.bat`.
+Si tu MySQL tiene contraseña, editá `DB_PASS` al inicio de `instalar.bat`.
+Si se rechaza el permiso de administrador no rompe nada: corré
+`instalar.bat --sin-vhost --sin-arranque` y queda en `/public`.
 
 ### Equipo nuevo, sin clonar a mano: `instalar-desde-cero.bat`
 
@@ -99,44 +109,14 @@ Copia al pendrive estos tres archivos y ejecutá el `.bat` en el equipo nuevo:
 | `laboratorio-kit-XXXX.zip` | `scripts\exportar_kit.ps1` (≈7,5 MB) |
 
 El lanzador **clona el repo** si hay Git y credenciales; si no (el repo es privado),
-descomprime `laboratorio-codigo.zip`. Después detecta el kit y llama a
-`instalar-como-admin.bat`: instala, carga datos y PDFs, configura el dominio `.test` y el
-arranque automático. Requiere XAMPP instalado.
+descomprime `laboratorio-codigo.zip`. Después detecta el kit y llama a `instalar.bat` con
+`--kit`: instala, carga datos y PDFs, configura el dominio `.test` y el arranque
+automático. Requiere XAMPP instalado.
 
 ```bat
 instalar-desde-cero.bat              :: clona (o usa el zip) + instala con datos
 instalar-desde-cero.bat -SinGit      :: no intentar clonar
 instalar-desde-cero.bat -SoloCodigo  :: solo obtener el código
-```
-
-### Automática con preguntas
-
-Con MySQL encendido en XAMPP, doble clic en **`instalar.bat`**. Verifica requisitos,
-crea `.env` y la clave, crea la base, instala dependencias, migra, crea el
-administrador, prepara carpetas y (opcional) la base de pruebas.
-
-```bat
-instalar.bat                   :: interactivo
-instalar.bat -Check            :: solo verifica requisitos
-instalar.bat -Si               :: sin preguntas
-instalar.bat -Si -Kit "D:\laboratorio-kit-XXXX.zip"   :: instala Y carga los datos
-instalar.bat -DbPass "clave"   :: si MySQL tiene contrasena
-instalar.bat -Si -SinVhost     :: no toca el dominio local
-```
-
-Con `-Kit` el instalador restaura la base, copia los PDFs archivados y deja el
-sistema **con los datos del laboratorio**, no vacío (a menos que se pase
-`-UsarEnvDelKit`, usa un `.env` nuevo y los usuarios solo deben volver a entrar).
-
-Los pasos 11 y 12 configuran **dominio local** (`http://laboratorio-cito-biop.test`) y
-**arranque automático** de Apache/MySQL. Requieren permisos de administrador para el
-vhost y para el arranque al encender el equipo; si el instalador no los tiene, deja el
-comando exacto para ejecutarlo aparte:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\setup-vhost.ps1   # hosts + vhost + reinicio
-powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Login      # al iniciar sesion
-powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Arranque   # al encender (admin)
 ```
 
 Guía paso a paso, verificación y problemas comunes: **[docs/INSTALACION.md](docs/INSTALACION.md)**.
