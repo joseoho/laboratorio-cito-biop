@@ -57,7 +57,7 @@
                 <label class="form-label small mb-1">Año</label>
                 <select name="anio" class="form-select">
                     @foreach ($years as $y)
-                        <option value="{{ $y }}" @selected($y === $year)>{{ $y }}</option>
+                        <option value="{{ $y }}" @selected($y === $year)>{{ $y }}@if (! in_array($y, $yearsWithData, true)) (sin datos)@endif</option>
                     @endforeach
                 </select>
             </div>

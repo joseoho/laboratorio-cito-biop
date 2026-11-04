@@ -12,9 +12,25 @@ class ReportController extends Controller
 {
     public function index(Request $request): View
     {
-        $year = (int) $request->query('anio', now()->year);
+        $currentYear = (int) now()->year;
+
+        // Anios que realmente tienen estudios (para marcar los vacios).
+        $dataYears = ClinicalCase::query()
+            ->select('year_no')
+            ->distinct()
+            ->whereNotNull('year_no')
+            ->pluck('year_no')
+            ->map(fn ($y) => (int) $y)
+            ->sort()
+            ->values()
+            ->all();
+
+        // Por defecto, el ultimo anio con datos (no un anio vacio).
+        $defaultYear = $dataYears ? max($dataYears) : $currentYear;
+
+        $year = (int) $request->query('anio', $defaultYear);
         if ($year < 2000 || $year > 2100) {
-            $year = (int) now()->year;
+            $year = $defaultYear;
         }
 
         $type = $request->query('tipo');
@@ -96,24 +112,23 @@ class ReportController extends Controller
             ->limit(10)
             ->get();
 
-        $years = ClinicalCase::query()
-            ->select('year_no')
-            ->distinct()
-            ->whereNotNull('year_no')
-            ->orderByDesc('year_no')
-            ->pluck('year_no')
-            ->map(fn ($y) => (int) $y)
-            ->all();
+        // Lista continua: 2001..2026, incluidos los anios sin estudios (ej. 2024),
+        // para que el selector no salte de 2023 a 2026.
+        $minYear = $dataYears ? min($dataYears) : $currentYear;
+        $maxYear = max(array_merge($dataYears, [$currentYear]));
+        $years = range($maxYear, $minYear);
 
         if (! in_array($year, $years, true)) {
-            array_unshift($years, $year);
+            $years = array_merge([$year], $years);
         }
+
+        $yearsWithData = $dataYears;
 
         $maxMonthly = max($monthly) ?: 1;
 
         return view('reports.index', compact(
             'year', 'type', 'totals', 'monthly', 'monthlyDelivered', 'maxMonthly',
-            'pending', 'withoutPathologist', 'pathologists', 'origins', 'doctors', 'years'
+            'pending', 'withoutPathologist', 'pathologists', 'origins', 'doctors', 'years', 'yearsWithData'
         ));
     }
 }
