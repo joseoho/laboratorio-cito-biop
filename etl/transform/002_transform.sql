@@ -125,9 +125,9 @@ INSERT INTO cases (patient_id, type, case_code, sequence_no, year_no, status,
 SELECT
   pat.id, 'biopsy',
   NULLIF(TRIM(p.nb),''),
-  CASE WHEN TRIM(p.nb) REGEXP '^[0-9]{6}$' AND CAST(RIGHT(TRIM(p.nb),2) AS UNSIGNED) BETWEEN 10 AND 25
+  CASE WHEN TRIM(p.nb) REGEXP '^[0-9]{6}$' AND CAST(RIGHT(TRIM(p.nb),2) AS UNSIGNED) BETWEEN 10 AND 99
        THEN CAST(LEFT(TRIM(p.nb),4) AS UNSIGNED) END,
-  CASE WHEN TRIM(p.nb) REGEXP '^[0-9]{6}$' AND CAST(RIGHT(TRIM(p.nb),2) AS UNSIGNED) BETWEEN 10 AND 25
+  CASE WHEN TRIM(p.nb) REGEXP '^[0-9]{6}$' AND CAST(RIGHT(TRIM(p.nb),2) AS UNSIGNED) BETWEEN 10 AND 99
        THEN 2000 + CAST(RIGHT(TRIM(p.nb),2) AS UNSIGNED) END,
   'received',
   CASE WHEN YEAR(b.fecha_recibido) BETWEEN 2000 AND 2026 THEN b.fecha_recibido END,
@@ -137,7 +137,7 @@ SELECT
   CONCAT_WS(',',
     CASE WHEN COALESCE(TRIM(p.nb),'')='' THEN 'SIN_NUMERO' END,
     CASE WHEN COALESCE(TRIM(p.nb),'')<>'' AND NOT (TRIM(p.nb) REGEXP '^[0-9]{6}$'
-              AND CAST(RIGHT(TRIM(p.nb),2) AS UNSIGNED) BETWEEN 10 AND 25) THEN 'NUMERO_FUERA_PATRON' END,
+              AND CAST(RIGHT(TRIM(p.nb),2) AS UNSIGNED) BETWEEN 10 AND 99) THEN 'NUMERO_FUERA_PATRON' END,
     CASE WHEN (COALESCE(TRIM(b.fecha_recibido),'')<>'' AND YEAR(b.fecha_recibido) NOT BETWEEN 2000 AND 2026)
            OR (COALESCE(TRIM(b.fecha_envio),'')<>''   AND YEAR(b.fecha_envio)    NOT BETWEEN 2000 AND 2026)
          THEN 'FECHA_CORRUPTA' END,
@@ -158,9 +158,9 @@ INSERT INTO cases (patient_id, type, case_code, sequence_no, year_no, status,
 SELECT
   pat.id, 'cytology',
   NULLIF(TRIM(p.nc),''),
-  CASE WHEN TRIM(p.nc) REGEXP '^[0-9]{7}$' AND CAST(RIGHT(TRIM(p.nc),2) AS UNSIGNED) BETWEEN 10 AND 25
+  CASE WHEN TRIM(p.nc) REGEXP '^[0-9]{7}$' AND CAST(RIGHT(TRIM(p.nc),2) AS UNSIGNED) BETWEEN 10 AND 99
        THEN CAST(LEFT(TRIM(p.nc),5) AS UNSIGNED) END,
-  CASE WHEN TRIM(p.nc) REGEXP '^[0-9]{7}$' AND CAST(RIGHT(TRIM(p.nc),2) AS UNSIGNED) BETWEEN 10 AND 25
+  CASE WHEN TRIM(p.nc) REGEXP '^[0-9]{7}$' AND CAST(RIGHT(TRIM(p.nc),2) AS UNSIGNED) BETWEEN 10 AND 99
        THEN 2000 + CAST(RIGHT(TRIM(p.nc),2) AS UNSIGNED) END,
   'received',
   CASE WHEN YEAR(c.fecha_recibido) BETWEEN 2000 AND 2026 THEN c.fecha_recibido END,
@@ -170,7 +170,7 @@ SELECT
   CONCAT_WS(',',
     CASE WHEN COALESCE(TRIM(p.nc),'')='' THEN 'SIN_NUMERO' END,
     CASE WHEN COALESCE(TRIM(p.nc),'')<>'' AND NOT (TRIM(p.nc) REGEXP '^[0-9]{7}$'
-              AND CAST(RIGHT(TRIM(p.nc),2) AS UNSIGNED) BETWEEN 10 AND 25) THEN 'NUMERO_FUERA_PATRON' END,
+              AND CAST(RIGHT(TRIM(p.nc),2) AS UNSIGNED) BETWEEN 10 AND 99) THEN 'NUMERO_FUERA_PATRON' END,
     CASE WHEN (COALESCE(TRIM(c.fecha_recibido),'')<>'' AND YEAR(c.fecha_recibido) NOT BETWEEN 2000 AND 2026)
            OR (COALESCE(TRIM(c.fecha_envio),'')<>''   AND YEAR(c.fecha_envio)    NOT BETWEEN 2000 AND 2026)
          THEN 'FECHA_CORRUPTA' END,
@@ -334,9 +334,9 @@ SELECT 'NUMERO_FUERA_PATRON','legacy_pacientes', p._row_id,
        JSON_OBJECT('id_paciente',p.id_paciente,'nb',p.nb,'nc',p.nc)
 FROM lapt_staging.legacy_pacientes p
 WHERE (COALESCE(TRIM(p.nb),'')<>'' AND NOT (TRIM(p.nb) REGEXP '^[0-9]{6}$'
-         AND CAST(RIGHT(TRIM(p.nb),2) AS UNSIGNED) BETWEEN 10 AND 25))
+         AND CAST(RIGHT(TRIM(p.nb),2) AS UNSIGNED) BETWEEN 10 AND 99))
    OR (COALESCE(TRIM(p.nc),'')<>'' AND NOT (TRIM(p.nc) REGEXP '^[0-9]{7}$'
-         AND CAST(RIGHT(TRIM(p.nc),2) AS UNSIGNED) BETWEEN 10 AND 25));
+         AND CAST(RIGHT(TRIM(p.nc),2) AS UNSIGNED) BETWEEN 10 AND 99));
 
 INSERT INTO quarantine (bucket, legacy_table, legacy_row_id, legacy_key, detail, payload)
 SELECT 'SEXO_INVALIDO','legacy_pacientes', p._row_id, p.id_paciente,
