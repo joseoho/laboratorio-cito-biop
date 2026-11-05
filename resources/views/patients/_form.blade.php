@@ -88,7 +88,7 @@
                         @foreach ($doctors as $doctor)
                             <option value="{{ $doctor->id }}"
                                 @selected((string) old('doctor_id', $p->doctor_id ?? '') === (string) $doctor->id)>
-                                {{ $doctor->legacy_code }} — {{ $doctor->name }}
+                                {{ $doctor->name }}@if ($doctor->legacy_code && $doctor->legacy_code !== $doctor->name) — {{ $doctor->legacy_code }}@endif
                             </option>
                         @endforeach
                     </select>

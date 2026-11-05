@@ -49,7 +49,7 @@ SELECT nombre FROM (
 ORDER BY nombre;
 
 INSERT INTO doctors (legacy_code, name, phone)
-SELECT TRIM(codigo), MAX(NULLIF(TRIM(nombre),'')), MAX(NULLIF(TRIM(telefono),''))
+SELECT TRIM(codigo), COALESCE(MAX(NULLIF(TRIM(nombre),'')), TRIM(codigo)), MAX(NULLIF(TRIM(telefono),''))
 FROM lapt_staging.legacy_medico
 WHERE COALESCE(TRIM(codigo),'')<>''
 GROUP BY TRIM(codigo);
