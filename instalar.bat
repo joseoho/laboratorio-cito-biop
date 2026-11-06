@@ -35,7 +35,6 @@ set "ADMIN_PASS=cambiar123"
 set "KIT="
 set "SIN_VHOST=0"
 set "SIN_ADMIN=0"
-set "SIN_ARRANQUE=0"
 
 :args
 if "%~1"=="" goto :inicio
@@ -53,11 +52,6 @@ if /i "%~1"=="--sin-vhost" (
 )
 if /i "%~1"=="--sin-admin" (
     set "SIN_ADMIN=1"
-    shift
-    goto :args
-)
-if /i "%~1"=="--sin-arranque" (
-    set "SIN_ARRANQUE=1"
     shift
     goto :args
 )
@@ -106,7 +100,7 @@ if exist "%TARGET_DIR%\artisan" (
     goto :proyecto_listo
 )
 
-echo [1/9] Descargando el proyecto en %TARGET_DIR%...
+echo [1/8] Descargando el proyecto en %TARGET_DIR%...
 if not exist "%XAMPP%\htdocs" mkdir "%XAMPP%\htdocs"
 
 if exist "%TARGET_DIR%" (
@@ -158,7 +152,7 @@ if exist ".git" (
 REM ------------------------------------------------------------
 REM 2) Composer
 REM ------------------------------------------------------------
-echo [2/9] Preparando Composer...
+echo [2/8] Preparando Composer...
 set "COMPOSER_CMD="
 where composer >nul 2>&1
 if not errorlevel 1 set "COMPOSER_CMD=composer"
@@ -186,16 +180,16 @@ if not exist ".env" (
         echo [X] Falta .env.example en el proyecto.
         goto :fin_error
     )
-    echo [3/9] Creando .env desde .env.example...
+    echo [3/8] Creando .env desde .env.example...
     copy /y ".env.example" ".env" >nul
 ) else (
-    echo [3/9] .env ya existe, se conserva.
+    echo [3/8] .env ya existe, se conserva.
 )
 
 REM ------------------------------------------------------------
 REM 4) Dependencias PHP
 REM ------------------------------------------------------------
-echo [4/9] Instalando dependencias PHP...
+echo [4/8] Instalando dependencias PHP...
 call %COMPOSER_CMD% install --no-interaction --prefer-dist --no-progress
 if errorlevel 1 (
     echo [X] Fallo composer install.
@@ -211,7 +205,7 @@ if errorlevel 1 (
 REM ------------------------------------------------------------
 REM 5) MySQL y base de datos
 REM ------------------------------------------------------------
-echo [5/9] Preparando MySQL...
+echo [5/8] Preparando MySQL...
 set "MYSQL_AUTH=-u %DB_USER%"
 if not "%DB_PASS%"=="" set "MYSQL_AUTH=-u %DB_USER% -p%DB_PASS%"
 
@@ -239,7 +233,7 @@ echo [OK] Base de datos %DB_NAME% disponible.
 REM ------------------------------------------------------------
 REM 6) Configuracion del .env
 REM ------------------------------------------------------------
-echo [6/9] Configurando .env...
+echo [6/8] Configurando .env...
 "%PHP%" scripts\set-env.php ".env" "APP_NAME=Laboratorio Becomarca" "APP_URL=http://%APP_HOST%" "APP_TIMEZONE=America/Caracas" "APP_LOCALE=es" "DB_CONNECTION=mysql" "DB_HOST=127.0.0.1" "DB_PORT=3306" "DB_DATABASE=%DB_NAME%" "DB_USERNAME=%DB_USER%" "DB_PASSWORD=%DB_PASS%"
 if errorlevel 1 goto :fin_error
 
@@ -260,7 +254,7 @@ if not "!HAS_TABLES!"=="0" (
 REM ------------------------------------------------------------
 REM 7) Migraciones, datos iniciales y kit
 REM ------------------------------------------------------------
-echo [7/9] Migrando la base de datos...
+echo [7/8] Migrando la base de datos...
 "%PHP%" artisan migrate --force
 if errorlevel 1 (
     echo [X] Fallaron las migraciones.
@@ -296,7 +290,7 @@ echo [OK] Migraciones y datos iniciales aplicados.
 REM ------------------------------------------------------------
 REM 8) VirtualHost
 REM ------------------------------------------------------------
-echo [8/9] Configurando Apache...
+echo [8/8] Configurando Apache...
 set "VHOST_OK=0"
 
 if "%SIN_VHOST%"=="1" (
@@ -308,21 +302,6 @@ if "%SIN_VHOST%"=="1" (
         echo     Revisa los permisos de %XAMPP%\apache o configura Apache a mano.
     ) else (
         set "VHOST_OK=1"
-    )
-)
-
-REM ------------------------------------------------------------
-REM 9) Arranque automatico de XAMPP
-REM ------------------------------------------------------------
-echo [9/9] Configurando arranque automatico...
-if "%SIN_ARRANQUE%"=="1" (
-    echo     Omitido por --sin-arranque.
-) else (
-    powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\autostart.ps1" -Modo Arranque
-    if errorlevel 1 (
-        echo     El arranque al encender fallo; se intenta al iniciar sesion...
-        powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\autostart.ps1" -Modo Login
-        if errorlevel 1 echo [AVISO] No se pudo configurar el arranque automatico.
     )
 )
 

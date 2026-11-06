@@ -83,7 +83,6 @@ administrador. No pregunta nada y hace todo:
 - instala Composer si falta y las dependencias PHP;
 - crea `.env`, `APP_KEY`, la base `lapt_core` y el usuario administrador;
 - configura **`http://laboratorio-cito-biop.test`**;
-- deja Apache y MySQL arrancando **al encender la PC** (sobrevive a un corte de luz);
 - con `--kit`, restaura los datos del laboratorio y los PDFs archivados.
 
 ```bat
@@ -91,12 +90,15 @@ instalar.bat                                       :: instala todo
 instalar.bat --kit "D:\laboratorio-kit-XXXX.zip"   :: instala Y carga los datos
 instalar.bat --check                               :: solo diagnostica
 instalar.bat --sin-vhost                           :: no toca hosts ni Apache
-instalar.bat --sin-arranque                        :: no programa el arranque
 ```
 
 Si tu MySQL tiene contraseña, editá `DB_PASS` al inicio de `instalar.bat`.
 Si se rechaza el permiso de administrador no rompe nada: corré
-`instalar.bat --sin-vhost --sin-arranque` y queda en `/public`.
+`instalar.bat --sin-vhost` y queda en `/public`.
+
+> El arranque de Apache y MySQL **no lo configura el instalador**: administralo desde
+> Windows (servicios o Programador de tareas). Si querés el script opcional, está en
+> `scripts\autostart.ps1`.
 
 ### Equipo nuevo, sin clonar a mano: `instalar-desde-cero.bat`
 
@@ -110,8 +112,7 @@ Copia al pendrive estos tres archivos y ejecutá el `.bat` en el equipo nuevo:
 
 El lanzador **clona el repo** si hay Git y credenciales; si no (el repo es privado),
 descomprime `laboratorio-codigo.zip`. Después detecta el kit y llama a `instalar.bat` con
-`--kit`: instala, carga datos y PDFs, configura el dominio `.test` y el arranque
-automático. Requiere XAMPP instalado.
+`--kit`: instala, carga datos y PDFs y configura el dominio `.test`. Requiere XAMPP instalado.
 
 ```bat
 instalar-desde-cero.bat              :: clona (o usa el zip) + instala con datos

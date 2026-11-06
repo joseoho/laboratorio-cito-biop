@@ -45,8 +45,7 @@ instalar.bat --kit "D:\laboratorio-kit-20261101-183016.zip"
 |---|---|
 | `--kit "ruta"` | restaura la base y copia los PDFs del kit |
 | `--sin-vhost` | no toca `hosts` ni Apache (deja la app en `/public`) |
-| `--sin-arranque` | no programa el arranque automático |
-| `--sin-admin` | no pide elevación (diagnóstico; el vhost y el arranque fallarán) |
+| `--sin-admin` | no pide elevación (diagnóstico; el vhost fallará) |
 | `--check` | **solo diagnostica**, no instala nada |
 
 Si tu MySQL tiene contraseña, editá `DB_PASS` al inicio de `instalar.bat`.
@@ -63,17 +62,16 @@ Si tu MySQL tiene contraseña, editá `DB_PASS` al inicio de `instalar.bat`.
 | 6 | Configura `.env` (`APP_URL`, `DB_*`, zona horaria) y respalda si ya había datos. |
 | 7 | `migrate --force`, `db:seed --force` y, si hay `--kit`, restaura datos y PDFs. |
 | 8 | Configura el vhost `.test` (respalda y valida con `httpd -t`). |
-| 9 | Programa el arranque de Apache/MySQL al encender el equipo. |
 
 **Se puede volver a ejecutar** sin romper nada: omite lo que ya está hecho.
 
 Si rechazás el permiso de administrador, no rompe nada: podés correr
-`instalar.bat --sin-vhost --sin-arranque` y la app queda funcionando en
+`instalar.bat --sin-vhost` y la app queda funcionando en
 `http://localhost/laboratorio-cito-biop/public`.
 
-### Dominio local y arranque automático por separado
+### Dominio local por separado
 
-El instalador ya los configura. Si preferís hacerlo a mano:
+El instalador ya configura el dominio. Si preferís hacerlo a mano:
 
 **Dominio `http://laboratorio-cito-biop.test`** (consola **como administrador**):
 
@@ -90,27 +88,23 @@ existentes (en este equipo ya conviven `localhost`, `ganaderia_SaaS.test` y
 `facturacion-inventario.test`). Valida con `httpd -t` y reinicia; si no puede reiniciar,
 avisa.
 
-**Arranque de servicios** (para que el sistema vuelva solo después de un corte de luz):
+### Arranque de Apache y MySQL
+
+**El instalador no lo configura.** Apache y MySQL se administran desde Windows:
+servicios, el Programador de tareas o el panel de XAMPP, según prefiera cada equipo.
+
+Si se quiere el script opcional del repositorio (crea una tarea o un acceso directo):
 
 ```powershell
 # Al iniciar sesión (no requiere administrador)
 powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Login
 
-# Al ARRANCAR Windows, sin que nadie inicie sesión (requiere administrador)
+# Al arrancar Windows, sin que nadie inicie sesión (requiere administrador)
 powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Arranque
 
 # Quitar
-powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Login -Remove
 powershell -ExecutionPolicy Bypass -File scripts\autostart.ps1 -Modo Arranque -Remove
 ```
-
-| Modo | Cuándo arranca | Requiere admin | Sirve para corte de luz |
-|---|---|---|---|
-| `Login` | al iniciar sesión del usuario | no | solo si alguien inicia sesión |
-| `Arranque` | al encender Windows (tarea como SYSTEM) | sí | **sí** |
-
-En los dos casos el script es idempotente: si Apache o MySQL ya están corriendo, no hace
-nada, y deja rastro en `storage\logs\xampp-autostart.log`.
 
 Solo verificar requisitos, sin instalar ni pedir administrador:
 
@@ -287,7 +281,7 @@ En el equipo nuevo, **doble clic en `instalar-desde-cero.bat`**. El lanzador:
 3. Si no hay Git, o el clon falla: descomprime `laboratorio-codigo.zip`.
 4. Detecta el `laboratorio-kit-*.zip` que esté al lado y lo pasa como `--kit`.
 5. Llama a `instalar.bat`, que pide administrador **una vez** e instala todo
-   (dependencias, base, datos, PDFs, dominio `.test` y arranque al encender).
+   (dependencias, base, datos, PDFs y dominio `.test`).
 
 Opciones:
 
