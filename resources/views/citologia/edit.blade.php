@@ -4,7 +4,7 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Jose R. Becker Reyes"</h1>
+            <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Juan Carlos Becker"</h1>
             <h2>Editar Citología</h2>
         </div>
         <div>

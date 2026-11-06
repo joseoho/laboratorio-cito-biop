@@ -1,6 +1,6 @@
 # Laboratorio Becomarca
 
-Sistema interno del **Laboratorio de Anatomía Patológica "Dr. José R. Becker Reyes"**
+Sistema interno del **Laboratorio de Anatomía Patológica "Dr. Juan Carlos Becker"**
 (Becomarca): recepción de muestras, informes de biopsia y citología, emisión con PDF
 archivado, reportes de producción y auditoría.
 

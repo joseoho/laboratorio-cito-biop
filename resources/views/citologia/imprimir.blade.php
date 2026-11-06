@@ -53,7 +53,7 @@
             </div>
             <div class="lab-info">
                 <div class="lab-name">LABORATORIO DE ANATOMIA PATOLOGICA</div>
-                <div class="lab-title">"Dr. Jose R. Becker Reyes"</div>
+                <div class="lab-title">"Dr. Juan Carlos Becker"</div>
                 <div class="lab-details">
                     <strong>Dirección:</strong> Urb. San Inés, Hotel Valle Santiango, CENTROMED, San Cristóbal, Edo Táchira<br>
                     <strong>Teléfono:</strong> 0276-3410380 • <strong>Email:</strong> becomarca@gmail.com

@@ -27,7 +27,7 @@
             <img src="{{ asset('assets/images/logo.jpg') }}" alt="Becomarca" style="height:78px;width:auto">
             <div>
                 <div class="fw-bold" style="font-size:1.15rem">LABORATORIO BECOMARCA</div>
-                <div class="small">Anatomía Patológica · Dr. José R. Becker Reyes</div>
+                <div class="small">Anatomía Patológica · Dr. Juan Carlos Becker</div>
                 <div class="small muted">Urb. San Inés, Hotel Valle Santiango, CENTROMED, San Cristóbal, Edo. Táchira</div>
                 <div class="small muted">Tel. 0276-3410380 · becomarca@gmail.com · RIF J-29890247-7</div>
             </div>

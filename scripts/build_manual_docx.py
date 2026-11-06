@@ -249,7 +249,7 @@ def cover(doc):
 
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = p.add_run('"Dr. José R. Becker Reyes"')
+    r = p.add_run('"Dr. Juan Carlos Becker"')
     r.font.size = Pt(13)
     r.font.color.rgb = NAVY
     r.italic = True

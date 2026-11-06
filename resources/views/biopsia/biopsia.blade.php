@@ -5,7 +5,7 @@
     <div class="container">
     <div class="row mb-3">
         <div class="col">
-            <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Jose R. Becker Reyes"</h1>
+            <h1>LABORATORIO DE ANATOMIA PATOLOGICA "Dr. Juan Carlos Becker"</h1>
             <h2>Biopsia, Registrar</h2>
         </div>
         <div class="col text-right">
