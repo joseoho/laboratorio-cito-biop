@@ -327,7 +327,7 @@ def build():
             ("5. Estudios", "Registrar biopsias y citologías, numeración y filtros."),
             ("6. El informe", "Campos, plantillas, diagnósticos y anexos."),
             ("7. Emitir (Entregado)", "Cuándo se emite, qué exige y qué implica."),
-            ("8. Imprimir y PDF", "Impresión y copia archivada."),
+            ("8. Imprimir el informe", "Cómo imprimir el informe del paciente."),
             ("9. Reportes", "Producción, pendientes y estadísticas."),
             ("10. Usuarios", "Altas, bajas y contraseñas (administrador)."),
             ("11. Respaldos", "Copias de la base (administrador)."),
@@ -628,7 +628,7 @@ def build():
     )
 
     # ------------------------------------------------------------------ 8
-    h1(doc, "8. Imprimir y PDF")
+    h1(doc, "8. Imprimir el informe")
     h2(doc, "Imprimir")
     steps(
         doc,
@@ -638,20 +638,12 @@ def build():
             ("Imprimí.", "Con el botón de imprimir o Ctrl+P."),
         ],
     )
-
-    h2(doc, "PDF archivado")
-    para(
+    callout(
         doc,
-        "El botón PDF descarga la copia que el sistema guardó al emitir. Es la copia "
-        "fiel del informe y sirve para enviar por correo o para respaldo.",
-    )
-    bullets(
-        doc,
-        [
-            "Cada emisión genera una versión nueva.",
-            "La copia queda en el servidor, no en la computadora.",
-            "Si el botón PDF no aparece, el informe todavía no está emitido.",
-        ],
+        "El papel es la entrega.",
+        "El informe se imprime desde el sistema con el formato del laboratorio. "
+        "No hace falta descargar nada: la impresión es la copia que se entrega al paciente.",
+        "ok",
     )
 
     # ------------------------------------------------------------------ 9
@@ -792,7 +784,7 @@ def build():
             ("Informe", "El texto del diagnóstico de un estudio."),
             ("Emitir", "Cerrar el informe; pasa a Entregado y se bloquea."),
             ("Entregado", "Informe terminado y listo para imprimir."),
-            ("PDF archivado", "Copia del informe guardada en el servidor al emitir."),
+            ("Imprimir", "Genera el informe en papel con el formato del laboratorio."),
             ("Cuarentena", "Bandeja con las anomalías del histórico."),
         ],
         widths=[4.0, 11.6],

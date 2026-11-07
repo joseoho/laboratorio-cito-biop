@@ -38,11 +38,6 @@
             @else
                 <span class="badge text-bg-light border">Complete el informe para imprimir</span>
             @endif
-            @if ($case->pdfs->isNotEmpty())
-                <a href="{{ route('cases.pdf', $case) }}" class="btn btn-sm btn-outline-dark">
-                    <i class="fas fa-file-pdf me-1"></i>PDF
-                </a>
-            @endif
         </div>
     </div>
 
@@ -130,22 +125,6 @@
                     @endforelse
                 </div>
             </div>
-
-            @if ($case->pdfs->isNotEmpty())
-                @php($pdf = $case->pdfs->first())
-                <div class="card mt-3">
-                    <div class="card-body small">
-                        <div class="section-title">Documento archivado</div>
-                        <div class="d-flex justify-content-between border-bottom py-1">
-                            <span>PDF versión {{ $pdf->version }}</span>
-                            <span class="muted">{{ $pdf->created_at?->format('d/m/Y H:i') }}</span>
-                        </div>
-                        <div class="muted mt-1" style="word-break:break-all">
-                            SHA-256: {{ $pdf->hash }}
-                        </div>
-                    </div>
-                </div>
-            @endif
 
             <div class="card mt-3">
                 <div class="card-body">
