@@ -6,6 +6,7 @@
     $logo = file_exists($logoPath)
         ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath))
         : null;
+    $firma = $case->signed ? \App\Support\Signature::dataUri() : null;
 @endphp
 <!doctype html>
 <html lang="es">
@@ -126,9 +127,18 @@
 
     <table class="sign" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 28px;">
         <tr>
-            <td width="45%">{{ $signers->get(0) ?: '____________________' }}<br><span class="muted">Médico Patólogo 1</span></td>
+            <td width="45%" align="center">
+                @if ($firma)
+                    <img src="{{ $firma }}" alt="Firma" style="height:42px;">
+                @endif
+                <div style="border-top:1px solid #000; padding-top:3px;">{{ $signers->get(0) ?: '____________________' }}</div>
+                <span class="muted">Médico Patólogo 1</span>
+            </td>
             <td width="10%"></td>
-            <td width="45%">{{ $signers->get(1) ?: '____________________' }}<br><span class="muted">Médico Patólogo 2</span></td>
+            <td width="45%" align="center">
+                <div style="border-top:1px solid #000; padding-top:3px;">{{ $signers->get(1) ?: '____________________' }}</div>
+                <span class="muted">Médico Patólogo 2</span>
+            </td>
         </tr>
     </table>
 

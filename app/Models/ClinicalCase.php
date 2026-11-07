@@ -19,6 +19,7 @@ class ClinicalCase extends Model
     protected $fillable = [
         'patient_id', 'type', 'case_code', 'sequence_no', 'year_no', 'status',
         'received_at', 'sent_at', 'completed_at', 'legacy_source', 'legacy_row_id', 'flags',
+        'signed', 'signed_at',
     ];
 
     protected $casts = [
@@ -29,6 +30,8 @@ class ClinicalCase extends Model
         'completed_at' => 'datetime',
         'sequence_no' => 'integer',
         'year_no' => 'integer',
+        'signed' => 'boolean',
+        'signed_at' => 'datetime',
     ];
 
     public function patient(): BelongsTo

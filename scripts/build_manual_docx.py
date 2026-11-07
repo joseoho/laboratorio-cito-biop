@@ -614,6 +614,7 @@ def build():
             "Se genera una copia PDF en el servidor, con su huella de verificación.",
             "El informe queda bloqueado: ya no se puede editar.",
             "Se habilita el botón Imprimir y la descarga del PDF.",
+            "Si la casilla Firma está activa, la impresión y el PDF llevan la firma digitalizada.",
         ],
     )
 

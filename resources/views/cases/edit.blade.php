@@ -138,6 +138,18 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        <div class="section-title mt-3">Firma</div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="signed" id="signed"
+                                   value="1" @checked(old('signed', $case->signed))>
+                            <label class="form-check-label" for="signed">
+                                Incluir firma digitalizada
+                            </label>
+                        </div>
+                        <div class="form-text">
+                            Agrega la firma del Dr. Juan Carlos Becker a la impresión y al PDF.
+                        </div>
                     </div>
                 </div>
             </div>

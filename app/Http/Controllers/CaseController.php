@@ -165,9 +165,12 @@ class CaseController extends Controller
             'conclusion' => ['nullable', 'string', 'max:5000'],
             'pathologist_1' => ['nullable', 'string', 'max:100'],
             'pathologist_2' => ['nullable', 'string', 'max:100', Rule::notIn([$request->input('pathologist_1')])],
+            'signed' => ['nullable', 'boolean'],
         ]);
 
-        DB::transaction(function () use ($case, $data, $isBiopsy, $audit) {
+        $signed = $request->boolean('signed');
+
+        DB::transaction(function () use ($case, $data, $isBiopsy, $audit, $signed) {
             $report = $case->report();
 
             if (! $report) {
@@ -209,10 +212,18 @@ class CaseController extends Controller
                 );
             }
 
+            $wasSigned = (bool) $case->signed;
+
             $case->update([
                 'received_at' => $data['received_at'] ?? $case->received_at,
                 'sent_at' => $data['sent_at'] ?? null,
+                'signed' => $signed,
+                'signed_at' => $signed ? ($case->signed_at ?? now()) : null,
             ]);
+
+            if ($wasSigned !== $signed) {
+                $audit->log('case.signature', $case, ['signed' => $signed]);
+            }
 
             // Emisión: el informe terminado pasa a Entregado y habilita la
             // impresión. Solo aplica a casos nuevos; el histórico no se revalida.
