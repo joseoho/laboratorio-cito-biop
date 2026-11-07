@@ -39,6 +39,12 @@
 @php($biopsy = $case->isBiopsy())
 @php($signers = $case->assignments->pluck('pathologist_name')->filter())
 @php($firma = $case->signed ? \App\Support\Signature::dataUri() : null)
+@php($firmante = $case->signed
+        ? 'Dr. Juan Carlos Becker'
+        : $signers->get(0))
+@php($cosignante = $case->signed
+        ? $signers->first(fn ($n) => ! \Illuminate\Support\Str::contains(\Illuminate\Support\Str::lower((string) $n), 'becker'))
+        : $signers->get(1))
 
 <div class="toolbar">
     <button onclick="window.print()">Imprimir</button>
@@ -160,18 +166,18 @@
         <tr>
             <td width="45%" align="center">
                 <div class="firma-slot"></div>
-                <div class="firmante">{{ $signers->get(1) ?: '' }}</div>
-                <div class="especialidad">{{ $signers->get(1) ? 'Anatomía Patológica' : '' }}</div>
+                <div class="firmante">{{ $cosignante ?: '' }}</div>
+                <div class="especialidad">{{ $cosignante ? 'Anatomía Patológica' : '' }}</div>
             </td>
             <td width="10%"></td>
             <td width="45%" align="center">
-                <div class="firma-slot"><!-- firma-v5 -->
+                <div class="firma-slot"><!-- firma-v6 -->
                     @if ($firma)
                         <img class="firma" src="{{ $firma }}" alt="Firma digitalizada">
                     @endif
                 </div>
-                <div class="firmante">{{ $signers->get(0) ?: '' }}</div>
-                <div class="especialidad">{{ $signers->get(0) ? 'Anatomía Patológica' : '' }}</div>
+                <div class="firmante">{{ $firmante ?: '' }}</div>
+                <div class="especialidad">{{ $firmante ? 'Anatomía Patológica' : '' }}</div>
             </td>
         </tr>
     </table>

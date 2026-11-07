@@ -7,6 +7,12 @@
         ? 'data:image/jpeg;base64,' . base64_encode(file_get_contents($logoPath))
         : null;
     $firma = $case->signed ? \App\Support\Signature::dataUri() : null;
+    $firmante = $case->signed
+        ? 'Dr. Juan Carlos Becker'
+        : $signers->get(0);
+    $cosignante = $case->signed
+        ? $signers->first(fn ($n) => ! \Illuminate\Support\Str::contains(\Illuminate\Support\Str::lower((string) $n), 'becker'))
+        : $signers->get(1);
 @endphp
 <!doctype html>
 <html lang="es">
@@ -135,8 +141,8 @@
         <tr>
             <td width="45%" align="center">
                 <div style="height:42px;"></div>
-                <div class="firmante">{{ $signers->get(1) ?: '' }}</div>
-                <div class="especialidad">{{ $signers->get(1) ? 'Anatomía Patológica' : '' }}</div>
+                <div class="firmante">{{ $cosignante ?: '' }}</div>
+                <div class="especialidad">{{ $cosignante ? 'Anatomía Patológica' : '' }}</div>
             </td>
             <td width="10%"></td>
             <td width="45%" align="center">
@@ -145,8 +151,8 @@
                         <img src="{{ $firma }}" alt="Firma" style="height:40px;">
                     @endif
                 </div>
-                <div class="firmante">{{ $signers->get(0) ?: '' }}</div>
-                <div class="especialidad">{{ $signers->get(0) ? 'Anatomía Patológica' : '' }}</div>
+                <div class="firmante">{{ $firmante ?: '' }}</div>
+                <div class="especialidad">{{ $firmante ? 'Anatomía Patológica' : '' }}</div>
             </td>
         </tr>
     </table>
