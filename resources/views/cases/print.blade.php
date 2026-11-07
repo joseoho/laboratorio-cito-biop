@@ -22,12 +22,13 @@
         .section-title { font-weight:bold; background:#eee; padding:2px 6px; border-left:3px solid #333; font-size:10px; margin-bottom:3px; }
         .text { border:1px solid #ddd; padding:5px; white-space:pre-wrap; font-size:10px; }
         .dx { background:#fff9c4; border:1px solid #c62828; padding:6px; font-weight:bold; font-size:11px; }
-        .sign { display:flex; justify-content:space-around; margin-top:22px; }
-        .signer { width:45%; text-align:center; font-size:10px; }
-        .signer-name { min-height:14px; }
-        .firma-slot { height:40px; line-height:40px; }
-        .firma { max-height:38px; max-width:150px; vertical-align:middle; }
-        .line { border-top:1px solid #000; }
+        .cuerpo { min-height:17cm; }
+        .firmas { margin-top:12px; }
+        .firmas td { border-bottom:1px solid #000; height:72px; vertical-align:bottom; padding-bottom:2px; }
+        .firma-slot { height:42px; line-height:42px; }
+        .firma { max-height:40px; max-width:150px; vertical-align:middle; }
+        .firmante { font-size:10px; font-weight:bold; }
+        .especialidad { font-size:7.5px; color:#333; }
         .foot { margin-top:14px; border-top:1px solid #333; padding-top:5px; font-size:8px; text-align:center; line-height:1.3; }
         .hormonal { display:grid; grid-template-columns:repeat(3,1fr); text-align:center; margin-bottom:6px; }
         @@media print { .toolbar { display:none; } body { margin:0; } .sheet { width:auto; padding:0; } }
@@ -45,6 +46,7 @@
 </div>
 
 <div class="sheet">
+    <div class="cuerpo">
     <div class="head">
         <img src="{{ asset('assets/images/logo.jpg') }}" alt="Logo">
         <div>
@@ -152,25 +154,27 @@
             <div class="text">{{ $report->notes }}</div>
         </div>
     @endif
+    </div>{{-- /cuerpo --}}
 
-    <div class="sign">
-        <div class="signer">
-            <div class="signer-name">{{ $signers->get(0) ?: '' }}</div>
-            <div class="firma-slot"><!-- firma-v4 -->
-                @if ($firma)
-                    <img class="firma" src="{{ $firma }}" alt="Firma digitalizada">
-                @endif
-            </div>
-            <div class="line"></div>
-            <small>Médico Patólogo 1</small>
-        </div>
-        <div class="signer">
-            <div class="signer-name">{{ $signers->get(1) ?: '' }}</div>
-            <div class="firma-slot"></div>
-            <div class="line"></div>
-            <small>Médico Patólogo 2</small>
-        </div>
-    </div>
+    <table class="firmas" width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+            <td width="45%" align="center">
+                <div class="firma-slot"></div>
+                <div class="firmante">{{ $signers->get(1) ?: '' }}</div>
+                <div class="especialidad">{{ $signers->get(1) ? 'Anatomía Patológica' : '' }}</div>
+            </td>
+            <td width="10%"></td>
+            <td width="45%" align="center">
+                <div class="firma-slot"><!-- firma-v5 -->
+                    @if ($firma)
+                        <img class="firma" src="{{ $firma }}" alt="Firma digitalizada">
+                    @endif
+                </div>
+                <div class="firmante">{{ $signers->get(0) ?: '' }}</div>
+                <div class="especialidad">{{ $signers->get(0) ? 'Anatomía Patológica' : '' }}</div>
+            </td>
+        </tr>
+    </table>
 
     <div class="foot">
         Urb. San Inés, Hotel Valle Santiango, CENTROMED, San Cristóbal, Edo. Táchira ·

@@ -26,11 +26,16 @@
         .text { border: 1px solid #dddddd; padding: 5px; white-space: pre-wrap; font-size: 9.5px; }
         .dx { background: #fff9c4; border: 1px solid #c62828; padding: 6px; font-weight: bold; font-size: 10px; }
         .sign td { border-top: 1px solid #000; text-align: center; font-size: 9px; padding-top: 3px; }
+        .cuerpo { min-height: 17.5cm; }
+        .firmas td { border-bottom: 1px solid #000; height: 72px; vertical-align: bottom; padding-bottom: 2px; }
+        .firmante { font-size: 9px; font-weight: bold; }
+        .especialidad { font-size: 7px; color: #555555; }
         .foot { border-top: 1px solid #333; margin-top: 14px; padding-top: 5px; text-align: center; font-size: 7.5px; line-height: 1.35; }
         .muted { color: #555555; }
     </style>
 </head>
 <body>
+    <div class="cuerpo">
     <table class="head" width="100%" cellspacing="0" cellpadding="0">
         <tr>
             @if ($logo)
@@ -124,27 +129,24 @@
         <div class="sec-title">NOTAS</div>
         <div class="text">{{ $report->notes }}</div>
     @endif
+    </div>{{-- /cuerpo --}}
 
-    <table class="sign" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 24px;">
+    <table class="firmas" width="100%" cellspacing="0" cellpadding="0">
         <tr>
             <td width="45%" align="center">
-                <div style="height:12px;">{{ $signers->get(0) ?: '' }}</div>
-                <div style="height:40px;">
-                    @if ($firma)
-                        <img src="{{ $firma }}" alt="Firma" style="height:36px;">
-                    @endif
-                </div>
-                <div style="border-top:1px solid #000; padding-top:3px;">
-                    <span class="muted">Médico Patólogo 1</span>
-                </div>
+                <div style="height:42px;"></div>
+                <div class="firmante">{{ $signers->get(1) ?: '' }}</div>
+                <div class="especialidad">{{ $signers->get(1) ? 'Anatomía Patológica' : '' }}</div>
             </td>
             <td width="10%"></td>
             <td width="45%" align="center">
-                <div style="height:12px;">{{ $signers->get(1) ?: '' }}</div>
-                <div style="height:40px;"></div>
-                <div style="border-top:1px solid #000; padding-top:3px;">
-                    <span class="muted">Médico Patólogo 2</span>
+                <div style="height:42px;">
+                    @if ($firma)
+                        <img src="{{ $firma }}" alt="Firma" style="height:40px;">
+                    @endif
                 </div>
+                <div class="firmante">{{ $signers->get(0) ?: '' }}</div>
+                <div class="especialidad">{{ $signers->get(0) ? 'Anatomía Patológica' : '' }}</div>
             </td>
         </tr>
     </table>
