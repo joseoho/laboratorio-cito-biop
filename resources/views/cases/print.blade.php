@@ -24,9 +24,9 @@
         .dx { background:#fff9c4; border:1px solid #c62828; padding:6px; font-weight:bold; font-size:11px; }
         .sign { display:flex; justify-content:space-around; margin-top:22px; }
         .signer { width:45%; text-align:center; font-size:10px; }
-        .firma-line { min-height:46px; line-height:46px; text-align:center; white-space:nowrap; }
-        .firma { max-height:40px; max-width:150px; vertical-align:middle; }
-        .signer-name { vertical-align:middle; }
+        .signer-name { min-height:14px; }
+        .firma-slot { height:40px; line-height:40px; }
+        .firma { max-height:38px; max-width:150px; vertical-align:middle; }
         .line { border-top:1px solid #000; }
         .foot { margin-top:14px; border-top:1px solid #333; padding-top:5px; font-size:8px; text-align:center; line-height:1.3; }
         .hormonal { display:grid; grid-template-columns:repeat(3,1fr); text-align:center; margin-bottom:6px; }
@@ -155,8 +155,8 @@
 
     <div class="sign">
         <div class="signer">
-            <div class="firma-line"><!-- firma-v3 -->
-                <span class="signer-name">{{ $signers->get(0) ?: '____________________' }}</span>
+            <div class="signer-name">{{ $signers->get(0) ?: '' }}</div>
+            <div class="firma-slot"><!-- firma-v4 -->
                 @if ($firma)
                     <img class="firma" src="{{ $firma }}" alt="Firma digitalizada">
                 @endif
@@ -165,9 +165,8 @@
             <small>Médico Patólogo 1</small>
         </div>
         <div class="signer">
-            <div class="firma-line">
-                <span class="signer-name">{{ $signers->get(1) ?: '____________________' }}</span>
-            </div>
+            <div class="signer-name">{{ $signers->get(1) ?: '' }}</div>
+            <div class="firma-slot"></div>
             <div class="line"></div>
             <small>Médico Patólogo 2</small>
         </div>

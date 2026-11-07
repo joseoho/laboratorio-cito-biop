@@ -125,13 +125,13 @@
         <div class="text">{{ $report->notes }}</div>
     @endif
 
-    <table class="sign" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 28px;">
+    <table class="sign" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 24px;">
         <tr>
             <td width="45%" align="center">
-                <div style="min-height:38px; padding-bottom:2px; white-space:nowrap;">
-                    <span style="vertical-align:middle;">{{ $signers->get(0) ?: '____________________' }}</span>
+                <div style="height:12px;">{{ $signers->get(0) ?: '' }}</div>
+                <div style="height:40px;">
                     @if ($firma)
-                        <img src="{{ $firma }}" alt="Firma" style="height:34px; vertical-align:middle; margin-left:6px;">
+                        <img src="{{ $firma }}" alt="Firma" style="height:36px;">
                     @endif
                 </div>
                 <div style="border-top:1px solid #000; padding-top:3px;">
@@ -140,9 +140,8 @@
             </td>
             <td width="10%"></td>
             <td width="45%" align="center">
-                <div style="min-height:38px; padding-bottom:2px;">
-                    <span style="vertical-align:middle;">{{ $signers->get(1) ?: '____________________' }}</span>
-                </div>
+                <div style="height:12px;">{{ $signers->get(1) ?: '' }}</div>
+                <div style="height:40px;"></div>
                 <div style="border-top:1px solid #000; padding-top:3px;">
                     <span class="muted">Médico Patólogo 2</span>
                 </div>
