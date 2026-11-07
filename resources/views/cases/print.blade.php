@@ -155,11 +155,11 @@
 
     <div class="sign">
         <div class="signer">
-            <div class="firma-line"><!-- firma-v2 -->
+            <div class="firma-line"><!-- firma-v3 -->
+                <span class="signer-name">{{ $signers->get(0) ?: '____________________' }}</span>
                 @if ($firma)
                     <img class="firma" src="{{ $firma }}" alt="Firma digitalizada">
                 @endif
-                <span class="signer-name">{{ $signers->get(0) ?: '____________________' }}</span>
             </div>
             <div class="line"></div>
             <small>Médico Patólogo 1</small>

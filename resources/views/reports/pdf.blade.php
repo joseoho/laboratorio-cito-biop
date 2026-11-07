@@ -128,11 +128,11 @@
     <table class="sign" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 28px;">
         <tr>
             <td width="45%" align="center">
-                <div style="min-height:38px; padding-bottom:2px;">
-                    @if ($firma)
-                        <img src="{{ $firma }}" alt="Firma" style="height:34px; vertical-align:middle;">
-                    @endif
+                <div style="min-height:38px; padding-bottom:2px; white-space:nowrap;">
                     <span style="vertical-align:middle;">{{ $signers->get(0) ?: '____________________' }}</span>
+                    @if ($firma)
+                        <img src="{{ $firma }}" alt="Firma" style="height:34px; vertical-align:middle; margin-left:6px;">
+                    @endif
                 </div>
                 <div style="border-top:1px solid #000; padding-top:3px;">
                     <span class="muted">Médico Patólogo 1</span>
