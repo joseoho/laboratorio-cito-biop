@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="utf-8">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
     <title>{{ $case->isBiopsy() ? 'Biopsia' : 'Informe de Citología' }} · {{ $case->codeLabel() }}</title>
     <style>
         @@page { size: letter; margin: 12mm; }
@@ -23,8 +24,9 @@
         .dx { background:#fff9c4; border:1px solid #c62828; padding:6px; font-weight:bold; font-size:11px; }
         .sign { display:flex; justify-content:space-around; margin-top:22px; }
         .signer { width:45%; text-align:center; font-size:10px; }
-        .firma-line { display:flex; align-items:center; justify-content:center; gap:8px; min-height:46px; }
-        .firma { height:38px; }
+        .firma-line { min-height:46px; line-height:46px; text-align:center; white-space:nowrap; }
+        .firma { max-height:40px; max-width:150px; vertical-align:middle; }
+        .signer-name { vertical-align:middle; }
         .line { border-top:1px solid #000; }
         .foot { margin-top:14px; border-top:1px solid #333; padding-top:5px; font-size:8px; text-align:center; line-height:1.3; }
         .hormonal { display:grid; grid-template-columns:repeat(3,1fr); text-align:center; margin-bottom:6px; }
@@ -153,18 +155,18 @@
 
     <div class="sign">
         <div class="signer">
-            <div class="firma-line">
+            <div class="firma-line"><!-- firma-v2 -->
                 @if ($firma)
                     <img class="firma" src="{{ $firma }}" alt="Firma digitalizada">
                 @endif
-                <span>{{ $signers->get(0) ?: '____________________' }}</span>
+                <span class="signer-name">{{ $signers->get(0) ?: '____________________' }}</span>
             </div>
             <div class="line"></div>
             <small>Médico Patólogo 1</small>
         </div>
         <div class="signer">
             <div class="firma-line">
-                <span>{{ $signers->get(1) ?: '____________________' }}</span>
+                <span class="signer-name">{{ $signers->get(1) ?: '____________________' }}</span>
             </div>
             <div class="line"></div>
             <small>Médico Patólogo 2</small>
