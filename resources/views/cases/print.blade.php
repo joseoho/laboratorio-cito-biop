@@ -25,8 +25,8 @@
         .cuerpo { min-height:17cm; }
         .firmas { margin-top:12px; }
         .firmas td { border-bottom:1px solid #000; height:72px; vertical-align:bottom; padding-bottom:2px; }
-        .firma-slot { height:42px; line-height:42px; }
-        .firma { max-height:40px; max-width:150px; vertical-align:middle; }
+        .firma-slot { height:70px; line-height:70px; }
+        .firma { max-height:60px; max-width:150px; vertical-align:middle; }
         .firmante { font-size:10px; font-weight:bold; }
         .especialidad { font-size:7.5px; color:#333; }
         .foot { margin-top:14px; border-top:1px solid #333; padding-top:5px; font-size:8px; text-align:center; line-height:1.3; }
