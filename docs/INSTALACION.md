@@ -69,6 +69,23 @@ Si rechazás el permiso de administrador, no rompe nada: podés correr
 `instalar.bat --sin-vhost` y la app queda funcionando en
 `http://localhost/laboratorio-cito-biop/public`.
 
+### Paquete portable (sin Composer)
+
+Para equipos donde `composer install` falla por permisos (Windows viejo, carpeta de XAMPP
+con ACL restringidas), se entrega un ZIP con el proyecto **y `vendor/` incluido**:
+
+1. Copiar la carpeta `laboratorio-cito-biop` a `C:\laboratorio` (fuera de `htdocs`).
+2. Abrir la carpeta y ejecutar como administrador:
+   `instalar.bat --kit "laboratorio-kit.zip"`
+3. El instalador detecta `vendor\autoload.php` y **omite Composer**; sigue con `.env`,
+   base de datos, kit y vhost.
+
+Si Windows responde "permiso denegado":
+
+```powershell
+icacls "C:\laboratorio" /grant "%USERNAME%:(OI)(CI)F" /T
+```
+
 ### Dominio local por separado
 
 El instalador ya configura el dominio. Si preferís hacerlo a mano:

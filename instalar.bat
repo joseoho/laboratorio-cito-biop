@@ -154,6 +154,12 @@ REM 2) Composer
 REM ------------------------------------------------------------
 echo [2/8] Preparando Composer...
 set "COMPOSER_CMD="
+
+if exist "vendor\autoload.php" (
+    echo     Dependencias incluidas en el paquete: no hace falta Composer.
+    goto :composer_listo
+)
+
 where composer >nul 2>&1
 if not errorlevel 1 set "COMPOSER_CMD=composer"
 
@@ -171,6 +177,8 @@ if not defined COMPOSER_CMD (
     )
     set "COMPOSER_CMD=%PHP% composer.phar"
 )
+
+:composer_listo
 
 REM ------------------------------------------------------------
 REM 3) .env inicial
@@ -190,10 +198,14 @@ REM ------------------------------------------------------------
 REM 4) Dependencias PHP
 REM ------------------------------------------------------------
 echo [4/8] Instalando dependencias PHP...
-call %COMPOSER_CMD% install --no-interaction --prefer-dist --no-progress
-if errorlevel 1 (
-    echo [X] Fallo composer install.
-    goto :fin_error
+if exist "vendor\autoload.php" (
+    echo     vendor ya viene incluido: se omite composer install.
+) else (
+    call %COMPOSER_CMD% install --no-interaction --prefer-dist --no-progress
+    if errorlevel 1 (
+        echo [X] Fallo composer install.
+        goto :fin_error
+    )
 )
 
 findstr /b /c:"APP_KEY=base64:" ".env" >nul 2>&1
